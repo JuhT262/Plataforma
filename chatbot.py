@@ -90,14 +90,14 @@ class Config:
     AUDIO_DURATION = 7
     IMG_PROFILE = "https://i.ibb.co/vvD2dkbQ/17.png"
     IMG_GALLERY = [
-        "https://i.ibb.co/vvD2dkbQ/17.png",
-        "https://i.ibb.co/1GcmQffP/11.png",
+        "https://i.ibb.co/DkXF5Wy/Swapfaces-AI-789cad8b-d632-473a-bb72-623c70724707.png",
+        "https://i.ibb.co/DfTmwHZb/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png",
         "https://i.ibb.co/rfK0DPBM/27.png"
     ]
     IMG_HOME_PREVIEWS = [
         "https://i.ibb.co/vvD2dkbQ/17.png",
         "https://i.ibb.co/RpPBjFp1/image.png",
-        "https://i.ibb.co/DfTmwHZb/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png"
+        "https://i.ibb.co/1GcmQffP/11.png"
     ]
     LOGO_URL = "https://i.ibb.co/LX7x3tcB/Logo-Golden-Pepper-Letreiro-1.png"
 
