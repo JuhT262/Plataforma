@@ -1259,12 +1259,12 @@ class NewPages:
 
         plans = [
             {
-                "name": "1 Mês",
-                "price": "R$ 29,90",
-                "original": "R$ 49,90",
-                "benefits": ["Acesso total", "Conteúdo novo diário", "Chat privado"],
+                "name": "PROMO",
+                "price": "R$ 12,50",
+                "original": "R$ 17,90",
+                "benefits": ["Acesso total", "Conteúdo único", "Chat privado"],
                 "tag": "COMUM",
-                "link": Config.CHECKOUT_VIP_1MES + "?plan=1mes"
+                "link": Config.CHECKOUT_PROMO + "?plan=Promo"
             },
             {
                 "name": "3 Meses",
