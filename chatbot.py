@@ -1267,7 +1267,7 @@ class NewPages:
                 "link": Config.CHECKOUT_PROMO + "?plan=Promo"
             },
             {
-                "name": "3 Meses",
+                #"name": "3 Meses",
                 "price": "R$ 69,90",
                 "original": "R$ 149,70",
                 "benefits": ["25% de desconto", "Bônus: 1 vídeo exclusivo", "Prioridade no chat"],
@@ -1275,7 +1275,7 @@ class NewPages:
                 "link": Config.CHECKOUT_VIP_3MESES + "?plan=3meses"
             },
             {
-                "name": "1 Ano",
+                #"name": "1 Ano",
                 "price": "R$ 199,90",
                 "original": "R$ 598,80",
                 "benefits": ["66% de desconto", "Presente surpresa mensal", "Acesso a conteúdos raros"],
