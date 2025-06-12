@@ -19,7 +19,7 @@ from functools import lru_cache
 # ======================
 st.set_page_config(
     page_title="Juh Premium",
-    page_icon="💎",  # Emoji de diamante adicionado
+    page_icon="💎",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -181,7 +181,7 @@ def save_persistent_data():
 # MODELOS DE DADOS
 # ======================
 class Persona:
-    JUH = """  # Alterado de PALOMA para JUH
+    JUH = """
     [PERFIL JUH]
     - Mulher vulgar e safada que adora provocar
     - Linguagem direta e cheia de malícia
@@ -197,7 +197,7 @@ class Persona:
     1. Quando o histórico mostra clima sexual:
     Histórico:
     Cliente: sua buceta é rosinha?
-    Juh: adoro mostrar ela aberta  # Alterado de Paloma para Juh
+    Juh: adoro mostrar ela aberta
     Cliente: quero ver
     Resposta: ```json
     {
@@ -227,7 +227,7 @@ class Persona:
     3. Quando o contexto não justifica CTA:
     Histórico:
     Cliente: oi
-    Juh: oi gato  # Alterado de Paloma para Juh
+    Juh: oi gato
     Resposta: ```json
     {
       "text": "eai gostoso",
@@ -293,7 +293,7 @@ class CTAEngine:
                 ]),
                 "cta": {
                     "show": True,
-                    "label": "Ver Fotos Quentes",
+                    "label": "Ver Fotos Quentes 💎",
                     "target": "offers"
                 }
             }
@@ -307,7 +307,7 @@ class CTAEngine:
                 ]),
                 "cta": {
                     "show": True,
-                    "label": "Ver Vídeos Exclusivos",
+                    "label": "Ver Vídeos Exclusivos 💎",
                     "target": "offers"
                 }
             }
@@ -467,7 +467,7 @@ class UiService:
             animation: pulse-ring 2s infinite;
         ">
             <div style="font-size: 3rem;">📱</div>
-            <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>  <!-- Alterado de Paloma para Juh -->
+            <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh 💎...</h3>
             <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
                 <div style="width: 10px; height: 10px; background: #4CAF50; border-radius: 50%;"></div>
                 <span style="font-size: 0.9rem;">Online agora</span>
@@ -497,7 +497,7 @@ class UiService:
         ">
             <div style="font-size: 3rem; color: #4CAF50;">✓</div>
             <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
-            <p style="font-size: 0.9rem; margin:0;">Juh está te esperando...</p>  <!-- Alterado de Paloma para Juh -->
+            <p style="font-size: 0.9rem; margin:0;">Juh 💎 está te esperando...</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -705,8 +705,8 @@ class UiService:
             
             st.markdown("""
             <div class="sidebar-header">
-                <img src="{profile_img}" alt="Juh">  <!-- Alterado de Paloma para Juh -->
-                <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>  <!-- Alterado e adicionado emoji de diamante -->
+                <img src="{profile_img}" alt="Juh">
+                <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>
             </div>
             """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
             
@@ -717,7 +717,7 @@ class UiService:
                 "Início": "home",
                 "Galeria Privada": "gallery",
                 "Mensagens": "messages",
-                "Ofertas Especiais": "offers"
+                "Ofertas Especiais 💎": "offers"
             }
             
             for option, page in menu_options.items():
@@ -743,7 +743,7 @@ class UiService:
             """, unsafe_allow_html=True)
             
             st.markdown("---")
-            st.markdown("### Upgrade VIP 💎")  # Adicionado emoji de diamante
+            st.markdown("### Upgrade VIP 💎")
             st.markdown("""
             <div class="vip-badge">
                 <p style="margin: 0 0 10px; font-weight: bold;">Acesso completo por apenas</p>
@@ -752,15 +752,14 @@ class UiService:
             </div>
             """, unsafe_allow_html=True)
             
-            if st.button("Tornar-se VIP 💎", use_container_width=True, type="primary"):  # Adicionado emoji de diamante
+            if st.button("Tornar-se VIP 💎", use_container_width=True, type="primary"):
                 st.session_state.current_page = "offers"
-                save_persistent_data()
                 st.rerun()
             
             st.markdown("---")
             st.markdown("""
             <div style="text-align: center; font-size: 0.7em; color: #888;">
-                <p>© 2024 Juh Premium</p>  <!-- Alterado de Paloma Premium para Juh Premium -->
+                <p>© 2024 Juh Premium</p>
                 <p>Conteúdo para maiores de 18 anos</p>
             </div>
             """, unsafe_allow_html=True)
@@ -806,7 +805,7 @@ class UiService:
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button("Tornar-se VIP 💎",  # Adicionado emoji de diamante
+        if st.button("Tornar-se VIP 💎",
                     key="vip_button_gallery", 
                     use_container_width=True,
                     type="primary"):
@@ -836,14 +835,14 @@ class UiService:
                 save_persistent_data()
                 st.rerun()
         with cols[2]:
-            if st.button("Ofertas 💎", key="shortcut_offers",  # Adicionado emoji de diamante
+            if st.button("Ofertas 💎", key="shortcut_offers",
                        help="Ver ofertas especiais",
                        use_container_width=True):
                 st.session_state.current_page = "offers"
                 save_persistent_data()
                 st.rerun()
         with cols[3]:
-            if st.button("VIP 💎", key="shortcut_vip",  # Adicionado emoji de diamante
+            if st.button("VIP 💎", key="shortcut_vip",
                        help="Acessar área VIP",
                        use_container_width=True):
                 st.session_state.current_page = "vip"
@@ -901,7 +900,7 @@ class UiService:
         
         st.markdown(f"""
         <div class="chat-header">
-            <h2 style="margin:0; font-size:1.5em; display:inline-block;">Chat Privado com Juh 💎</h2>  <!-- Alterado e adicionado emoji de diamante -->
+            <h2 style="margin:0; font-size:1.5em; display:inline-block;">Chat Privado com Juh 💎</h2>
         </div>
         """, unsafe_allow_html=True)
         
@@ -916,4 +915,20 @@ class UiService:
             <p style="margin:0; font-size:0.9em;">
                 Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
             </p>
-            <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS
+            <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:8px; border-radius:4px;"></progress>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.session_state.get('audio_sent', False):
+            st.markdown(UiService.get_chat_audio_player(), unsafe_allow_html=True)
+            st.session_state.audio_sent = False
+            save_persistent_data()
+
+        for message in st.session_state.messages:
+            if message["role"] == "user":
+                st.markdown(f"""
+                <div style="
+                    background: rgba(255, 102, 179, 0.1);
+                    border-radius: 15px;
+                    padding: 12px;
+                    margin
