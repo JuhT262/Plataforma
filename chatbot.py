@@ -19,7 +19,7 @@ from functools import lru_cache
 # ======================
 st.set_page_config(
     page_title="Juh Premium",
-    page_icon="💎",  # Emoji de diamante adicionado
+    page_icon="😍",  # Emoji de diamante adicionado
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -967,7 +967,7 @@ class NewPages:
 
         st.markdown("""
         <div class="hero-banner">
-            <h1 style="color: #ff66b3;">Paloma Premium</h1>
+            <h1 style="color: #ff66b3;">Juh Premium</h1>
             <p>Conteúdo exclusivo que você não encontra em nenhum outro lugar...</p>
             <div style="margin-top: 20px;">
                 <a href="#vip" style="
