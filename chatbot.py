@@ -92,10 +92,10 @@ class Config:
     IMG_GALLERY = [
         "https://i.ibb.co/DkXF5Wy/Swapfaces-AI-789cad8b-d632-473a-bb72-623c70724707.png",
         "https://i.ibb.co/DfTmwHZb/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png",
-        "https://i.ibb.co/rfK0DPBM/27.png"
+        "https://i.ibb.co/60nYTWfV/Swapfaces-AI-6fa11bfe-af4f-4aa9-bbe0-2edb97e67026.png"
     ]
     IMG_HOME_PREVIEWS = [
-        "https://i.ibb.co/vvD2dkbQ/17.png",
+        "https://i.ibb.co/rfK0DPBM/27.png",
         "https://i.ibb.co/RpPBjFp1/image.png",
         "https://i.ibb.co/1GcmQffP/11.png"
     ]
