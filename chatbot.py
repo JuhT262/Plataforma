@@ -924,7 +924,7 @@ class NewPages:
 
         for plan in plans:
             st.markdown(f"""
-            <div style="
+        <div style="
                 border: 1px solid #ff66b3;
                 border-radius: 15px;
                 padding: 20px;
