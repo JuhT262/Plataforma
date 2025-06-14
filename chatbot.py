@@ -928,19 +928,24 @@ for plan in plans:
         border-radius: 15px;
         padding: 20px;
         margin-bottom: 20px;
+        background-color: #fff9fc;
     ">
-        <h3>{plan['name']}</h3>
-        <p style="font-size: 1.5em; color: #ff66b3;">{plan['price']}</p>
-        <ul>{''.join(f'<li>{b}</li>' for b in plan['benefits'])}</ul>
-        <a href="{plan['link']}" style="
+        <h3>{plan.get('name', 'Plano Sem Nome')}</h3>
+        <p style="font-size: 1.5em; color: #ff66b3; font-weight: bold;">{plan.get('price', 'R$ --')}</p>
+        <ul style="margin-left: 20px;">
+            {''.join(f'<li>{benefit}</li>' for benefit in plan.get('benefits', []))}
+        </ul>
+        <a href="{plan.get('link', '#')}" style="
             background: #ff66b3;
             color: white;
             padding: 10px 20px;
             text-decoration: none;
             border-radius: 5px;
             display: inline-block;
+            margin-top: 15px;
+            font-weight: bold;
         ">
-            Assinar
+            Assinar Agora
         </a>
     </div>
     """, unsafe_allow_html=True)
