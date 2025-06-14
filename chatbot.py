@@ -27,7 +27,38 @@ st.set_page_config(
 st._config.set_option('client.caching', True)
 st._config.set_option('client.showErrorDetails', False)
 
-hide_streamlit_style = """
+hide_streamlit_style = 
+st.markdown("""
+<style>
+    /* Ajustes para mobile */
+    @media (max-width: 768px) {
+        /* Ajuste dos pacotes */
+        .package-container {
+            flex-direction: column;
+        }
+        
+        /* Ajuste do chat */
+        [data-testid="stChatMessage"] {
+            max-width: 85% !important;
+        }
+        
+        /* Ajuste dos botões */
+        div[data-testid="column"] {
+            padding: 0.5rem !important;
+        }
+        
+        /* Ajuste da sidebar */
+        [data-testid="stSidebar"] {
+            width: 100% !important;
+        }
+        
+        /* Ajuste das imagens */
+        .stImage {
+            margin-bottom: 0.5rem !important;
+        }
+    }
+</style>
+""", unsafe_allow_html=True)"""
 <style>
     #root > div:nth-child(1) > div > div > div > div > section > div {
         padding-top: 0rem;
