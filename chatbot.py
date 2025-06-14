@@ -1335,7 +1335,7 @@ class NewPages:
 ]
         
 
-        for plan in plans:
+        for plan in [p for p in plans if p.get("active", True)]:
             with st.container():
                 st.markdown(f"""
                 <div class="offer-card">
@@ -1508,8 +1508,67 @@ class ChatService:
         return cleaned_input[:500]
 
     @staticmethod
-    def process_user_input(conn):
-        ChatService.display_chat_history()
+def process_user_input(conn):
+    ChatService.display_chat_history()
+    
+    # Verificação para PIX (adicionar esta parte NOVO)
+    user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
+    
+    if user_input:
+        cleaned_input = ChatService.validate_input(user_input.lower())  # Convertendo para minúsculas
+        
+        # Resposta especial para PIX (adicionar esta parte NOVO)
+        if "pix" in cleaned_input or "chave pix" in cleaned_input:
+            resposta = {
+                "text": "💳 Aceitamos PIX amor! Temos esses planos especiais:\n\n"
+                        "✨ START: R$ 19,50/mês\n"
+                        "✨ PREMIUM: R$ 45,50/mês\n"
+                        "✨ EXTREME: R$ 75,50/mês\n\n"
+                        "Clique no botão pra ver todos 👇",
+                "cta": {
+                    "show": True,
+                    "label": "VER PLANOS COMPLETOS",
+                    "target": "offers"
+                }
+            }
+            
+            # Mostra a resposta
+            with st.chat_message("assistant", avatar="💋"):
+                st.markdown(f"""
+                <div style="
+                    background: linear-gradient(45deg, #ff66b3, #ff1493);
+                    color: white;
+                    padding: 12px;
+                    border-radius: 18px 18px 18px 0;
+                    margin: 5px 0;
+                ">
+                    {resposta["text"]}
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if st.button(
+                    resposta["cta"]["label"],
+                    key=f"pix_cta_{time.time()}",
+                    use_container_width=True
+                ):
+                    st.session_state.current_page = "offers"
+                    st.rerun()
+            
+            # Registra no histórico
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": json.dumps(resposta)
+            })
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "assistant",
+                json.dumps(resposta)
+            )
+            
+            save_persistent_data()
+            return  
         
         if not st.session_state.get("audio_sent") and st.session_state.chat_started:
             status_container = st.empty()
