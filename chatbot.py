@@ -1,4 +1,3 @@
-
 # ======================
 # IMPORTAÇÕES
 # ======================
@@ -14,6 +13,25 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
+from pathlib import Path
+from threading import Lock
+import sqlite
+
+def get_user_id():
+    """Retorna um ID único para o usuário atual"""
+    if 'user_id' not in st.session_state:
+        st.session_state.user_id = str(uuid.uuid4())
+    return st.session_state.user_id
+
+def save_persistent_data():
+    """Salva dados persistentes na sessão"""
+    # Você pode adicionar lógica personalizada aqui se necessário
+    pass
+
+def load_persistent_data():
+    """Carrega dados persistentes da sessão"""
+    # Você pode adicionar lógica personalizada aqui se necessário
+    pass
 
 # ======================
 # CONFIGURAÇÃO INICIAL DO STREAMLIT
@@ -30,53 +48,44 @@ st._config.set_option('client.showErrorDetails', False)
 
 hide_streamlit_style = """
 <style>
+    /* --- Estilos principais --- */
     #root > div:nth-child(1) > div > div > div > div > section > div {
         padding-top: 0rem;
     }
     div[data-testid="stToolbar"] {
         display: none !important;
     }
-    div[data-testid="stDecoration"] {
-        display: none !important;
-    }
-    div[data-testid="stStatusWidget"] {
-        display: none !important;
-    }
-    #MainMenu {
-        display: none !important;
-    }
-    header {
-        display: none !important;
-    }
-    footer {
-        display: none !important;
-    }
-    .stDeployButton {
-        display: none !important;
-    }
-    .block-container {
-        padding-top: 0rem !important;
-    }
-    [data-testid="stVerticalBlock"] {
-        gap: 0.5rem !important;
-    }
-    [data-testid="stHorizontalBlock"] {
-        gap: 0.5rem !important;
-    }
-    .stApp {
-        margin: 0 !important;
-        padding: 0 !important;
+    /* ... (todos os outros estilos principais) ... */
+
+    /* --- Ajustes para mobile --- */
+    @media (max-width: 768px) {
+        .package-container {
+            flex-direction: column;
+        }
+        [data-testid="stChatMessage"] {
+            max-width: 85% !important;
+        }
+        div[data-testid="column"] {
+            padding: 0.5rem !important;
+        }
+        [data-testid="stSidebar"] {
+            width: 100% !important;
+        }
+        .stImage {
+            margin-bottom: 0.5rem !important;
+        }
     }
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
+"""
 # ======================
 # CONSTANTES E CONFIGURAÇÕES
 # ======================
 class Config:
-    API_KEY = "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g"
-    API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
+    API_KEY = st.secrets["GEMINI_API_KEY"]  # Pega a chave do secrets.toml
+    API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={st.secrets['GEMINI_API_KEY']}"
+    DB_PATH = Path(__file__).parent / "data" / "user_history.db"
     VIP_LINK = "https://exemplo.com/vip"
     CHECKOUT_PROMO = "https://pay.risepay.com.br/Pay/c7abdd05f91d43b9bbf54780d648d4f6"
     CHECKOUT_START = "https://pay.risepay.com.br/Pay/7947c2af1ef64b4dac1c32afb086c9fe"
@@ -102,113 +111,132 @@ class Config:
     ]
     LOGO_URL = "https://i.ibb.co/LX7x3tcB/Logo-Golden-Pepper-Letreiro-1.png"
 
+    Config.DB_PATH.parent.mkdir(exist_ok=True, parents=True)
+
+    db_lock = Lock()
+
+def get_db_connection():
+    with db_lock:
+         sqlite3.connect(str(Config.DB_PATH), check_same_thread=False)
+        conn.execute("PRAGMA journal_mode=WAL")
+        return conn
+
+
+    # ======================
+# BANCO DE DADOS DE HISTÓRICO
 # ======================
-# PERSISTÊNCIA DE ESTADO
-# ======================
-class PersistentState:
-    _instance = None
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.init_db()
-        return cls._instance
-    
-    def init_db(self):
-        self.conn = sqlite3.connect('persistent_state.db', check_same_thread=False)
-        self.create_tables()
-    
-    def create_tables(self):
-        cursor = self.conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS global_state (
-                user_id TEXT PRIMARY KEY,
-                session_data TEXT NOT NULL,
-                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ''')
-        self.conn.commit()
+class UserHistory:
+    @staticmethod
+    def init_db():
+         sqlite3.connect('user_history.db', check_same_thread=False)
+        c = conn.cursor()
+        c.execute('''CREATE TABLE IF NOT EXISTS user_history (
+                     user_id TEXT PRIMARY KEY,
+                     first_visit TIMESTAMP,
+                     last_visit TIMESTAMP,
+                     visit_count INTEGER,
+                     messages TEXT,
+                     last_reset TIMESTAMP)''')
+        conn.commit()
+        return conn
 
-    def save_state(self, user_id, data):
-        cursor = self.conn.cursor()
-        cursor.execute('''
-            INSERT OR REPLACE INTO global_state (user_id, session_data)
-            VALUES (?, ?)
-        ''', (user_id, json.dumps(data)))
-        self.conn.commit()
-    
-    def load_state(self, user_id):
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT session_data FROM global_state WHERE user_id = ?', (user_id,))
-        result = cursor.fetchone()
-        return json.loads(result[0]) if result else None
+    @staticmethod
+    def get_user_data(conn, user_id):
+        c = conn.cursor()
+        c.execute("SELECT * FROM user_history WHERE user_id = ?", (user_id,))
+        data = c.fetchone()
+        if data:
+            return {
+                "first_visit": datetime.fromisoformat(data[1]),
+                "last_visit": datetime.fromisoformat(data[2]),
+                "visit_count": data[3],
+                "messages": json.loads(data[4]) if data[4] else [],
+                "last_reset": datetime.fromisoformat(data[5]) if data[5] else None
+            }
+        return None
 
-def get_user_id():
-    if 'user_id' not in st.session_state:
-        user_id = st.query_params.get('uid', [None])[0]
-        if not user_id:
-            user_id = str(uuid.uuid4())
-            st.query_params['uid'] = user_id
-        st.session_state.user_id = user_id
-    return st.session_state.user_id
-
-def load_persistent_data():
-    user_id = get_user_id()
-    db = PersistentState()
-    saved_data = db.load_state(user_id) or {}
+    @staticmethod
+    def update_user(conn, user_id, messages=None):
+        now = datetime.now().isoformat()
+        c = conn.cursor()
+        
+        user_data = UserHistory.get_user_data(conn, user_id)
+        messages = messages or []
+        
+        if user_data:
+            # Verifica se passou 24h desde a última visita
+            last_reset = user_data['last_reset'] or user_data['first_visit']
+            hours_since_reset = (datetime.now() - last_reset).total_seconds() / 3600
+            
+            if hours_since_reset >= 24:
+                # Mensagem especial após 24h
+                welcome_msg = {
+                    "role": "assistant",
+                    "content": random.choice([
+                        "Que bom que voltou meu gostoso! Senti sua falta...",
+                        "Olha quem voltou! Pronto pra mais uma?",
+                        "Nossa, você voltou mesmo! Tava com saudades?"
+                    ])
+                }
+                messages = [welcome_msg]
+                last_reset = now
+            else:
+                messages = user_data['messages'] + messages
+                last_reset = user_data['last_reset']
+            
+            c.execute('''UPDATE user_history SET
+                        last_visit = ?,
+                        visit_count = visit_count + 1,
+                        messages = ?,
+                        last_reset = ?
+                        WHERE user_id = ?''',
+                    (now, json.dumps(messages), last_reset, user_id))
+        else:
+            # Primeira visita - mensagens iniciais
+            initial_msgs = [
+                {"role": "assistant", "content": "Oi gostoso, que bom que veio me ver!"},
+                {"role": "assistant", "content": "Eu sou a Juh, sua safadinha preferida 😈"},
+                {"role": "assistant", "content": "O que você quer fazer comigo hoje?"}
+            ]
+            c.execute('''INSERT INTO user_history 
+                        (user_id, first_visit, last_visit, visit_count, messages, last_reset)
+                        VALUES (?, ?, ?, 1, ?, ?)''',
+                    (user_id, now, now, json.dumps(initial_msgs), now))
+        
+        conn.commit()
+        return messages
     
-    for key, value in saved_data.items():
-        if key not in st.session_state:
-            st.session_state[key] = value
-
-def save_persistent_data():
-    user_id = get_user_id()
-    db = PersistentState()
-    
-    persistent_keys = [
-        'age_verified', 'messages', 'request_count',
-        'connection_complete', 'chat_started', 'audio_sent',
-        'current_page', 'show_vip_offer', 'session_id',
-        'last_cta_time'
-    ]
-    
-    new_data = {key: st.session_state.get(key) for key in persistent_keys if key in st.session_state}
-    saved_data = db.load_state(user_id) or {}
-    
-    if new_data != saved_data:
-        db.save_state(user_id, new_data)
 
 # ======================
 # MODELOS DE DADOS
 # ======================
 class Persona:
-    JUH = """  # Alterado de PALOMA para JUH
-    [PERFIL JUH]
-    - Mulher vulgar e safada que adora provocar
-    - Linguagem direta e cheia de malícia
-    - Frases curtas e sem pontuação perfeita
-    - Adora falar putaria e deixar o cliente com tesão
+    JUH = """[PERFIL JUH]
+- Mulher vulgar e safada que adora provocar
+- Linguagem direta e cheia de malícia
+- Frases curtas e sem pontuação perfeita
+- Adora falar putaria e deixar o cliente com tesão
 
-    [DIRETRIZES DE RESPOSTA]
-    1. Analise o histórico da conversa para entender o contexto
-    2. Só ofereça conteúdo quando o clima estiver quente
-    3. Use CTAs inteligentes baseados no que o cliente está pedindo
+[DIRETRIZES DE RESPOSTA]
+1. Analise o histórico da conversa
+2. Só ofereça conteúdo quando o clima estiver quente
+3. Use CTAs inteligentes
 
-    [EXEMPLOS CONTEXTUAIS]
-    1. Quando o histórico mostra clima sexual:
-    Histórico:
-    Cliente: sua buceta é rosinha?
-    Juh: adoro mostrar ela aberta  # Alterado de Paloma para Juh
-    Cliente: quero ver
-    Resposta: ```json
-    {
-      "text": "to com fotos da minha buceta escorrendo quer ver?",
-      "cta": {
-        "show": true,
-        "label": "Ver Fotos Quentes",
-        "target": "offers"
-      }
-    }
+[EXEMPLOS CONTEXTUAIS]
+1. Quando o histórico mostra clima sexual:
+   Histórico:
+   Cliente: sua buceta é rosinha?
+   Juh: adoro mostrar ela aberta
+   Cliente: quero ver
+   Resposta: ```json
+   {
+     "text": "to com fotos da minha buceta escorrendo quer ver?",
+     "cta": {
+       "show": true,
+       "label": "Ver Fotos Quentes",
+       "target": "offers"
+     }
+   }
     ```
 
     2. Quando o cliente pede algo específico:
@@ -328,10 +356,13 @@ class CTAEngine:
 # ======================
 # SERVIÇOS DE BANCO DE DADOS
 # ======================
+# ======================
+# SERVIÇOS DE BANCO DE DADOS
+# ======================
 class DatabaseService:
     @staticmethod
     def init_db():
-        conn = sqlite3.connect('chat_history.db', check_same_thread=False)
+        conn = get_db_connection()
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS conversations
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -341,28 +372,35 @@ class DatabaseService:
                      role TEXT,
                      content TEXT)''')
         conn.commit()
+        
+        # Inicializa também o histórico de usuários
+        UserHistory.init_db()
         return conn
 
     @staticmethod
-    def save_message(conn, user_id, session_id, role, content):
-        try:
-            c = conn.cursor()
-            c.execute("""
-                INSERT INTO conversations (user_id, session_id, timestamp, role, content)
-                VALUES (?, ?, ?, ?, ?)
-            """, (user_id, session_id, datetime.now(), role, content))
-            conn.commit()
-        except sqlite3.Error as e:
-            st.error(f"Erro ao salvar mensagem: {e}")
+def save_message(conn, user_id, session_id, role, content):
+    try:
+        c = conn.cursor()
+        c.execute('''INSERT INTO conversations 
+                    (user_id, session_id, timestamp, role, content)
+                    VALUES (?, ?, ?, ?, ?)''',
+                (user_id, session_id, datetime.now().isoformat(), role, content))
+        conn.commit()
+    except Exception as e:  # Pega QUALQUER erro
+        st.error(f"❌ Erro fatal ao salvar mensagem: {str(e)}")
+        conn.rollback()  # Desfaz operação se falhar
+        raise  # Opcional: remove esta linha se quiser continuar mesmo com erro
+    finally:
+        if conn:
+            conn.close()  # Fecha conexão com segurança
 
     @staticmethod
     def load_messages(conn, user_id, session_id):
         c = conn.cursor()
-        c.execute("""
-            SELECT role, content FROM conversations 
-            WHERE user_id = ? AND session_id = ?
-            ORDER BY timestamp
-        """, (user_id, session_id))
+        c.execute('''SELECT role, content FROM conversations 
+                    WHERE user_id = ? AND session_id = ?
+                    ORDER BY timestamp''',
+                (user_id, session_id))
         return [{"role": row[0], "content": row[1]} for row in c.fetchall()]
 
 # ======================
@@ -390,18 +428,24 @@ class ApiService:
         
         headers = {'Content-Type': 'application/json'}
         data = {
-            "contents": [
-                {
-                    "role": "user",
-                    "parts": [{"text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
-                }
-            ],
-            "generationConfig": {
-                "temperature": 0.9,
-                "topP": 0.8,
-                "topK": 40
-            }
+    "contents": [
+        {
+            "role": "user",
+            "parts": [{"text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
         }
+    ],
+    "generationConfig": {
+        "temperature": 0.9,
+        "topP": 0.8,
+        "topK": 40
+    }
+}
+                response = requests.post(
+    f"{Config.API_URL}{Config.API_KEY}", 
+    headers=headers, 
+    json=data, 
+    timeout=Config.REQUEST_TIMEOUT
+)
         
         try:
             response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
@@ -907,21 +951,19 @@ class UiService:
         """, unsafe_allow_html=True)
         
         st.sidebar.markdown(f"""
-        <div style="
-            background: rgba(255, 20, 147, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-        ">
-            <p style="margin:0; font-size:0.9em;">
-                Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
-            </p>
-            <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}</strong>
-            </p>
-            <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
-        </div>
-        """, unsafe_allow_html=True)
+<div style="
+    background: rgba(255, 20, 147, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+">
+    <p style="margin:0; font-size:0.9em;">
+        Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
+    </p>
+    <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
+</div>
+""", unsafe_allow_html=True)
         
         ChatService.process_user_input(conn)
         save_persistent_data()
@@ -1258,69 +1300,96 @@ class NewPages:
         </script>
         """, height=0)
 
-        plans = [
-            {
-                "name": "PROMO",
-                "price": "R$ 12,50",
-                "original": "R$ 17,90",
-                "benefits": ["Acesso total", "Conteúdo único", "Chat privado"],
-                "tag": "COMUM",
-                "link": Config.CHECKOUT_PROMO + "?plan=Promo"
-            },
-            {
-              "name": "3 Meses",
-                "price": "R$ 69,90",
-                "original": "R$ 149,70",
-                "benefits": ["25% de desconto", "Bônus: 1 vídeo exclusivo", "Prioridade no chat"],
-                "tag": "MAIS POPULAR",
-                "link": Config.CHECKOUT_VIP_3MESES + "?plan=3meses"
-        
-            },
-            {
-                 "name": "1 Ano",
-                "price": "R$ 199,90",
-                "original": "R$ 598,80",
-                "benefits": ["66% de desconto", "Presente surpresa mensal", "Acesso a conteúdos raros"],
-                "tag": "MELHOR CUSTO-BENEFÍCIO",
-                "link": Config.CHECKOUT_VIP_1ANO + "?plan=1ano"
-            }
-        ]
+@staticmethod
+def show_offers_page():
+    st.markdown("""
+    <style>
+        .package-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            gap: 20px;
+        }
+        /* ... (mantenha todos os outros estilos) ... */
+    </style>
+    """, unsafe_allow_html=True)
 
-        for plan in plans:
-            with st.container():
-                st.markdown(f"""
-                <div class="offer-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3>{plan['name']}</h3>
-                        {f'<span class="offer-highlight">{plan["tag"]}</span>' if plan["tag"] else ''}
-                    </div>
-                    <div style="margin: 10px 0;">
-                        <span style="font-size: 1.8em; color: #ff66b3; font-weight: bold;">{plan['price']}</span>
-                        <span style="text-decoration: line-through; color: #888; margin-left: 10px;">{plan['original']}</span>
-                    </div>
-                    <ul style="padding-left: 20px;">
-                        {''.join([f'<li style="margin-bottom: 5px;">{benefit}</li>' for benefit in plan['benefits']])}
-                    </ul>
-                    <div style="text-align: center; margin-top: 15px;">
-                        <a href="{plan['link']}" style="
-                            background: linear-gradient(45deg, #ff1493, #9400d3);
-                            color: white;
-                            padding: 10px 20px;
-                            border-radius: 30px;
-                            text-decoration: none;
-                            display: inline-block;
-                            font-weight: bold;
-                        ">
-                            Assinar {plan['name']}
-                        </a>
-                    </div>
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="color: #ff66b3; border-bottom: 2px solid #ff66b3; display: inline-block; padding-bottom: 5px;">PACOTES EXCLUSIVOS</h2>
+        <p style="color: #aaa; margin-top: 10px;">Escolha o que melhor combina com seus desejos...</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    pplans = [
+        {
+            "name": "Start",
+            "price": "R$ 19,50/mês",
+            "active": True,
+            "benefits": [
+                "10 fotos Inéditas",
+                "1 vídeo Íntimo",
+                "Fotos Exclusivas"
+            ],
+            "link": Config.CHECKOUT_START
+        },
+        {
+            "name": "Premium",
+            "price": "R$ 45,50/mês",
+            "active": True,
+            "benefits": [
+                "24 fotos exclusivas",
+                "2 vídeos premium",
+                "Fotos dos Peitos/Bunda"
+            ],
+            "link": Config.CHECKOUT_PREMIUM
+        },
+        {
+            "name": "Extreme",
+            "price": "R$ 75,50/mês",
+            "active": True,
+            "benefits": [
+                "23 fotos ultra-exclusivas",
+                "4 Videos Exclusivos",
+                "Videos Transando"
+            ],
+            "link": Config.CHECKOUT_EXTREME
+        }
+    ]
+
+    for plan in [p for p in pplans if p.get("active", True)]:
+        with st.container():
+            st.markdown(f"""
+            <div class="offer-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>{plan['name']}</h3>
                 </div>
-                """, unsafe_allow_html=True)
+                <div style="margin: 10px 0;">
+                    <span style="font-size: 1.8em; color: #ff66b3; font-weight: bold;">{plan['price']}</span>
+                </div>
+                <ul style="padding-left: 20px;">
+                    {''.join([f'<li style="margin-bottom: 5px;">{benefit}</li>' for benefit in plan['benefits']])}
+                </ul>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="{plan['link']}" style="
+                        background: linear-gradient(45deg, #ff1493, #9400d3);
+                        color: white;
+                        padding: 10px 20px;
+                        border-radius: 30px;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-weight: bold;
+                    ">
+                        Assinar {plan['name']}
+                    </a>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
-        if st.button("Voltar ao chat", key="back_from_offers"):
-            st.session_state.current_page = "chat"
-            save_persistent_data()
-            st.rerun()
+    if st.button("Voltar ao chat", key="back_from_offers"):
+        st.session_state.current_page = "chat"
+        save_persistent_data()
+        st.rerun()
 
 # ======================
 # SERVIÇOS DE CHAT
@@ -1458,9 +1527,70 @@ class ChatService:
         cleaned_input = re.sub(r'<[^>]*>', '', user_input)
         return cleaned_input[:500]
 
-    @staticmethod
-    def process_user_input(conn):
-        ChatService.display_chat_history()
+    
+@staticmethod
+def process_user_input(conn):
+    ChatService.display_chat_history()
+    
+    # VERIFICAÇÃO ÚNICA DO INPUT
+    user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
+    
+if user_input:
+    cleaned_input = ChatService.validate_input(user_input.lower())
+    
+    # ... código ...
+    
+    # Remover a segunda verificação de input
+        
+        # Resposta especial para PIX
+        if "pix" in cleaned_input or "chave pix" in cleaned_input:
+            resposta = {
+                "text": "💳 Aceitamos PIX amor! Temos esses planos especiais:\n\n"
+                        "✨ START: R$ 19,50/mês\n"
+                        "✨ PREMIUM: R$ 45,50/mês\n"
+                        "✨ EXTREME: R$ 75,50/mês\n\n"
+                        "Clique no botão pra ver todos 👇",
+                "cta": {
+                    "show": True,
+                    "label": "VER PLANOS COMPLETOS",
+                    "target": "offers"
+                }
+            }
+            
+            with st.chat_message("assistant", avatar="💋"):
+                st.markdown(f"""
+                <div style="
+                    background: linear-gradient(45deg, #ff66b3, #ff1493);
+                    color: white;
+                    padding: 12px;
+                    border-radius: 18px 18px 18px 0;
+                    margin: 5px 0;
+                ">
+                    {resposta["text"]}
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if st.button(
+                    resposta["cta"]["label"],
+                    key=f"pix_cta_{time.time()}",
+                    use_container_width=True
+                ):
+                    st.session_state.current_page = "offers"
+                    st.rerun()
+            
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": json.dumps(resposta)
+            })
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "assistant",
+                json.dumps(resposta)
+            )
+            save_persistent_data()
+            return  
         
         if not st.session_state.get("audio_sent") and st.session_state.chat_started:
             status_container = st.empty()
@@ -1480,8 +1610,6 @@ class ChatService:
             st.session_state.audio_sent = True
             save_persistent_data()
             st.rerun()
-        
-        user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
         
         if user_input:
             cleaned_input = ChatService.validate_input(user_input)
@@ -1582,6 +1710,18 @@ class ChatService:
 # APLICAÇÃO PRINCIPAL
 # ======================
 def main():
+    # ======================
+    # VERIFICAÇÕES INICIAIS
+    # ======================
+    if not st.secrets.get("GEMINI_API_KEY"):
+        st.error("❌ Chave API não configurada. Verifique o arquivo secrets.toml")
+        st.stop()
+
+    if not Config.DB_PATH.parent.exists():
+        st.warning("⚠️ Criando pasta para banco de dados...")
+        Config.DB_PATH.parent.mkdir(parents=True)
+
+    # ... (continue o resto do seu código original)
     st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -1620,9 +1760,9 @@ def main():
     """, unsafe_allow_html=True)
     
     if 'db_conn' not in st.session_state:
-        st.session_state.db_conn = DatabaseService.init_db()
+        st.session_state.db_ DatabaseService.init_db()
     
-    conn = st.session_state.db_conn
+     st.session_state.db_conn
     
     ChatService.initialize_session(conn)
     
