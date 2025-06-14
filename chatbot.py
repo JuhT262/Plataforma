@@ -1,5 +1,3 @@
-CODIGO CERTO 
-
 
 # ======================
 # IMPORTAÇÕES
