@@ -922,33 +922,34 @@ class NewPages:
             }
         ]
 for plan in plans:
-    st.markdown(f"""
-    <div style="
-        border: 1px solid #ff66b3;
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 20px;
-        background-color: #fff9fc;
-    ">
-        <h3>{plan.get('name', 'Plano Sem Nome')}</h3>
-        <p style="font-size: 1.5em; color: #ff66b3; font-weight: bold;">{plan.get('price', 'R$ --')}</p>
-        <ul style="margin-left: 20px;">
-            {''.join(f'<li>{benefit}</li>' for benefit in plan.get('benefits', []))}
-        </ul>
-        <a href="{plan.get('link', '#')}" style="
-            background: #ff66b3;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 15px;
-            font-weight: bold;
-        ">
-            Assinar Agora
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div style='
+            border: 1px solid #ff66b3;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff9fc;
+        '>
+            <h3>{plan.get('name', 'Plano')}</h3>
+            <p style='font-size: 1.5em; color: #ff66b3;'>{plan.get('price', 'R$ --')}</p>
+            <ul>
+                {''.join(f'<li>{benefit}</li>' for benefit in plan.get('benefits', []))}
+            </ul>
+            <a href='{plan.get('link', '#')}' style='
+                background: #ff66b3;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                display: inline-block;
+            '>
+                Assinar
+            </a>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
                     color: white;
                     padding: 10px 20px;
                     border-radius: 20px;
