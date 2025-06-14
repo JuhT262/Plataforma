@@ -223,7 +223,20 @@ class Persona:
       }
     }
     ```
-
+elif "pix" in pergunta.lower() or "chave pix" in pergunta.lower():
+    resposta = {
+        "text": "💳 Aceitamos PIX amor! Temos esses planos especiais pra você:\n\n"
+                "✨ START: R$ 19,50\n"
+                "✨ PREMIUM: R$ 45,50\n"
+                "✨ EXTREME: R$ 75,50\n"
+                "✨ PROMO: R$ 12,50\n\n"
+                "Qual você quer? É só clicar no botão abaixo 👇",
+        "cta": {
+            "show": True,
+            "label": "Ver Planos Completos",
+            "target": "offers"
+        }
+    }
     3. Quando o contexto não justifica CTA:
     Histórico:
     Cliente: oi
