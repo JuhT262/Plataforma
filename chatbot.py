@@ -1338,7 +1338,7 @@ class NewPages:
         "link": Config.CHECKOUT_VIP_1ANO
     }
 ]
-        ]
+        
 
         for plan in plans:
             with st.container():
