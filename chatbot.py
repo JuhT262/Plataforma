@@ -86,8 +86,8 @@ class Config:
     CHECKOUT_VIP_1ANO = "https://checkout.exemplo.com/vip-1ano"
     MAX_REQUESTS_PER_SESSION = 30
     REQUEST_TIMEOUT = 30
-    AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/assets_audio_juh_audio.mp3"
-    AUDIO_DURATION = 7
+    AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/Juh%20of.mp3"
+    AUDIO_DURATION = 8
     IMG_PROFILE = "https://i.ibb.co/vvD2dkbQ/17.png"
     IMG_GALLERY = [
         "https://i.ibb.co/DkXF5Wy/Swapfaces-AI-789cad8b-d632-473a-bb72-623c70724707.png",
@@ -746,8 +746,8 @@ class UiService:
             st.markdown("### Upgrade VIP 💎")  # Adicionado emoji de diamante
             st.markdown("""
             <div class="vip-badge">
-                <p style="margin: 0 0 10px; font-weight: bold;">Acesso completo por apenas</p>
-                <p style="margin: 0; font-size: 1.5em; font-weight: bold;">R$ 29,90/mês</p>
+                <p style="margin: 0 0 10px; font-weight: bold;">Acesso ao Promo por apenas</p>
+                <p style="margin: 0; font-size: 1.5em; font-weight: bold;">R$ 12,50/mês</p>
                 <p style="margin: 10px 0 0; font-size: 0.8em;">Cancele quando quiser</p>
             </div>
             """, unsafe_allow_html=True)
@@ -1193,9 +1193,9 @@ class NewPages:
             <ul class="package-benefits">
                 <li>23 fotos ultra-exclusivas</li>
                 <li>4 Videos Exclusivos</li>
-                <li>Fotos Peito</li>
-                <li>Fotos Bunda</li>
-                <li>Fotos Buceta</li>
+                <li>Fotos do Peito</li>
+                <li>Fotos da Bunda</li>
+                <li>Fotos da Buceta</li>
                 <li>Fotos Exclusivas</li>
                 <li>Videos Masturbando</li>
                 <li>Videos Transando</li>
