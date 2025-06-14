@@ -14,6 +14,59 @@ from functools import lru_cache
 # ===================================================
 # CONFIGURAÇÕES GERAIS (200 linhas)
 # ===================================================
+st.set_page_config(
+    page_title="Juh Premium",
+    page_icon="😍",  # Emoji de diamante adicionado
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+ 
+st._config.set_option('client.caching', True)
+st._config.set_option('client.showErrorDetails', False)
+ 
+hide_streamlit_style = """
+<style>
+    #root > div:nth-child(1) > div > div > div > div > section > div {
+        padding-top: 0rem;
+    }
+    div[data-testid="stToolbar"] {
+        display: none !important;
+    }
+    div[data-testid="stDecoration"] {
+        display: none !important;
+    }
+    div[data-testid="stStatusWidget"] {
+        display: none !important;
+    }
+    #MainMenu {
+        display: none !important;
+    }
+    header {
+        display: none !important;
+    }
+    footer {
+        display: none !important;
+    }
+    .stDeployButton {
+        display: none !important;
+    }
+    .block-container {
+        padding-top: 0rem !important;
+    }
+    [data-testid="stVerticalBlock"] {
+        gap: 0.5rem !important;
+    }
+    [data-testid="stHorizontalBlock"] {
+        gap: 0.5rem !important;
+    }
+    .stApp {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 class Config:
     API_KEY = "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g"
     API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
