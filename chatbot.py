@@ -1265,106 +1265,86 @@ class NewPages:
         </script>
         """, height=0)
 
-        plans = [
-    {
-        "name": "Start",
-        "price": "R$ 19,50/mês",
-        "active": True,
-        "benefits": [
-            "10 fotos Inéditas",
-            "1 vídeo Íntimo",
-            "Fotos Exclusivas"
-        ],
-        "link": Config.CHECKOUT_START
-    },
-    {
-        "name": "Premium",
-        "price": "R$ 45,50/mês",
-        "active": True,
-        "benefits": [
-            "24 fotos exclusivas",
-            "2 vídeos premium",
-            "Fotos dos Peitos/Bunda"
-        ],
-        "link": Config.CHECKOUT_PREMIUM
-    },
-    {
-        "name": "Extreme",
-        "price": "R$ 75,50/mês",
-        "active": True,
-        "benefits": [
-            "23 fotos ultra-exclusivas",
-            "4 Videos Exclusivos",
-            "Videos Transando"
-        ],
-        "link": Config.CHECKOUT_EXTREME
-    },
-    {
-        "name": "Promo",
-        "price": "R$ 12,50/mês",
-        "active": True,
-        "benefits": [
-            "Acesso total",
-            "Conteúdo único",
-            "Chat privado"
-        ],
-        "link": Config.CHECKOUT_PROMO
-    },
-    # Planos inativos (mantidos no código mas não aparecem)
-    {
-        "name": "1 Mês",
-        "price": "R$ 97,00",
-        "active": False,
-        "benefits": [],
-        "link": Config.CHECKOUT_VIP_1MES
-    },
-    {
-        "name": "3 Meses",
-        "price": "R$ 69,90",
-        "active": False,
-        "benefits": [],
-        "link": Config.CHECKOUT_VIP_3MESES
-    },
-    {
-        "name": "1 Ano",
-        "price": "R$ 199,90",
-        "active": False,
-        "benefits": [],
-        "link": Config.CHECKOUT_VIP_1ANO
-    }
-]
-        
+        def show_offers_page():
+    # ... (código anterior permanece o mesmo)
 
-        for plan in [p for p in plans if p.get("active", True)]:
-            with st.container():
-                st.markdown(f"""
-                <div class="offer-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3>{plan['name']}</h3>
-                        {f'<span class="offer-highlight">{plan["tag"]}</span>' if plan["tag"] else ''}
-                    </div>
-                    <div style="margin: 10px 0;">
-                        <span style="font-size: 1.8em; color: #ff66b3; font-weight: bold;">{plan['price']}</span>
-                        <span style="text-decoration: line-through; color: #888; margin-left: 10px;">{plan['original']}</span>
-                    </div>
-                    <ul style="padding-left: 20px;">
-                        {''.join([f'<li style="margin-bottom: 5px;">{benefit}</li>' for benefit in plan['benefits']])}
-                    </ul>
-                    <div style="text-align: center; margin-top: 15px;">
-                        <a href="{plan['link']}" style="
-                            background: linear-gradient(45deg, #ff1493, #9400d3);
-                            color: white;
-                            padding: 10px 20px;
-                            border-radius: 30px;
-                            text-decoration: none;
-                            display: inline-block;
-                            font-weight: bold;
-                        ">
-                            Assinar {plan['name']}
-                        </a>
-                    </div>
+    pplans = [
+        {
+            "name": "Start",
+            "price": "R$ 19,50/mês",
+            "active": True,
+            "benefits": [
+                "10 fotos Inéditas",
+                "1 vídeo Íntimo",
+                "Fotos Exclusivas"
+            ],
+            "link": Config.CHECKOUT_START
+        },
+        {
+            "name": "Premium",
+            "price": "R$ 45,50/mês",
+            "active": True,
+            "benefits": [
+                "24 fotos exclusivas",
+                "2 vídeos premium",
+                "Fotos dos Peitos/Bunda"
+            ],
+            "link": Config.CHECKOUT_PREMIUM
+        },
+        {
+            "name": "Extreme",
+            "price": "R$ 75,50/mês",
+            "active": True,
+            "benefits": [
+                "23 fotos ultra-exclusivas",
+                "4 Videos Exclusivos",
+                "Videos Transando"
+            ],
+            "link": Config.CHECKOUT_EXTREME
+        },
+        {
+            "name": "Promo",
+            "price": "R$ 12,50/mês",
+            "active": True,
+            "benefits": [
+                "Acesso total",
+                "Conteúdo único",
+                "Chat privado"
+            ],
+            "link": Config.CHECKOUT_PROMO
+        }
+    ]
+
+    for plan in [p for p in pplans if p.get("active", True)]:
+        with st.container():
+            st.markdown(f"""
+            <div class="offer-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>{plan['name']}</h3>
                 </div>
-                """, unsafe_allow_html=True)
+                <div style="margin: 10px 0;">
+                    <span style="font-size: 1.8em; color: #ff66b3; font-weight: bold;">{plan['price']}</span>
+                </div>
+                <ul style="padding-left: 20px;">
+                    {''.join([f'<li style="margin-bottom: 5px;">{benefit}</li>' for benefit in plan['benefits']])}
+                </ul>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="{plan['link']}" style="
+                        background: linear-gradient(45deg, #ff1493, #9400d3);
+                        color: white;
+                        padding: 10px 20px;
+                        border-radius: 30px;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-weight: bold;
+                    ">
+                        Assinar {plan['name']}
+                    </a>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # ... (restante do código permanece o mesmo)
 
         if st.button("Voltar ao chat", key="back_from_offers"):
             st.session_state.current_page = "chat"
