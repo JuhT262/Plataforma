@@ -1124,7 +1124,7 @@ class NewPages:
                 <li>3 vídeo Intimos</li>
                 <li>Fotos Exclusivas</li>
                 <li>Videos Intimos </li>
-                <li>Fotos Buceta</li>
+                <li>Fotos da Buceta</li>
             </ul>
             <div style="position: absolute; bottom: 20px; width: calc(100% - 40px);">
                 <a href="{checkout_start}" target="_blank" rel="noopener noreferrer" style="
@@ -1157,9 +1157,9 @@ class NewPages:
             <ul class="package-benefits">
                 <li>20 fotos exclusivas</li>
                 <li>2 vídeos premium</li>
-                <li>Fotos Peito</li>
-                <li>Fotos Bunda</li>
-                <li>Fotos Buceta</li>
+                <li>Fotos dos Peitos</li>
+                <li>Fotos da Bunda</li>
+                <li>Fotos da Buceta</li>
                 <li>Fotos Exclusivas e Videos Exclusivos</li>
                 <li>Videos Masturbando</li>
             </ul>
@@ -1193,7 +1193,7 @@ class NewPages:
             <ul class="package-benefits">
                 <li>23 fotos ultra-exclusivas</li>
                 <li>4 Videos Exclusivos</li>
-                <li>Fotos do Peito</li>
+                <li>Fotos dos Peitos</li>
                 <li>Fotos da Bunda</li>
                 <li>Fotos da Buceta</li>
                 <li>Fotos Exclusivas</li>
