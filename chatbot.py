@@ -19,7 +19,7 @@ from functools import lru_cache
 # ======================
 st.set_page_config(
     page_title="Juh Premium",
-    page_icon="😍",  # Emoji de diamante adicionado
+    page_icon="😍",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -66,6 +66,21 @@ hide_streamlit_style = """
         margin: 0 !important;
         padding: 0 !important;
     }
+    /* REGRAS PARA MOBILE */
+    @media (max-width: 768px) {
+        .stButton > button {
+            width: 100% !important;
+            padding: 12px !important;
+            font-size: 18px !important;
+        }
+        .stTextInput > div > div > input {
+            font-size: 16px !important;
+            padding: 12px !important;
+        }
+        .main .block-container {
+            padding: 10px !important;
+        }
+    }
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
@@ -78,17 +93,18 @@ class Config:
     API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
     VIP_LINK = "https://exemplo.com/vip"
     
-    # LINHAS QUE DEVEM SER MANTIDAS (planos ativos):
-    VIP_LINK = "https://exemplo.com/vip"  # 👈 MANTER (se ainda for útil)
-    CHECKOUT_PROMO = "https://pay.risepay.com.br/Pay/c7abdd05f91d43b9bbf54780d648d4f6"  # 👈 MANTER
-    CHECKOUT_START = "https://pay.risepay.com.br/Pay/7947c2af1ef64b4dac1c32afb086c9fe"  # 👈 MANTER
-    CHECKOUT_PREMIUM = "https://pay.risepay.com.br/Pay/6c0dcab126a74a499e5f5a45007ab168"  # 👈 MANTER
-    CHECKOUT_EXTREME = "https://pay.risepay.com.br/Pay/33ba988f596a450099606539fc9ff1ed"  # 👈 MANTER
-
-    # ADICIONE ISSO (para mensagens de planos inativos):
+    # PLANOS ATIVOS (mantidos)
+    CHECKOUT_PROMO = "https://pay.risepay.com.br/Pay/c7abdd05f91d43b9bbf54780d648d4f6"
+    CHECKOUT_START = "https://pay.risepay.com.br/Pay/7947c2af1ef64b4dac1c32afb086c9fe"
+    CHECKOUT_PREMIUM = "https://pay.risepay.com.br/Pay/6c0dcab126a74a499e5f5a45007ab168"
+    CHECKOUT_EXTREME = "https://pay.risepay.com.br/Pay/33ba988f596a450099606539fc9ff1ed"
+    
+    # REMOVIDOS: CHECKOUT_VIP_1MES, CHECKOUT_VIP_3MESES, CHECKOUT_VIP_1ANO
+    
     @staticmethod
     def get_inactive_plan_message():
-        return "💖 Amore, no momento só temos os planos START, PREMIUM e EXTREME! Quer algo especial? temos o pacote Promo na parte de ofertas!"
+        return "💖 Amore, no momento só temos os planos START, PREMIUM e EXTREME! Quer algo especial?"
+
     MAX_REQUESTS_PER_SESSION = 30
     REQUEST_TIMEOUT = 30
     AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/Juh%20of.mp3"
@@ -186,7 +202,7 @@ def save_persistent_data():
 # MODELOS DE DADOS
 # ======================
 class Persona:
-    JUH = """  # Alterado de PALOMA para JUH
+    JUH = """
     [PERFIL JUH]
     - Mulher vulgar e safada que adora provocar
     - Linguagem direta e cheia de malícia
@@ -202,7 +218,7 @@ class Persona:
     1. Quando o histórico mostra clima sexual:
     Histórico:
     Cliente: sua buceta é rosinha?
-    Juh: adoro mostrar ela aberta  # Alterado de Paloma para Juh
+    Juh: adoro mostrar ela aberta
     Cliente: quero ver
     Resposta: ```json
     {
@@ -211,33 +227,6 @@ class Persona:
         "show": true,
         "label": "Ver Fotos Quentes",
         "target": "offers"
-      }
-    }
-    ```
-
-    2. Quando o cliente pede algo específico:
-    Histórico:
-    Cliente: tem video vc transando?
-    Resposta: ```json
-    {
-      "text": "tenho varios videos bem gostosos vem ver",
-      "cta": {
-        "show": true,
-        "label": "Ver Vídeos Exclusivos",
-        "target": "offers"
-      }
-    }
-    ```
-
-    3. Quando o contexto não justifica CTA:
-    Histórico:
-    Cliente: oi
-    Juh: oi gato  # Alterado de Paloma para Juh
-    Resposta: ```json
-    {
-      "text": "eai gostoso",
-      "cta": {
-        "show": false
       }
     }
     ```
@@ -472,7 +461,7 @@ class UiService:
             animation: pulse-ring 2s infinite;
         ">
             <div style="font-size: 3rem;">📱</div>
-            <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>  <!-- Alterado de Paloma para Juh -->
+            <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>
             <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
                 <div style="width: 10px; height: 10px; background: #4CAF50; border-radius: 50%;"></div>
                 <span style="font-size: 0.9rem;">Online agora</span>
@@ -502,13 +491,12 @@ class UiService:
         ">
             <div style="font-size: 3rem; color: #4CAF50;">✓</div>
             <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
-            <p style="font-size: 0.9rem; margin:0;">Juh está te esperando...</p>  <!-- Alterado de Paloma para Juh -->
+            <p style="font-size: 0.9rem; margin:0;">Juh está te esperando...</p>
         </div>
         """, unsafe_allow_html=True)
         
         time.sleep(ATENDIDA_DELAY)
         call_container.empty()
-
     @staticmethod
     def show_status_effect(container, status_type):
         status_messages = {
