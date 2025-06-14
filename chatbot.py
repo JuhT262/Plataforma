@@ -13,6 +13,9 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
+from pathlib import Path
+from threading import Lock
+import sqlite
 
 def get_user_id():
     """Retorna um ID único para o usuário atual"""
@@ -80,8 +83,9 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # CONSTANTES E CONFIGURAÇÕES
 # ======================
 class Config:
-    API_KEY = "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g"
-    API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="
+    API_KEY = st.secrets["GEMINI_API_KEY"]  # Pega a chave do secrets.toml
+    API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={st.secrets['GEMINI_API_KEY']}"
+    DB_PATH = Path(__file__).parent / "data" / "user_history.db"
     VIP_LINK = "https://exemplo.com/vip"
     CHECKOUT_PROMO = "https://pay.risepay.com.br/Pay/c7abdd05f91d43b9bbf54780d648d4f6"
     CHECKOUT_START = "https://pay.risepay.com.br/Pay/7947c2af1ef64b4dac1c32afb086c9fe"
@@ -107,6 +111,16 @@ class Config:
     ]
     LOGO_URL = "https://i.ibb.co/LX7x3tcB/Logo-Golden-Pepper-Letreiro-1.png"
 
+    Config.DB_PATH.parent.mkdir(exist_ok=True, parents=True)
+
+    db_lock = Lock()
+
+def get_db_connection():
+    with db_lock:
+         sqlite3.connect(str(Config.DB_PATH), check_same_thread=False)
+        conn.execute("PRAGMA journal_mode=WAL")
+        return conn
+
 
     # ======================
 # BANCO DE DADOS DE HISTÓRICO
@@ -114,7 +128,7 @@ class Config:
 class UserHistory:
     @staticmethod
     def init_db():
-        conn = sqlite3.connect('user_history.db', check_same_thread=False)
+         sqlite3.connect('user_history.db', check_same_thread=False)
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS user_history (
                      user_id TEXT PRIMARY KEY,
@@ -349,7 +363,7 @@ class CTAEngine:
 class DatabaseService:
     @staticmethod
     def init_db():
-        conn = sqlite3.connect('chat_data.db', check_same_thread=False)
+        conn = get_db_connection()
         c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS conversations
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -365,16 +379,21 @@ class DatabaseService:
         return conn
 
     @staticmethod
-    def save_message(conn, user_id, session_id, role, content):
-        try:
-            c = conn.cursor()
-            c.execute('''INSERT INTO conversations 
-                        (user_id, session_id, timestamp, role, content)
-                        VALUES (?, ?, ?, ?, ?)''',
-                    (user_id, session_id, datetime.now().isoformat(), role, content))
-            conn.commit()
-        except sqlite3.Error as e:
-            st.error(f"Erro ao salvar mensagem: {e}")
+def save_message(conn, user_id, session_id, role, content):
+    try:
+        c = conn.cursor()
+        c.execute('''INSERT INTO conversations 
+                    (user_id, session_id, timestamp, role, content)
+                    VALUES (?, ?, ?, ?, ?)''',
+                (user_id, session_id, datetime.now().isoformat(), role, content))
+        conn.commit()
+    except Exception as e:  # Pega QUALQUER erro
+        st.error(f"❌ Erro fatal ao salvar mensagem: {str(e)}")
+        conn.rollback()  # Desfaz operação se falhar
+        raise  # Opcional: remove esta linha se quiser continuar mesmo com erro
+    finally:
+        if conn:
+            conn.close()  # Fecha conexão com segurança
 
     @staticmethod
     def load_messages(conn, user_id, session_id):
@@ -1692,6 +1711,18 @@ if user_input:
 # APLICAÇÃO PRINCIPAL
 # ======================
 def main():
+    # ======================
+    # VERIFICAÇÕES INICIAIS
+    # ======================
+    if not st.secrets.get("GEMINI_API_KEY"):
+        st.error("❌ Chave API não configurada. Verifique o arquivo secrets.toml")
+        st.stop()
+
+    if not Config.DB_PATH.parent.exists():
+        st.warning("⚠️ Criando pasta para banco de dados...")
+        Config.DB_PATH.parent.mkdir(parents=True)
+
+    # ... (continue o resto do seu código original)
     st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -1730,9 +1761,9 @@ def main():
     """, unsafe_allow_html=True)
     
     if 'db_conn' not in st.session_state:
-        st.session_state.db_conn = DatabaseService.init_db()
+        st.session_state.db_ DatabaseService.init_db()
     
-    conn = st.session_state.db_conn
+     st.session_state.db_conn
     
     ChatService.initialize_session(conn)
     
