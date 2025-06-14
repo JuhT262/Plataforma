@@ -240,17 +240,17 @@ class Persona:
     ```
 
     2. Quando o cliente pede algo específico:
-    Histórico:
-    Cliente: tem video vc transando?
-    Resposta: ```json
-    {
-      "text": "tenho varios videos bem gostosos vem ver",
-      "cta": {
-        "show": true,
-        "label": "Ver Vídeos Exclusivos",
-        "target": "offers"
-      }
-    }
+Histórico:
+Cliente: tem video vc transando?
+Resposta: ```json
+{
+"text": "tenho varios videos bem gostosos vem ver",
+"cta": {
+"show": true,
+"label": "Ver Vídeos Exclusivos",
+"target": "offers"
+}
+}
     ```
 
     3. Quando o contexto não justifica CTA:
