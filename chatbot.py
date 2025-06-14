@@ -921,20 +921,29 @@ class NewPages:
                 "link": Config.CHECKOUT_PREMIUM
             }
         ]
-
-        for plan in plans:
-            st.markdown(f"""
-        <div style="
-                border: 1px solid #ff66b3;
-                border-radius: 15px;
-                padding: 20px;
-                margin-bottom: 20px;
-            ">
-                <h3>{plan['name']}</h3>
-                <p style="font-size: 1.5em; color: #ff66b3;">{plan['price']}</p>
-                <ul>{''.join(f'<li>{b}</li>' for b in plan['benefits'])}</ul>
-                <a href="{plan['link']}" style="
-                    background: #ff66b3;
+for plan in plans:
+    st.markdown(f"""
+    <div style="
+        border: 1px solid #ff66b3;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+    ">
+        <h3>{plan['name']}</h3>
+        <p style="font-size: 1.5em; color: #ff66b3;">{plan['price']}</p>
+        <ul>{''.join(f'<li>{b}</li>' for b in plan['benefits'])}</ul>
+        <a href="{plan['link']}" style="
+            background: #ff66b3;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        ">
+            Assinar
+        </a>
+    </div>
+    """, unsafe_allow_html=True)
                     color: white;
                     padding: 10px 20px;
                     border-radius: 20px;
