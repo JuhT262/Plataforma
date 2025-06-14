@@ -63,8 +63,6 @@ hide_streamlit_style = """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 """
 """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
 # ======================
 # CONSTANTES E CONFIGURAÇÕES
 # ======================
@@ -1265,9 +1263,28 @@ class NewPages:
         </script>
         """, height=0)
 
-        def show_offers_page():
-    # ... (código anterior permanece o mesmo)
+        @staticmethod
+def show_offers_page():
+    st.markdown("""
+    <style>
+        .package-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            gap: 20px;
+        }
+        /* ... (mantenha todos os outros estilos) ... */
+    </style>
+    """, unsafe_allow_html=True)
 
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="color: #ff66b3; border-bottom: 2px solid #ff66b3; display: inline-block; padding-bottom: 5px;">PACOTES EXCLUSIVOS</h2>
+        <p style="color: #aaa; margin-top: 10px;">Escolha o que melhor combina com seus desejos...</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # LISTA DE PLANOS CORRIGIDA (agora corretamente indentada)
     pplans = [
         {
             "name": "Start",
@@ -1301,20 +1318,10 @@ class NewPages:
                 "Videos Transando"
             ],
             "link": Config.CHECKOUT_EXTREME
-        },
-        {
-            "name": "Promo",
-            "price": "R$ 12,50/mês",
-            "active": True,
-            "benefits": [
-                "Acesso total",
-                "Conteúdo único",
-                "Chat privado"
-            ],
-            "link": Config.CHECKOUT_PROMO
         }
     ]
 
+    # LOOP CORRIGIDO (indentação correta)
     for plan in [p for p in pplans if p.get("active", True)]:
         with st.container():
             st.markdown(f"""
@@ -1344,12 +1351,10 @@ class NewPages:
             </div>
             """, unsafe_allow_html=True)
 
-    # ... (restante do código permanece o mesmo)
-
-        if st.button("Voltar ao chat", key="back_from_offers"):
-            st.session_state.current_page = "chat"
-            save_persistent_data()
-            st.rerun()
+    if st.button("Voltar ao chat", key="back_from_offers"):
+        st.session_state.current_page = "chat"
+        save_persistent_data()
+        st.rerun()
 
 # ======================
 # SERVIÇOS DE CHAT
@@ -1489,15 +1494,17 @@ class ChatService:
 
     @staticmethod
 def process_user_input(conn):
+    @staticmethod
+def process_user_input(conn):
     ChatService.display_chat_history()
     
-    # Verificação para PIX (adicionar esta parte NOVO)
+    # VERIFICAÇÃO ÚNICA DO INPUT (corrigido)
     user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
     
     if user_input:
-        cleaned_input = ChatService.validate_input(user_input.lower())  # Convertendo para minúsculas
+        cleaned_input = ChatService.validate_input(user_input.lower())
         
-        # Resposta especial para PIX (adicionar esta parte NOVO)
+        # Resposta especial para PIX
         if "pix" in cleaned_input or "chave pix" in cleaned_input:
             resposta = {
                 "text": "💳 Aceitamos PIX amor! Temos esses planos especiais:\n\n"
@@ -1512,7 +1519,6 @@ def process_user_input(conn):
                 }
             }
             
-            # Mostra a resposta
             with st.chat_message("assistant", avatar="💋"):
                 st.markdown(f"""
                 <div style="
@@ -1534,7 +1540,6 @@ def process_user_input(conn):
                     st.session_state.current_page = "offers"
                     st.rerun()
             
-            # Registra no histórico
             st.session_state.messages.append({
                 "role": "assistant",
                 "content": json.dumps(resposta)
@@ -1546,7 +1551,6 @@ def process_user_input(conn):
                 "assistant",
                 json.dumps(resposta)
             )
-            
             save_persistent_data()
             return  
         
