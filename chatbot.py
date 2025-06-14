@@ -1270,32 +1270,74 @@ class NewPages:
         </script>
         """, height=0)
 
-        plans = [
-            {
-                "name": "PROMO",
-                "price": "R$ 12,50",
-                "original": "R$ 17,90",
-                "benefits": ["Acesso total", "Conteúdo único", "Chat privado"],
-                "tag": "COMUM",
-                "link": Config.CHECKOUT_PROMO + "?plan=Promo"
-            },
-            {
-              "name": "3 Meses",
-                "price": "R$ 69,90",
-                "original": "R$ 149,70",
-                "benefits": ["25% de desconto", "Bônus: 1 vídeo exclusivo", "Prioridade no chat"],
-                "tag": "MAIS POPULAR",
-                "link": Config.CHECKOUT_VIP_3MESES + "?plan=3meses"
-        
-            },
-            {
-                 "name": "1 Ano",
-                "price": "R$ 199,90",
-                "original": "R$ 598,80",
-                "benefits": ["66% de desconto", "Presente surpresa mensal", "Acesso a conteúdos raros"],
-                "tag": "MELHOR CUSTO-BENEFÍCIO",
-                "link": Config.CHECKOUT_VIP_1ANO + "?plan=1ano"
-            }
+        pplans = [
+    {
+        "name": "Start",
+        "price": "R$ 19,50/mês",
+        "active": True,
+        "benefits": [
+            "10 fotos Inéditas",
+            "1 vídeo Íntimo",
+            "Fotos Exclusivas"
+        ],
+        "link": Config.CHECKOUT_START
+    },
+    {
+        "name": "Premium",
+        "price": "R$ 45,50/mês",
+        "active": True,
+        "benefits": [
+            "24 fotos exclusivas",
+            "2 vídeos premium",
+            "Fotos dos Peitos/Bunda"
+        ],
+        "link": Config.CHECKOUT_PREMIUM
+    },
+    {
+        "name": "Extreme",
+        "price": "R$ 75,50/mês",
+        "active": True,
+        "benefits": [
+            "23 fotos ultra-exclusivas",
+            "4 Videos Exclusivos",
+            "Videos Transando"
+        ],
+        "link": Config.CHECKOUT_EXTREME
+    },
+    {
+        "name": "Promo",
+        "price": "R$ 12,50/mês",
+        "active": True,
+        "benefits": [
+            "Acesso total",
+            "Conteúdo único",
+            "Chat privado"
+        ],
+        "link": Config.CHECKOUT_PROMO
+    },
+    # Planos inativos (mantidos no código mas não aparecem)
+    {
+        "name": "1 Mês",
+        "price": "R$ 97,00",
+        "active": False,
+        "benefits": [],
+        "link": Config.CHECKOUT_VIP_1MES
+    },
+    {
+        "name": "3 Meses",
+        "price": "R$ 69,90",
+        "active": False,
+        "benefits": [],
+        "link": Config.CHECKOUT_VIP_3MESES
+    },
+    {
+        "name": "1 Ano",
+        "price": "R$ 199,90",
+        "active": False,
+        "benefits": [],
+        "link": Config.CHECKOUT_VIP_1ANO
+    }
+]
         ]
 
         for plan in plans:
