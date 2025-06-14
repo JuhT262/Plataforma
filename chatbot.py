@@ -1265,7 +1265,7 @@ class NewPages:
         </script>
         """, height=0)
 
-        pplans = [
+        plans = [
     {
         "name": "Start",
         "price": "R$ 19,50/mês",
