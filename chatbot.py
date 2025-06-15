@@ -740,13 +740,13 @@ class UiService:
             """, unsafe_allow_html=True)
 
     @staticmethod
-def show_gallery_page(conn):
-    st.markdown("""
-    <div style="
-        background: rgba(255, 20, 147, 0.1);
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 20px;
+    def show_gallery_page(conn):
+            st.markdown("""
+           <div style="
+                background: rgba(255, 20, 147, 0.1);
+                padding: 15px;
+                border-radius: 10px;
+                margin-bottom: 20px;
     ">
         <p style="margin: 0;">Conteúdo exclusivo disponível</p>
     </div>
