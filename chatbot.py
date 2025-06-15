@@ -1498,7 +1498,7 @@ def main():
     
     if not st.session_state.connection_complete:
             UiService.show_call_effect()
-        st.session_state.connection_complete = True
+    st.session_state.connection_complete = True
         save_persistent_data()
         st.rerun()
 
