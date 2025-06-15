@@ -82,7 +82,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # ======================
 class Config:
 
-    API_KEY = st.secrets.get("GEMINI_API_KEY", "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g")
+    API_KEY = "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g"
     API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
     VIP_LINK = "https://exemplo.com/vip"
     CHECKOUT_PROMO = "https://pay.risepay.com.br/Pay/c7abdd05f91d43b9bbf54780d648d4f6"
@@ -1448,7 +1448,7 @@ class ChatService:
 # APLICAÇÃO PRINCIPAL
 # ======================
 def main():
-    if not Config.API_KEY or Config.API_KEY == "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g":
+    if not Config.API_KEY:
         st.error("❌ Chave API não configurada. Verifique o arquivo secrets.toml")
         st.stop()
 
