@@ -437,8 +437,8 @@ class ApiService:
         "topK": 40
     }
 }
-                response = requests.post(
-    f"{Config.API_URL}{Config.API_KEY}", 
+    response = requests.post(
+    Config.API_URL,  # Já contém a chave API
     headers=headers, 
     json=data, 
     timeout=Config.REQUEST_TIMEOUT
@@ -473,21 +473,21 @@ class ApiService:
 # ======================
 # SERVIÇOS DE INTERFACE
 # ======================
-class class UiService:
+class UiService:
     @staticmethod
-def get_chat_audio_player():
-    return f"""
-    <div style=\"
-        background: linear-gradient(45deg, #ff66b3, #ff1493);
-        border-radius: 15px;
-        padding: 12px;
-        margin: 5px 0;
-    \">
-        <audio controls style=\"width:100%; height:40px;\">
-            <source src=\"{Config.AUDIO_FILE}\" type=\"audio/mp3\">
-        </audio>
-    </div>
-    """
+    def get_chat_audio_player():  # Corrigir a indentação
+        return f"""
+        <div style=\"
+            background: linear-gradient(45deg, #ff66b3, #ff1493);
+            border-radius: 15px;
+            padding: 12px;
+            margin: 5px 0;
+        \">
+            <audio controls style=\"width:100%; height:40px;\">
+                <source src=\"{Config.AUDIO_FILE}\" type=\"audio/mp3\">
+            </audio>
+        </div>
+        """
 
     @staticmethod
     def show_call_effect():
@@ -1759,7 +1759,7 @@ def main():
     if 'db_conn' not in st.session_state:
     st.session_state.db_conn = DatabaseService.init_db()
 
-conn = st.session_state.db_conn  
+        conn = st.session_state.db_conn  # Corrigir indentação
     
     ChatService.initialize_session(conn)
     
