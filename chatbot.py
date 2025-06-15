@@ -847,11 +847,11 @@ class UiService:
         </style>
         """, unsafe_allow_html=True)
 
-    @staticmethod
-    def enhanced_chat_ui(conn):
+        @staticmethod
+        def enhanced_chat_ui(conn):
     
-    st.markdown("""
-    <style>
+        st.markdown("""
+          <style>
         /* Estilos gerais do chat */
         .chat-header {
             background: linear-gradient(90deg, #ff66b3, #ff1493);
