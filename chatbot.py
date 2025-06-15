@@ -1340,7 +1340,7 @@ class ChatService:
         """Inicializa a sessão do chat corretamente"""
         load_persistent_data()
     
-    # Garante que todos os estados necessários existam
+        # Garante que todos os estados necessários existam
         defaults = {
             'session_id': str(uuid.uuid4()),
             'messages': [],
@@ -1352,18 +1352,18 @@ class ChatService:
             'current_page': 'home',
             'show_vip_offer': False,
             'last_cta_time': 0
-    }
+       }
     
-    for key, default in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = default
+        for key, default in defaults.items():
+            if key not in st.session_state:
+                st.session_state[key] = default
     
     # Carrega mensagens do banco de dados
-    st.session_state.messages = DatabaseService.load_messages(
-        conn,
-        get_user_id(),
-        st.session_state.session_id
-    ) or []
+        st.session_state.messages = DatabaseService.load_messages(
+            conn,
+            get_user_id(),
+            st.session_state.session_id
+        ) or []
     
     # Atualiza contador de requisições
     st.session_state.request_count = len([
