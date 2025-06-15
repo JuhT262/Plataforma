@@ -1430,7 +1430,7 @@ class ChatService:
         cleaned_input = re.sub(r'<[^>]*>', '', user_input)
         return cleaned_input[:500]
 
-    @staticmethod
+  @staticmethod
 def process_user_input(conn):
     ChatService.display_chat_history()
     
@@ -1485,7 +1485,7 @@ def process_user_input(conn):
                     {resposta["text"]}
                 </div>
                 """, unsafe_allow_html=True)
-            
+                
                 if st.button(
                     resposta["cta"]["label"],
                     key=f"pix_cta_{time.time()}",
