@@ -476,112 +476,75 @@ def get_chat_audio_player():
 
 @staticmethod
 def show_call_effect():
-    """Efeito de chamada com template literal à prova de erros"""
+    """Efeito de chamada com CSS completamente seguro"""
     # Configurações
-    DELAYS = (5, 3)  # (ligando, atendida)
+    DELAY_LIGANDO = 5
+    DELAY_ATENDIDA = 3
     
-    # Template como função que retorna HTML seguro
-    def get_html_template(stage):
-        templates = {
-            'ligando': (
-                '<div style="background:linear-gradient(135deg,#1e0033,#3c0066);'
-                'border-radius:20px;padding:30px;max-width:300px;margin:0 auto;'
-                'box-shadow:0 10px 30px rgba(0,0,0,0.3);border:2px solid #ff66b3;'
-                'text-align:center;color:white;animation:pulse-ring 2s infinite;">'
-                '<div style="font-size:3rem;">📱</div>'
-                '<h3 style="color:#ff66b3;margin-bottom:5px;">Ligando para Juh...</h3>'
-                '<div style="display:flex;align-items:center;justify-content:center;'
-                'gap:8px;margin-top:15px;"><div style="width:10px;height:10px;'
-                'background:#4CAF50;border-radius:50%;"></div>'
-                '<span style="font-size:0.9rem;">Online agora</span></div></div>'
-                '<style>@keyframes pulse-ring{0%{transform:scale(0.95);opacity:0.8;}'
-                '50%{transform:scale(1.05);opacity:1;}100%{transform:scale(0.95);'
-                'opacity:0.8;}}</style>'
-            ),
-            'atendida': (
-                '<div style="background:linear-gradient(135deg,#1e0033,#3c0066);'
-                'border-radius:20px;padding:30px;max-width:300px;margin:0 auto;'
-                'box-shadow:0 10px 30px rgba(0,0,0,0.3);border:2px solid #4CAF50;'
-                'text-align:center;color:white;"><div style="font-size:3rem;'
-                'color:#4CAF50;">✓</div><h3 style="color:#4CAF50;margin-bottom:5px;">'
-                'Chamada atendida!</h3><p style="font-size:0.9rem;margin:0;">'
-                'Juh está te esperando...</p></div>'
-            )
-        }
-        return templates[stage]
+    # Templates usando dicionário com strings raw
+    templates = {
+        'ligando': (
+            r'<div style="'
+            r'background:linear-gradient(135deg,#1e0033,#3c0066);'
+            r'border-radius:20px;'
+            r'padding:30px;'
+            r'max-width:600px;'  # Note a ausência de espaços
+            r'margin:0 auto;'
+            r'box-shadow:0 10px 30px rgba(0,0,0,0.3);'
+            r'border:2px solid #ff66b3;'
+            r'text-align:center;'
+            r'color:white;'
+            r'animation:pulse-ring 2s infinite;'
+            r'">'
+            r'<div style="font-size:3rem;">📱</div>'
+            r'<h3 style="color:#ff66b3;margin-bottom:5px;">Ligando para Juh...</h3>'
+            r'<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:15px;">'
+            r'<div style="width:10px;height:10px;background:#4CAF50;border-radius:50%;"></div>'
+            r'<span style="font-size:0.9rem;">Online agora</span>'
+            r'</div>'
+            r'</div>'
+            r'<style>'
+            r'@keyframes pulse-ring{'
+            r'0%{transform:scale(0.95);opacity:0.8;}'
+            r'50%{transform:scale(1.05);opacity:1;}'
+            r'100%{transform:scale(0.95);opacity:0.8;}'
+            r'}'
+            r'</style>'
+        ),
+        'atendida': (
+            r'<div style="'
+            r'background:linear-gradient(135deg,#1e0033,#3c0066);'
+            r'border-radius:20px;'
+            r'padding:30px;'
+            r'max-width:600px;'  # Correção aplicada aqui também
+            r'margin:0 auto;'
+            r'box-shadow:0 10px 30px rgba(0,0,0,0.3);'
+            r'border:2px solid #4CAF50;'
+            r'text-align:center;'
+            r'color:white;'
+            r'">'
+            r'<div style="font-size:3rem;color:#4CAF50;">✓</div>'
+            r'<h3 style="color:#4CAF50;margin-bottom:5px;">Chamada atendida!</h3>'
+            r'<p style="font-size:0.9rem;margin:0;">Juh está te esperando...</p>'
+            r'</div>'
+        )
+    }
 
-    # Execução segura
+    # Execução
     container = st.empty()
     try:
         # Fase 1 - Ligando
-        container.markdown(get_html_template('ligando'), unsafe_allow_html=True)
-        time.sleep(DELAYS[0])
+        container.markdown(templates['ligando'], unsafe_allow_html=True)
+        time.sleep(DELAY_LIGANDO)
         
         # Fase 2 - Atendida
-        container.markdown(get_html_template('atendida'), unsafe_allow_html=True)
-        time.sleep(DELAYS[1])
+        container.markdown(templates['atendida'], unsafe_allow_html=True)
+        time.sleep(DELAY_ATENDIDA)
         
     except Exception as e:
-        st.error(f"Erro no efeito visual: {str(e)}")
+        st.error(f"Erro no efeito de chamada: {str(e)}")
     finally:
         container.empty()
-
-            @staticmethod
-    def age_verification():
-        st.markdown("""
-        <style>
-            .age-verification {
-                max-width: 600px;
-                margin: 2rem auto;
-                padding: 2rem;
-                background: linear-gradient(145deg, #1e0033, #3c0066);
-                border-radius: 15px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                border: 1px solid rgba(255, 102, 179, 0.2);
-                color: white;
-            }
-            .age-header {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                margin-bottom: 1.5rem;
-            }
-            .age-icon {
-                font-size: 2.5rem;
-                color: #ff66b3;
-            }
-            .age-title {
-                font-size: 1.8rem;
-                font-weight: 700;
-                margin: 0;
-                color: #ff66b3;
-            }
-        </style>
-        """, unsafe_allow_html=True)
-
-        with st.container():
-            st.markdown("""
-            <div class="age-verification">
-                <div class="age-header">
-                    <div class="age-icon">🔞</div>
-                    <h1 class="age-title">Verificação de Idade</h1>
-                </div>
-                <div class="age-content">
-                    <p>Este site contém material explícito destinado exclusivamente a adultos maiores de 18 anos.</p>
-                    <p>Ao acessar este conteúdo, você declara estar em conformidade com todas as leis locais aplicáveis.</p>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-        col1, col2, col3 = st.columns([1,2,1])
-        with col2:
-            if st.button("Confirmo que sou maior de 18 anos", 
-                        key="age_checkbox",
-                        use_container_width=True,
-                        type="primary"):
-                st.session_state.age_verified = True
-                save_persistent_data()
-                st.rerun()
 
     @staticmethod
     def setup_sidebar():
