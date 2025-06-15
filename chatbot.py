@@ -1338,7 +1338,7 @@ class NewPages:
 class ChatService:
     @staticmethod
     def initialize_session(conn):
-    """Inicializa a sessão do chat corretamente"""
+        """Inicializa a sessão do chat corretamente"""
         load_persistent_data()
     
     # Garante que todos os estados necessários existam
