@@ -800,17 +800,16 @@ class UiService:
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Resto do método...
 
-        if st.button("Tornar-se VIP 💎",  # Adicionado emoji de diamante
+            if st.button("Tornar-se VIP 💎",  # Adicionado emoji de diamante
                     key="vip_button_gallery", 
                     use_container_width=True,
                     type="primary"):
-            st.session_state.current_page = "offers"
+               st.session_state.current_page = "offers"
             st.rerun()
         
-        if st.button("Voltar ao chat", key="back_from_gallery"):
-            st.session_state.current_page = "chat"
+            if st.button("Voltar ao chat", key="back_from_gallery"):
+               st.session_state.current_page = "chat"
             save_persistent_data()
             st.rerun()
 
