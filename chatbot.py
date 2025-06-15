@@ -897,7 +897,7 @@ class UiService:
         """, unsafe_allow_html=True)
         
         ChatService.process_user_input(conn)
-        save_persistent_data()
+        
         
         st.markdown("""
         <div style="
@@ -1334,7 +1334,7 @@ class ChatService:
                 st.session_state[key] = default
 
     @staticmethod
-def process_user_input(conn):
+    def process_user_input(conn):
     # Mostra o histórico de mensagens (últimas 12)
     for msg in st.session_state.messages[-12:]:
         if msg["role"] == "user":
