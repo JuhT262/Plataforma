@@ -1334,169 +1334,63 @@ class ChatService:
                 st.session_state[key] = default
 
     @staticmethod
-    def format_conversation_history(messages, max_messages=10):
-        formatted = []
-        
-        for msg in messages[-max_messages:]:
-            role = "Cliente" if msg["role"] == "user" else "Juh"
-            content = msg["content"]
-            if content == "[ÁUDIO]":
-                content = "[Enviou um áudio sensual]"
-            elif content.startswith('{"text"'):
-                try:
-                    content = json.loads(content).get("text", content)
-                except:
-                    pass
-            
-            formatted.append(f"{role}: {content}")
-        
-        return "\n".join(formatted)
-
-    @staticmethod
-    def display_chat_history():
-        chat_container = st.container()
-        with chat_container:
-            for idx, msg in enumerate(st.session_state.messages[-12:]):
-                if msg["role"] == "user":
-                    with st.chat_message("user", avatar="🧑"):
-                        st.markdown(f"""
-                        <div style="
-                            background: rgba(0, 0, 0, 0.1);
-                            padding: 12px;
-                            border-radius: 18px 18px 0 18px;
-                            margin: 5px 0;
-                        ">
-                            {msg["content"]}
-                        </div>
-                        """, unsafe_allow_html=True)
-                elif msg["content"] == "[ÁUDIO]":
-                    with st.chat_message("assistant", avatar="💋"):
-                        st.markdown(UiService.get_chat_audio_player(), unsafe_allow_html=True)
-                else:
-                    try:
-                        content_data = json.loads(msg["content"])
-                        if isinstance(content_data, dict):
-                            with st.chat_message("assistant", avatar="💋"):
-                                st.markdown(f"""
-                                <div style="
-                                    background: linear-gradient(45deg, #ff66b3, #ff1493);
-                                    color: white;
-                                    padding: 12px;
-                                    border-radius: 18px 18px 18px 0;
-                                    margin: 5px 0;
-                                ">
-                                    {content_data.get("text", "")}
-                                </div>
-                                """, unsafe_allow_html=True)
-                                
-                                if content_data.get("cta", {}).get("show") and idx == len(st.session_state.messages[-12:]) - 1:
-                                    if st.button(
-                                        content_data.get("cta", {}).get("label", "Ver Ofertas"),
-                                        key=f"cta_button_{hash(msg['content'])}",
-                                        use_container_width=True
-                                    ):
-                                        st.session_state.current_page = content_data.get("cta", {}).get("target", "offers")
-                                        save_persistent_data()
-                                        st.rerun()
-                        else:
-                            with st.chat_message("assistant", avatar="💋"):
-                                st.markdown(f"""
-                                <div style="
-                                    background: linear-gradient(45deg, #ff66b3, #ff1493);
-                                    color: white;
-                                    padding: 12px;
-                                    border-radius: 18px 18px 18px 0;
-                                    margin: 5px 0;
-                                ">
-                                    {msg["content"]}
-                                </div>
-                                """, unsafe_allow_html=True)
-                    except json.JSONDecodeError:
-                        with st.chat_message("assistant", avatar="💋"):
-                            st.markdown(f"""
-                            <div style="
-                                background: linear-gradient(45deg, #ff66b3, #ff1493);
-                                color: white;
-                                padding: 12px;
-                                border-radius: 18px 18px 18px 0;
-                                margin: 5px 0;
-                            ">
-                                {msg["content"]}
-                            </div>
-                            """, unsafe_allow_html=True)
-
-    @staticmethod
-    def validate_input(user_input):
-        cleaned_input = re.sub(r'<[^>]*>', '', user_input)
-        return cleaned_input[:500]
-
-    @staticmethod
     def process_user_input(conn):
-        # Mostra as mensagens antigas
-        for msg in st.session_state.messages:
+        # Mostra o histórico de mensagens
+        for msg in st.session_state.messages[-12:]:
             if msg["role"] == "user":
-                st.chat_message("user").markdown(msg["content"])
+                with st.chat_message("user", avatar="🧑"):
+                    st.markdown(msg["content"])
             else:
-                st.chat_message("assistant").markdown(msg["content"])
+                with st.chat_message("assistant", avatar="💋"):
+                    st.markdown(msg["content"])
         
         # Pega a nova mensagem
-        user_msg = st.chat_input("Digite uma mensagem...")
+        user_input = st.chat_input("Digite sua mensagem...")
         
-        if user_msg:
-            # Guarda a mensagem do usuário
-            st.session_state.messages.append({"role": "user", "content": user_msg})
+        if user_input:
+            # Limpa a mensagem
+            cleaned_input = user_input[:500]  # Limita a 500 caracteres
             
-            # Responde automaticamente
-            if "pix" in user_msg.lower():
-                resposta = """
-                💵 PLANOS DISPONÍVEIS:
-                
-                • PROMO: R$ 12,50
-                • START: R$ 19,50
-                • PREMIUM: R$ 45,50
-                • EXTREME: R$ 75,50
-                
-                [Clique abaixo para assinar]
-                """
-                btn_text = "QUERO ASSINAR"
+            # Adiciona a mensagem do usuário
+            st.session_state.messages.append({"role": "user", "content": cleaned_input})
+            
+            # Resposta para PIX
+            if "pix" in cleaned_input.lower() or "chave pix" in cleaned_input.lower():
+                resposta = {
+                    "text": """💰 PLANOS DISPONÍVEIS:
+                    
+                    • PROMO: R$ 12,50
+                    • START: R$ 19,50
+                    • PREMIUM: R$ 45,50
+                    • EXTREME: R$ 75,50
+                    
+                    Clique no botão para assinar!""",
+                    "cta": {
+                        "show": True,
+                        "label": "QUERO ASSINAR",
+                        "target": "offers"
+                    }
+                }
             else:
-                resposta = "Oi gato! Quer ver meus conteúdos quentes? 🔥"
-                btn_text = "VER CONTEÚDOS"
+                resposta = {
+                    "text": "Oi amor! Quer ver meus conteúdos especiais? 😘",
+                    "cta": {
+                        "show": True,
+                        "label": "VER CONTEÚDOS",
+                        "target": "offers"
+                    }
+                }
             
             # Mostra a resposta
-            with st.chat_message("assistant"):
-                st.markdown(resposta)
-                if st.button(btn_text):
-                    st.session_state.current_page = "offers"
-            
-            # Guarda a resposta
-            st.session_state.messages.append({"role": "assistant", "content": resposta})
-            
             with st.chat_message("assistant", avatar="💋"):
-                st.markdown(f"""
-                <div style="
-                    background: linear-gradient(45deg, #ff66b3, #ff1493);
-                    color: white;
-                    padding: 12px;
-                    border-radius: 18px 18px 18px 0;
-                    margin: 5px 0;
-                ">
-                    {resposta["text"]}
-                </div>
-                """, unsafe_allow_html=True)
-                
-                if st.button(
-                    resposta["cta"]["label"],
-                    key=f"pix_cta_{time.time()}",
-                    use_container_width=True
-                ):
-                    st.session_state.current_page = "offers"
-                    st.rerun()
+                st.markdown(resposta["text"])
+                if resposta["cta"]["show"]:
+                    if st.button(resposta["cta"]["label"]):
+                        st.session_state.current_page = resposta["cta"]["target"]
+                        st.rerun()
             
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": json.dumps(resposta)
-            })
+            # Salva a resposta
+            st.session_state.messages.append({"role": "assistant", "content": json.dumps(resposta)})
             DatabaseService.save_message(
                 conn,
                 get_user_id(),
@@ -1505,100 +1399,6 @@ class ChatService:
                 json.dumps(resposta)
             )
             save_persistent_data()
-            return
-        
-        if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": "Vou ficar ocupada agora, me manda mensagem depois?"
-            })
-            DatabaseService.save_message(
-                conn,
-                get_user_id(),
-                st.session_state.session_id,
-                "assistant",
-                "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
-            )
-            save_persistent_data()
-            st.rerun()
-            return
-        
-        st.session_state.messages.append({
-            "role": "user",
-            "content": cleaned_input
-        })
-        DatabaseService.save_message(
-            conn,
-            get_user_id(),
-            st.session_state.session_id,
-            "user",
-            cleaned_input
-        )
-        
-        st.session_state.request_count += 1
-        
-        with st.chat_message("user", avatar="🧑"):
-            st.markdown(f"""
-            <div style="
-                background: rgba(0, 0, 0, 0.1);
-                padding: 12px;
-                border-radius: 18px 18px 0 18px;
-                margin: 5px 0;
-            ">
-                {cleaned_input}
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with st.chat_message("assistant", avatar="💋"):
-            resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
-            
-            if isinstance(resposta, str):
-                resposta = {"text": resposta, "cta": {"show": False}}
-            elif "text" not in resposta:
-                resposta = {"text": str(resposta), "cta": {"show": False}}
-            
-            st.markdo    @staticmethod
-    def process_user_input(conn):
-        # Mostra as mensagens antigas
-        for msg in st.session_state.messages:
-            if msg["role"] == "user":
-                st.chat_message("user").markdown(msg["content"])
-            else:
-                st.chat_message("assistant").markdown(msg["content"])
-        
-        # Pega a nova mensagem
-        user_input = st.chat_input("Digite sua mensagem...")
-        
-        if user_input:
-            # Limpa e guarda a mensagem
-            cleaned_input = user_input[:500]  # Limita a 500 caracteres
-            st.session_state.messages.append({"role": "user", "content": cleaned_input})
-            
-            # Resposta para PIX
-            if "pix" in cleaned_input.lower() or "chave pix" in cleaned_input.lower():
-                resposta = """
-                💰 PLANOS DISPONÍVEIS:
-                
-                • PROMO: R$ 12,50
-                • START: R$ 19,50
-                • PREMIUM: R$ 45,50
-                • EXTREME: R$ 75,50
-                
-                Clique no botão para assinar!
-                """
-                btn_text = "QUERO ASSINAR"
-            else:
-                resposta = "Oi amor! Quer ver meus conteúdos especiais? 😘"
-                btn_text = "VER CONTEÚDOS"
-            
-            # Mostra a resposta
-            with st.chat_message("assistant"):
-                st.markdown(resposta)
-                if st.button(btn_text):
-                    st.session_state.current_page = "offers"
-            
-            # Guarda a resposta
-            st.session_state.messages.append({"role": "assistant", "content": resposta})
 
     
 
