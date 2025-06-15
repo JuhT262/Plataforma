@@ -546,73 +546,97 @@ def show_call_effect():
     finally:
         container.empty()
 
-        @staticmethod
-        def setup_sidebar():
-            with st.sidebar:
-                st.markdown("""
-                <style>
-                    [data-testid="stSidebar"] {
-                        background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-                        border-right: 1px solid #ff66b3 !important;
-                }
-                .sidebar-logo-container {
+    @staticmethod
+    def setup_sidebar():
+        with st.sidebar:
+            # CSS corrigido usando f-string
+            sidebar_css = f"""
+            <style>
+                [data-testid="stSidebar"] {{
+                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+                    border-right: 1px solid #ff66b3 !important;
+                }}
+                .sidebar-logo-container {{
                     margin: -25px -25px 0px -25px;
                     padding: 0;
                     text-align: left;
-                }
-                .sidebar-logo {
+                }}
+                .sidebar-logo {{
                     max-width: 100%;
                     height: auto;
                     margin-bottom: -10px;
-                }
-                .sidebar-header {
+                }}
+                .sidebar-header {{
                     text-align: center; 
                     margin-bottom: 20px;
-                }
-                .sidebar-header img {
+                }}
+                .sidebar-header img {{
                     border-radius: 50%; 
                     border: 2px solid #ff66b3;
                     width: 80px;
                     height: 80px;
                     object-fit: cover;
-                }
-                .vip-badge {
+                }}
+                .vip-badge {{
                     background: linear-gradient(45deg, #ff1493, #9400d3);
                     padding: 15px;
                     border-radius: 8px;
                     color: white;
                     text-align: center;
                     margin: 10px 0;
-                }
-                .menu-item {
+                }}
+                .menu-item {{
                     transition: all 0.3s;
                     padding: 10px;
                     border-radius: 5px;
-                }
-                .menu-item:hover {
+                }}
+                .menu-item:hover {{
                     background: rgba(255, 102, 179, 0.2);
-                }
-                .sidebar-logo {
+                }}
+                .sidebar-logo {{
                     width: 280px;
                     height: auto;
                     object-fit: contain;
                     margin-left: -15px;
                     margin-top: -15px;
-                }
-                @media (min-width: 768px) {
-                    .sidebar-logo {
+                }}
+                @media (min-width: 768px) {{
+                    .sidebar-logo {{
                         width: 320px;
-                    }
-                }
-                [data-testid="stSidebarNav"] {
+                    }}
+                }}
+                [data-testid="stSidebarNav"] {{
                     margin-top: -50px;
-                }
-                .sidebar-logo-container {
+                }}
+                .sidebar-logo-container {{
                     position: relative;
                     z-index: 1;
-                }
+                }}
             </style>
+            """
+            st.markdown(sidebar_css, unsafe_allow_html=True)
+
+            st.markdown(f"""
+            <div class="sidebar-logo-container">
+                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
+            </div>
             """, unsafe_allow_html=True)
+
+            st.markdown(f"""
+            <div class="sidebar-logo-container">
+                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Resto do código permanece igual...
+
+            st.markdown(f"""
+            <div class="sidebar-logo-container">
+                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Resto do código permanece igual...
 
             st.markdown(f"""
             <div class="sidebar-logo-container">
