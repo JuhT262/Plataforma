@@ -644,72 +644,31 @@ class UiService:
                 st.rerun()
 
     @staticmethod
-    def setup_sidebar():
-        with st.sidebar:
-            st.markdown("""
-            <style>
+def setup_sidebar():
+    with st.sidebar:
+        st.markdown("""
+        <style>
+            /* Estilos para mobile */
+            @media (max-width: 768px) {
                 [data-testid="stSidebar"] {
-                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-                    border-right: 1px solid #ff66b3 !important;
-                }
-                .sidebar-logo-container {
-                    margin: -25px -25px 0px -25px;
-                    padding: 0;
-                    text-align: left;
+                    width: 100% !important;
+                    max-width: 100% !important;
                 }
                 .sidebar-logo {
-                    max-width: 100%;
-                    height: auto;
-                    margin-bottom: -10px;
-                }
-                .sidebar-header {
-                    text-align: center; 
-                    margin-bottom: 20px;
+                    width: 200px !important;
                 }
                 .sidebar-header img {
-                    border-radius: 50%; 
-                    border: 2px solid #ff66b3;
-                    width: 80px;
-                    height: 80px;
-                    object-fit: cover;
+                    width: 60px !important;
+                    height: 60px !important;
                 }
                 .vip-badge {
-                    background: linear-gradient(45deg, #ff1493, #9400d3);
-                    padding: 15px;
-                    border-radius: 8px;
-                    color: white;
-                    text-align: center;
-                    margin: 10px 0;
+                    padding: 10px !important;
+                    font-size: 0.9em !important;
                 }
-                .menu-item {
-                    transition: all 0.3s;
-                    padding: 10px;
-                    border-radius: 5px;
-                }
-                .menu-item:hover {
-                    background: rgba(255, 102, 179, 0.2);
-                }
-                .sidebar-logo {
-                    width: 280px;
-                    height: auto;
-                    object-fit: contain;
-                    margin-left: -15px;
-                    margin-top: -15px;
-                }
-                @media (min-width: 768px) {
-                    .sidebar-logo {
-                        width: 320px;
-                    }
-                }
-                [data-testid="stSidebarNav"] {
-                    margin-top: -50px;
-                }
-                .sidebar-logo-container {
-                    position: relative;
-                    z-index: 1;
-                }
-            </style>
-            """, unsafe_allow_html=True)
+            }
+        </style>
+        """, unsafe_allow_html=True)
+        
             
             st.markdown(f"""
             <div class="sidebar-logo-container">
@@ -780,45 +739,67 @@ class UiService:
             """, unsafe_allow_html=True)
 
     @staticmethod
-    def show_gallery_page(conn):
-        st.markdown("""
-        <div style="
-            background: rgba(255, 20, 147, 0.1);
-            padding: 15px;
-            border-radius: 10px;
+    @staticmethod
+def show_gallery_page(conn):
+    st.markdown("""
+    <style>
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
             margin-bottom: 20px;
-        ">
-            <p style="margin: 0;">Conteúdo exclusivo disponível</p>
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .gallery-caption {
+            text-align: center;
+            color: #ff66b3;
+            margin-top: 5px;
+            font-size: 0.8em;
+        }
+        
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            .gallery-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="
+        background: rgba(255, 20, 147, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    ">
+        <p style="margin: 0;">Conteúdo exclusivo disponível</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown('<div class="gallery-container">', unsafe_allow_html=True)
+    
+    for idx, img_url in enumerate(Config.IMG_GALLERY):
+        st.markdown(f"""
+        <div class="gallery-item">
+            <img src="{img_url}" alt="Gallery image {idx+1}" onerror="this.src='https://via.placeholder.com/300x400?text=Imagem+Indispon%C3%ADvel'">
+            <div class="gallery-caption">Preview {idx+1}</div>
         </div>
         """, unsafe_allow_html=True)
-        
-        cols = st.columns(3)
-        
-        for idx, col in enumerate(cols):
-            with col:
-                st.image(
-                    Config.IMG_GALLERY[idx],
-                    use_container_width=True,
-                    caption=f"Preview {idx+1}"
-                )
-                st.markdown(f"""
-                <div style="
-                    text-align: center;
-                    font-size: 0.8em;
-                    color: #ff66b3;
-                    margin-top: -10px;
-                ">
-                    Conteúdo bloqueado
-                </div>
-                """, unsafe_allow_html=True)
-        
-        st.markdown("---")
-        st.markdown("""
-        <div style="text-align: center;">
-            <h4>Desbloqueie acesso completo</h4>
-            <p>Assine o plano VIP para ver todos os conteúdos</p>
-        </div>
-        """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    # Resto do método...
 
         if st.button("Tornar-se VIP 💎",  # Adicionado emoji de diamante
                     key="vip_button_gallery", 
@@ -888,6 +869,41 @@ class UiService:
 
     @staticmethod
     def enhanced_chat_ui(conn):
+    
+    st.markdown("""
+    <style>
+        /* Estilos gerais do chat */
+        .chat-header {
+            background: linear-gradient(90deg, #ff66b3, #ff1493);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Estilos específicos para mobile */
+        @media (max-width: 768px) {
+            .chat-header {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+            [data-testid="stChatInput"] {
+                padding: 8px !important;
+            }
+            .stChatMessage {
+                max-width: 80% !important;
+            }
+            .stButton > button {
+                padding: 8px 12px !important;
+                font-size: 0.8rem !important;
+            }
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Resto da implementação do chat...
         st.markdown("""    
         <style>
             .chat-header {
@@ -1341,32 +1357,64 @@ class NewPages:
 # ======================
 class ChatService:
     @staticmethod
-    def initialize_session(conn):
-        """Inicializa a sessão do chat"""
-        if 'session_id' not in st.session_state:
-            st.session_state.session_id = str(uuid.uuid4())
-        
-        if 'request_count' not in st.session_state:
-            st.session_state.request_count = 0
-            
-        if 'messages' not in st.session_state:
-            st.session_state.messages = DatabaseService.load_messages(
-                conn,
-                get_user_id(),
-                st.session_state.session_id
-            ) or []
+def initialize_session(conn):
+    """Inicializa a sessão do chat corretamente"""
+    load_persistent_data()
+    
+    # Garante que todos os estados necessários existam
+    defaults = {
+        'session_id': str(uuid.uuid4()),
+        'messages': [],
+        'request_count': 0,
+        'age_verified': False,
+        'connection_complete': False,
+        'chat_started': False,
+        'audio_sent': False,
+        'current_page': 'home',
+        'show_vip_offer': False,
+        'last_cta_time': 0
+    }
+    
+    for key, default in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = default
+    
+    # Carrega mensagens do banco de dados
+    st.session_state.messages = DatabaseService.load_messages(
+        conn,
+        get_user_id(),
+        st.session_state.session_id
+    ) or []
+    
+    # Atualiza contador de requisições
+    st.session_state.request_count = len([
+        m for m in st.session_state.messages 
+        if m["role"] == "user"
+    ])
 
-    @staticmethod
-    def format_conversation_history(messages):
-        """Formata o histórico para envio à API"""
-        return "\n".join(
-            f"{msg['role'].capitalize()}: {msg['content']}" 
-            for msg in messages[-8:]
-        )
-
+    
     @staticmethod
     def process_user_input(conn):
-        """Processa a entrada do usuário de forma segura"""
+    
+    # Verifica se é a primeira mensagem e envia o áudio
+    if not st.session_state.get("audio_sent") and st.session_state.chat_started:
+        status_container = st.empty()
+        UiService.show_audio_recording_effect(status_container)
+        
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": "[ÁUDIO]"
+        })
+        DatabaseService.save_message(
+            conn,
+            get_user_id(),
+            st.session_state.session_id,
+            "assistant",
+            "[ÁUDIO]"
+        )
+        st.session_state.audio_sent = True
+        save_persistent_data()
+        st.rerun()
         try:
             # 1. Verificar e inicializar mensagens
             if 'messages' not in st.session_state:
@@ -1454,111 +1502,54 @@ class ChatService:
 # APLICAÇÃO PRINCIPAL
 # ======================
 def main():
-    if not Config.API_KEY:
-        st.error("❌ Chave API não configurada. Verifique o arquivo secrets.toml")
-        st.stop()
-
-    # INÍCIO DA NOVA SEÇÃO ADICIONADA
+    # Inicializa a conexão com o banco de dados
     if 'db_conn' not in st.session_state:
         st.session_state.db_conn = DatabaseService.init_db()
     
-    # Inicializa todas as variáveis de sessão necessárias
-    session_defaults = {
-        'age_verified': False,
-        'connection_complete': False,
-        'chat_started': False,
-        'current_page': 'home',
-        'show_vip_offer': False,
-        'request_count': 0,
-        'messages': [],
-        'session_id': str(uuid.uuid4()),
-        'last_cta_time': 0,
-        'audio_sent': False
-    }
-    
-    for key, value in session_defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = value
-    
     conn = st.session_state.db_conn
-    # FIM DA NOVA SEÇÃO ADICIONADA
-
-    st.markdown("""
-    <style>
-        [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-            border-right: 1px solid #ff66b3 !important;
-        }
-        .stButton button {
-            background: rgba(255, 20, 147, 0.2) !important;
-            color: white !important;
-            border: 1px solid #ff66b3 !important;
-            transition: all 0.3s !important;
-        }
-        .stButton button:hover {
-            background: rgba(255, 20, 147, 0.4) !important;
-            transform: translateY(-2px) !important;
-        }
-        [data-testid="stChatInput"] {
-            background: rgba(255, 102, 179, 0.1) !important;
-            border: 1px solid #ff66b3 !important;
-        }
-        div.stButton > button:first-child {
-            background: linear-gradient(45deg, #ff1493, #9400d3) !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 20px !important;
-            padding: 10px 24px !important;
-            font-weight: bold !important;
-            transition: all 0.3s !important;
-            box-shadow: 0 4px 8px rgba(255, 20, 147, 0.3) !important;
-        }
-        div.stButton > button:first-child:hover {
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 12px rgba(255, 20, 147, 0.4) !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
     
+    # Inicializa a sessão do chat
     ChatService.initialize_session(conn)
     
- # NOVA VERIFICAÇÃO DE IDADE (ADICIONE ESTE BLOCO)
- 
-    if not st.session_state.get('age_verified', False):
-       UiService.age_verification()
-       save_persistent_data()  # Adicione esta linha para garantir a persistência
-       st.stop()
+    # Verificação de idade
+    if not st.session_state.age_verified:
+        UiService.age_verification()
+        st.stop()
     
+    # Configura o sidebar
     UiService.setup_sidebar()
     
+    # Efeito de chamada inicial
     if not st.session_state.connection_complete:
         UiService.show_call_effect()
         st.session_state.connection_complete = True
         save_persistent_data()
         st.rerun()
-        
-    if not st.session_state.get('chat_started', False):
+    
+    # Página inicial antes do chat
+    if not st.session_state.chat_started:
         col1, col2, col3 = st.columns([1,3,1])
         with col2:
             st.markdown(f"""
             <div style="text-align: center; margin: 50px 0;">
-                 <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
-                 <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
-                 <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
-             </div>
-             """, unsafe_allow_html=True)
-             
-    if st.button("Iniciar Conversa", type="primary", use_container_width=True):
-        st.session_state.update({
-            'chat_started': True,
-            'current_page': 'chat',
-            'audio_sent': False
-            })
-        save_persistent_data()
-        st.rerun()
+                <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
+                <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
+                <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.button("Iniciar Conversa", type="primary", use_container_width=True):
+                st.session_state.update({
+                    'chat_started': True,
+                    'current_page': 'chat',
+                    'audio_sent': False
+                })
+                save_persistent_data()
+                st.rerun()
         st.stop()
-        
-    if st.session_state.get('current_page', 'home') == "home":
+    
+    # Navegação entre páginas
+    if st.session_state.current_page == "home":
         NewPages.show_home_page()
     elif st.session_state.current_page == "gallery":
         UiService.show_gallery_page(conn)
@@ -1576,9 +1567,8 @@ def main():
             st.rerun()
     else:
         UiService.enhanced_chat_ui(conn)
-
+    
     save_persistent_data()
-
 
 if __name__ == "__main__":
     main()
