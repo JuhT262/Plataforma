@@ -474,15 +474,15 @@ def get_chat_audio_player():
     </div>
     '''
 
-    @staticmethod
+@staticmethod
 def show_call_effect():
     LIGANDO_DELAY = 5
     ATENDIDA_DELAY = 3
 
     call_container = st.empty()
     
-    # Primeiro estágio: "Ligando..."
-    call_container.markdown('''
+    # Primeira parte - Ligando
+    call_html = """
     <div style="
         background: linear-gradient(135deg, #1e0033, #3c0066);
         border-radius: 20px;
@@ -509,12 +509,12 @@ def show_call_effect():
             100% { transform: scale(0.95); opacity: 0.8; }
         }
     </style>
-    ''', unsafe_allow_html=True)
-
+    """
+    call_container.markdown(call_html, unsafe_allow_html=True)
     time.sleep(LIGANDO_DELAY)
     
-    # Segundo estágio: "Chamada atendida!"
-    call_container.markdown('''
+    # Segunda parte - Chamada atendida
+    atendida_html = """
     <div style="
         background: linear-gradient(135deg, #1e0033, #3c0066);
         border-radius: 20px;
@@ -530,8 +530,8 @@ def show_call_effect():
         <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
         <p style="font-size: 0.9rem; margin:0;">Juh está te esperando...</p>
     </div>
-    ''', unsafe_allow_html=True)
-    
+    """
+    call_container.markdown(atendida_html, unsafe_allow_html=True)
     time.sleep(ATENDIDA_DELAY)
     call_container.empty()
 
