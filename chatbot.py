@@ -1497,10 +1497,10 @@ def main():
     UiService.setup_sidebar()
     
     if not st.session_state.connection_complete:
-            UiService.show_call_effect()
-    st.session_state.connection_complete = True
-            save_persistent_data()
-            st.rerun()
+        UiService.show_call_effect()
+        st.session_state.connection_complete = True
+        save_persistent_data()
+        st.rerun()
 
     if not st.session_state.chat_started:
         col1, col2, col3 = st.columns([1,3,1])
