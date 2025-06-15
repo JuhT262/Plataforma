@@ -476,19 +476,19 @@ class ApiService:
 # ======================
 class class UiService:
     @staticmethod
-    def get_chat_audio_player():
-        return """
-        <div style='
-            background: linear-gradient(45deg, #ff66b3, #ff1493);
-            border-radius: 15px;
-            padding: 12px;
-            margin: 5px 0;
-        '>
-            <audio controls style='width:100%; height:40px;'>
-                <source src='{}' type='audio/mp3'>
-            </audio>
-        </div>
-        """.format(Config.AUDIO_FILE)
+def get_chat_audio_player():
+    return f"""
+    <div style=\"
+        background: linear-gradient(45deg, #ff66b3, #ff1493);
+        border-radius: 15px;
+        padding: 12px;
+        margin: 5px 0;
+    \">
+        <audio controls style=\"width:100%; height:40px;\">
+            <source src=\"{Config.AUDIO_FILE}\" type=\"audio/mp3\">
+        </audio>
+    </div>
+    """
 
     @staticmethod
     def show_call_effect():
