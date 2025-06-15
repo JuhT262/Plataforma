@@ -875,7 +875,7 @@ class UiService:
         </style>
         """, unsafe_allow_html=True)
 
-            @staticmethod
+    @staticmethod
     def enhanced_chat_ui(conn):
         st.markdown("""    
         <style>
