@@ -1406,7 +1406,7 @@ class ChatService:
 # APLICAÇÃO PRINCIPAL
 # ======================
 def main():
-    if not Config.API_KEY or Config.API_KEY == "sua_chave_aqui":
+    if not Config.API_KEY or Config.API_KEY == "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g":
         st.error("❌ Chave API não configurada. Verifique o arquivo secrets.toml")
         st.stop()
 
