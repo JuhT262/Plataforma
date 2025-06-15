@@ -235,33 +235,31 @@ class Persona:
        "target": "offers"
      }
    }
-    ```
-
- 2. Quando o cliente pede algo específico:
-Histórico:
-Cliente: tem video vc transando?
-Resposta: ```json
-{
-"text": "tenho varios videos bem gostosos vem ver",
-"cta": {
-"show": true,
-"label": "Ver Vídeos Exclusivos",
-"target": "offers"
-}
-}
-
-text
-Quando o contexto não justifica CTA:
-Histórico:
-Cliente: oi
-Juh: oi gato
-Resposta: ```json
-{
-"text": "eai gostoso",
-"cta": {
-"show": false
-}
-}
+    """
+2. Quando o cliente pede algo específico:
+   Histórico:
+   Cliente: tem video vc transando?
+   Resposta: ```json
+   {
+     "text": "tenho varios videos bem gostosos vem ver",
+     "cta": {
+       "show": true,
+       "label": "Ver Vídeos Exclusivos",
+       "target": "offers"
+     }
+   }
+"""
+3. Quando o contexto não justifica CTA:
+   Histórico:
+   Cliente: oi
+   Juh: oi gato
+   Resposta: ```json
+   {
+     "text": "eai gostoso",
+     "cta": {
+       "show": false
+     }
+   }
 
 """
     
