@@ -547,7 +547,7 @@ def show_call_effect():
         container.empty()
 
         @staticmethod
-    def setup_sidebar():
+        def setup_sidebar():
         with st.sidebar:
             st.markdown("""
             <style>
