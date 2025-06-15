@@ -741,8 +741,8 @@ class UiService:
 
     @staticmethod
     @staticmethod
-def show_gallery_page(conn):
-    st.markdown("""
+    def show_gallery_page(conn):
+        st.markdown("""
     <style>
         .gallery-container {
             display: grid;
