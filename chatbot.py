@@ -475,61 +475,65 @@ def get_chat_audio_player():
     '''
 
     @staticmethod
-    def show_call_effect():
-        LIGANDO_DELAY = 5
-        ATENDIDA_DELAY = 3
+def show_call_effect():
+    LIGANDO_DELAY = 5
+    ATENDIDA_DELAY = 3
 
-        call_container = st.empty()
-        call_container.markdown(f"""
-        <div style='
-            background: linear-gradient(135deg, #1e0033, #3c0066);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 300px;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 2px solid #ff66b3;
-            text-align: center;
-            color: white;
-            animation: pulse-ring 2s infinite;
-        '>
-            <div style='font-size: 3rem;'>📱</div>
-            <h3 style='color: #ff66b3; margin-bottom: 5px;'>Ligando para Juh...</h3>
-            <div style='display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;'>
-                <div style='width: 10px; height: 10px; background: #4CAF50; border-radius: 50%;'></div>
-                <span style='font-size: 0.9rem;'>Online agora</span>
-            </div>
+    call_container = st.empty()
+    
+    # Primeiro estágio: "Ligando..."
+    call_container.markdown('''
+    <div style="
+        background: linear-gradient(135deg, #1e0033, #3c0066);
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 300px;
+        margin: 0 auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: 2px solid #ff66b3;
+        text-align: center;
+        color: white;
+        animation: pulse-ring 2s infinite;
+    ">
+        <div style="font-size: 3rem;">📱</div>
+        <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
+            <div style="width: 10px; height: 10px; background: #4CAF50; border-radius: 50%;"></div>
+            <span style="font-size: 0.9rem;">Online agora</span>
         </div>
-        <style>
-            @keyframes pulse-ring {{
-                0% {{ transform: scale(0.95); opacity: 0.8; }}
-                50% {{ transform: scale(1.05); opacity: 1; }}
-                100% {{ transform: scale(0.95); opacity: 0.8; }}
-            }}
-        </style>
-        """, unsafe_allow_html=True)
+    </div>
+    <style>
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+    </style>
+    ''', unsafe_allow_html=True)
 
-                time.sleep(LIGANDO_DELAY)
-        call_container.markdown(f"""
-        <div style='
-            background: linear-gradient(135deg, #1e0033, #3c0066);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 300px;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 2px solid #4CAF50;
-            text-align: center;
-            color: white;
-        '>
-            <div style='font-size: 3rem; color: #4CAF50;'>✓</div>
-            <h3 style='color: #4CAF50; margin-bottom: 5px;'>Chamada atendida!</h3>
-            <p style='font-size: 0.9rem; margin:0;'>Juh está te esperando...</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        time.sleep(ATENDIDA_DELAY)
-        call_container.empty()
+    time.sleep(LIGANDO_DELAY)
+    
+    # Segundo estágio: "Chamada atendida!"
+    call_container.markdown('''
+    <div style="
+        background: linear-gradient(135deg, #1e0033, #3c0066);
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 300px;
+        margin: 0 auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: 2px solid #4CAF50;
+        text-align: center;
+        color: white;
+    ">
+        <div style="font-size: 3rem; color: #4CAF50;">✓</div>
+        <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
+        <p style="font-size: 0.9rem; margin:0;">Juh está te esperando...</p>
+    </div>
+    ''', unsafe_allow_html=True)
+    
+    time.sleep(ATENDIDA_DELAY)
+    call_container.empty()
 
     @staticmethod
     def show_status_effect(container, status_type):
