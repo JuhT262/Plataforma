@@ -1377,7 +1377,7 @@ class ChatService:
     def process_user_input(conn):
     
     # Verifica se é a primeira mensagem e envia o áudio
-    if not st.session_state.get("audio_sent") and st.session_state.chat_started:
+        if not st.session_state.get("audio_sent") and st.session_state.chat_started:
         status_container = st.empty()
         UiService.show_audio_recording_effect(status_container)
         
