@@ -850,7 +850,7 @@ class UiService:
         @staticmethod
         def enhanced_chat_ui(conn):
     
-        st.markdown("""
+        st.markdown("""    
           <style>
         /* Estilos gerais do chat */
         .chat-header {
