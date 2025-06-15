@@ -13,9 +13,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
-from pathlib import Path
 from threading import Lock
-import sqlite
 
 def get_user_id():
     """Retorna um ID único para o usuário atual"""
@@ -117,7 +115,7 @@ class Config:
 
 def get_db_connection():
     with db_lock:
-         sqlite3.connect(str(Config.DB_PATH), check_same_thread=False)
+        conn = sqlite3.connect(str(Config.DB_PATH), check_same_thread=False)  # Adicionei conn =
         conn.execute("PRAGMA journal_mode=WAL")
         return conn
 
@@ -126,10 +124,12 @@ def get_db_connection():
 # BANCO DE DADOS DE HISTÓRICO
 # ======================
 class UserHistory:
-    @staticmethod
-    def init_db():
-         sqlite3.connect('user_history.db', check_same_thread=False)
-        c = conn.cursor()
+
+ @staticmethod
+ def init_db():
+    conn = get_db_connection()  # Use a função corrigida
+    c = conn.cursor()
+
         c.execute('''CREATE TABLE IF NOT EXISTS user_history (
                      user_id TEXT PRIMARY KEY,
                      first_visit TIMESTAMP,
@@ -1760,9 +1760,9 @@ def main():
     """, unsafe_allow_html=True)
     
     if 'db_conn' not in st.session_state:
-        st.session_state.db_ DatabaseService.init_db()
-    
-     st.session_state.db_conn
+    st.session_state.db_conn = DatabaseService.init_db()  # Adicionei o =
+
+conn = st.session_state.db_conn  # Atribui à variável conn
     
     ChatService.initialize_session(conn)
     
