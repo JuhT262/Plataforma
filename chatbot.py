@@ -882,6 +882,15 @@ class UiService:
             <h2 style="margin:0; font-size:1.5em; display:inline-block;">Chat Privado com Juh 💎</h2>
         </div>
         """, unsafe_allow_html=True)
+
+        
+        print(f"Debug - Tipo de conn: {type(conn)}")  # Linha 1
+        print(f"Debug - Conexão válida: {conn is not None}")  # Linha 2
+        if conn is None:
+            st.error("ERRO: Conexão com banco de dados é None!")
+            return
+            
+        ChatService.process_user_input(conn)
         
         st.sidebar.markdown(f"""
         <div style="
