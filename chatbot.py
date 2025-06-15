@@ -78,7 +78,6 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # ======================
 class Config:
 
-    class Config:
     API_KEY = st.secrets["API_KEY"]
     API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
     VIP_LINK = "https://exemplo.com/vip"
