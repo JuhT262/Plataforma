@@ -851,74 +851,70 @@ class UiService:
         """, unsafe_allow_html=True)
 
     @staticmethod
-    def enhanced_chat_ui(conn):
-        st.markdown("""
-        <style>
-            .chat-header {
-                background: linear-gradient(90deg, #ff66b3, #ff1493);
-                color: white;
-                padding: 15px;
-                border-radius: 10px;
-                margin-bottom: 20px;
-                text-align: center;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            }
-            .stAudio {
-                border-radius: 20px !important;
-                background: rgba(255, 102, 179, 0.1) !important;
-                padding: 10px !important;
-                margin: 10px 0 !important;
-            }
-            audio::-webkit-media-controls-panel {
-                background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
-            }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        UiService.chat_shortcuts()
-        
-        st.markdown(f"""
-        <div class="chat-header">
-            <h2 style="margin:0; font-size:1.5em; display:inline-block;">Chat Privado com Juh 💎</h2>
-        </div>
-        """, unsafe_allow_html=True)
-
-        
-        print(f"Debug - Tipo de conn: {type(conn)}")  # Linha 1
-        print(f"Debug - Conexão válida: {conn is not None}")  # Linha 2
-        if conn is None:
-            st.error("ERRO: Conexão com banco de dados é None!")
-            return
-            
-        ChatService.process_user_input(conn)
-        
-st.sidebar.markdown(f"""
-<div style="
-    background: rgba(255, 20, 147, 0.1);
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    text-align: center;
-">
-    <p style="margin:0; font-size:0.9em;">
-        Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
-    </p>
-    <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
-</div>
-""", unsafe_allow_html=True)
-        
-        
-        st.markdown("""
-        <div style="
+def enhanced_chat_ui(conn):
+    st.markdown("""
+    <style>
+        .chat-header {
+            background: linear-gradient(90deg, #ff66b3, #ff1493);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
             text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 0.8em;
-            color: #888;
-        ">
-            <p>Conversa privada • Suas mensagens são confidenciais</p>
-        </div>
-        """, unsafe_allow_html=True)
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .stAudio {
+            border-radius: 20px !important;
+            background: rgba(255, 102, 179, 0.1) !important;
+            padding: 10px !important;
+            margin: 10px 0 !important;
+        }
+        audio::-webkit-media-controls-panel {
+            background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    UiService.chat_shortcuts()
+    
+    st.markdown(f"""
+    <div class="chat-header">
+        <h2 style="margin:0; font-size:1.5em; display:inline-block;">Chat Privado com Juh 💎</h2>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if conn is None:
+        st.error("ERRO: Conexão com banco de dados é None!")
+        return
+        
+    ChatService.process_user_input(conn)
+    
+    st.sidebar.markdown(f"""
+    <div style="
+        background: rgba(255, 20, 147, 0.1);
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        text-align: center;
+    ">
+        <p style="margin:0; font-size:0.9em;">
+            Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
+        </p>
+        <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div style="
+        text-align: center;
+        margin-top: 20px;
+        padding: 10px;
+        font-size: 0.8em;
+        color: #888;
+    ">
+        <p>Conversa privada • Suas mensagens são confidenciais</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ======================
 # PÁGINAS
