@@ -458,18 +458,21 @@ class ApiService:
 # ======================
 @staticmethod
 def get_chat_audio_player():
-    return """
+    """Retorna um player de áudio HTML estilizado"""
+    return f'''
     <div style="
         background: linear-gradient(45deg, #ff66b3, #ff1493);
         border-radius: 15px;
         padding: 12px;
         margin: 5px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     ">
         <audio controls style="width:100%; height:40px;">
-            <source src="{audio_file}" type="audio/mp3">
+            <source src="{Config.AUDIO_FILE}" type="audio/mp3">
+            Seu navegador não suporta o elemento de áudio.
         </audio>
     </div>
-    """.format(audio_file=Config.AUDIO_FILE)
+    '''
 
     @staticmethod
     def show_call_effect():
