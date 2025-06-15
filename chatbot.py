@@ -1333,8 +1333,8 @@ class ChatService:
             if key not in st.session_state:
                 st.session_state[key] = default
 
-        @staticmethod
-    def process_user_input(conn):
+   @staticmethod
+   def process_user_input(conn):
         # --- INÍCIO DA CORREÇÃO ---
         # 1. Verificação inicial
         if not hasattr(st.session_state, 'messages'):
