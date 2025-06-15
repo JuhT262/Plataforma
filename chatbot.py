@@ -740,43 +740,7 @@ class UiService:
             """, unsafe_allow_html=True)
 
     @staticmethod
-    @staticmethod
-    def show_gallery_page(conn):
-        st.markdown("""
-    <style>
-        .gallery-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .gallery-item {
-            position: relative;
-            overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .gallery-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .gallery-caption {
-            text-align: center;
-            color: #ff66b3;
-            margin-top: 5px;
-            font-size: 0.8em;
-        }
-        
-        /* Mobile styles */
-        @media (max-width: 768px) {
-            .gallery-container {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-    """, unsafe_allow_html=True)
-    
+def show_gallery_page(conn):
     st.markdown("""
     <div style="
         background: rgba(255, 20, 147, 0.1);
@@ -788,28 +752,44 @@ class UiService:
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown('<div class="gallery-container">', unsafe_allow_html=True)
+    cols = st.columns(3)
     
-    for idx, img_url in enumerate(Config.IMG_GALLERY):
-        st.markdown(f"""
-        <div class="gallery-item">
-            <img src="{img_url}" alt="Gallery image {idx+1}" onerror="this.src='https://via.placeholder.com/300x400?text=Imagem+Indispon%C3%ADvel'">
-            <div class="gallery-caption">Preview {idx+1}</div>
-        </div>
-        """, unsafe_allow_html=True)
+    for idx, col in enumerate(cols):
+        with col:
+            st.image(
+                Config.IMG_GALLERY[idx],
+                use_column_width=True,  # Corrigido para column_width
+                caption=f"Preview {idx+1}"
+            )
+            st.markdown(f"""
+            <div style="
+                text-align: center;
+                font-size: 0.8em;
+                color: #ff66b3;
+                margin-top: -10px;
+            ">
+                Conteúdo bloqueado
+            </div>
+            """, unsafe_allow_html=True)
     
-    st.markdown('</div>', unsafe_allow_html=True)
-    
+    st.markdown("---")
+    st.markdown("""
+    <div style="text-align: center;">
+        <h4>Desbloqueie acesso completo</h4>
+        <p>Assine o plano VIP para ver todos os conteúdos</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-             if st.button("Tornar-se VIP 💎",  # Adicionado emoji de diamante
+    # BOTÃO CORRIGIDO - atenção na indentação
+            if st.button("Tornar-se VIP 💎",
                          key="vip_button_gallery", 
                          use_container_width=True,
                          type="primary"):
                 st.session_state.current_page = "offers"
                 st.rerun()
-        
-             if st.button("Voltar ao chat", key="back_from_gallery"):
-                st.session_state.current_page = "chat"
+    
+            if st.button("Voltar ao chat", key="back_from_gallery"):
+               st.session_state.current_page = "chat"
                 save_persistent_data()
                 st.rerun()
 
