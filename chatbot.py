@@ -644,7 +644,7 @@ class UiService:
                 st.rerun()
 
     @staticmethod
-def setup_sidebar():
+    def setup_sidebar():
     with st.sidebar:
         st.markdown("""
         <style>
