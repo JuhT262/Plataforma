@@ -1431,16 +1431,16 @@ class ChatService:
         return cleaned_input[:500]
 
     @staticmethod
-    def process_user_input(conn):
-        ChatService.display_chat_history()
+def process_user_input(conn):
+    ChatService.display_chat_history()
     
-        if not st.session_state.get("audio_sent") and st.session_state.chat_started:
-            status_container = st.empty()
-            UiService.show_audio_recording_effect(status_container)
+    if not st.session_state.get("audio_sent") and st.session_state.chat_started:
+        status_container = st.empty()
+        UiService.show_audio_recording_effect(status_container)
         
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": "[ÁUDIO]"
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": "[ÁUDIO]"
         })
         DatabaseService.save_message(
             conn,
