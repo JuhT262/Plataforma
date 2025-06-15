@@ -13,6 +13,8 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
+from database import DatabaseService
+from config import Config
 
 # ======================
 # CONFIGURAÇÃO INICIAL
@@ -1300,106 +1302,90 @@ class NewPages:
 # ======================
 class ChatService:
     @staticmethod
-    def initialize_session(conn):
-        load_persistent_data()
-        
-        if "session_id" not in st.session_state:
-            st.session_state.session_id = str(random.randint(100000, 999999))
-        
-        if "messages" not in st.session_state:
-            st.session_state.messages = DatabaseService.load_messages(
+    # ======================
+# SERVIÇOS DE CHAT
+# ======================
+class ChatService:
+    @staticmethod
+    def process_user_input(conn):
+        """Processa a entrada do usuário de forma segura"""
+        try:
+            # 1. Verificar e inicializar mensagens
+            if 'messages' not in st.session_state:
+                st.session_state.messages = []
+            
+            # 2. Exibir histórico (últimas 12 mensagens)
+            for msg in st.session_state.messages[-12:]:
+                role = msg.get("role", "")
+                content = msg.get("content", "")
+                
+                avatar = "🧑" if role == "user" else "💋"
+                with st.chat_message(role, avatar=avatar):
+                    if content == "[ÁUDIO]":
+                        st.audio(Config.AUDIO_FILE)
+                    else:
+                        st.markdown(content)
+
+            # 3. Obter input do usuário
+            user_input = st.chat_input("Digite sua mensagem...")
+            if not user_input:
+                return
+
+            # 4. Processar input
+            cleaned_input = str(user_input)[:500].strip()
+            if not cleaned_input:
+                return
+
+            # 5. Salvar mensagem do usuário
+            st.session_state.messages.append({
+                "role": "user",
+                "content": cleaned_input
+            })
+            
+            DatabaseService.save_message(
                 conn,
                 get_user_id(),
-                st.session_state.session_id
+                st.session_state.session_id,
+                "user",
+                cleaned_input
             )
-        
-        if "request_count" not in st.session_state:
-            st.session_state.request_count = len([
-                m for m in st.session_state.messages 
-                if m["role"] == "user"
-            ])
-        
-        defaults = {
-            'age_verified': False,
-            'connection_complete': False,
-            'chat_started': False,
-            'audio_sent': False,
-            'current_page': 'home',
-            'show_vip_offer': False,
-            'last_cta_time': 0
-        }
-        
-        for key, default in defaults.items():
-            if key not in st.session_state:
-                st.session_state[key] = default
 
-   @staticmethod
-   def process_user_input(conn):
-        # --- INÍCIO DA CORREÇÃO ---
-        # 1. Verificação inicial
-        if not hasattr(st.session_state, 'messages'):
-            st.session_state.messages = []
-        
-        # 2. Mostrar histórico
-        for msg in st.session_state.messages[-12:]:
-            try:
-                if msg.get("role") == "user":
-                    with st.chat_message("user", avatar="🧑"):
-                        st.markdown(msg.get("content", ""))
-                else:
-                    with st.chat_message("assistant", avatar="💋"):
-                        if msg.get("content") == "[ÁUDIO]":
-                            st.audio(Config.AUDIO_FILE)
-                        else:
-                            st.markdown(msg.get("content", ""))
-            except:
-                continue
-        
-        # 3. Captura de input
-        user_input = st.chat_input("Digite sua mensagem...")
-        if not user_input:
-            return
-        
-        cleaned_input = str(user_input)[:500].strip()
-        if not cleaned_input:
-            return
-        
-        # 4. Salvamento da mensagem
-        try:
-            st.session_state.messages.append({"role": "user", "content": cleaned_input})
-            DatabaseService.save_message(conn, get_user_id(), st.session_state.session_id, "user", cleaned_input)
-        except:
-            return
-        
-        # 5. Geração de resposta
-        try:
+            # 6. Gerar resposta
             resposta = {
                 "text": "Oi amor! Quer ver meus conteúdos especiais? 😘",
-                "cta": {"show": True, "label": "VER CONTEÚDOS", "target": "offers"}
+                "cta": {
+                    "show": True,
+                    "label": "VER CONTEÚDOS",
+                    "target": "offers"
+                }
             } if "pix" not in cleaned_input.lower() else {
                 "text": "💰 Planos disponíveis:\n\n• PROMO: R$12,50\n• START: R$19,50\n• PREMIUM: R$45,50\n• EXTREME: R$75,50",
-                "cta": {"show": True, "label": "QUERO ASSINAR", "target": "offers"}
+                "cta": {
+                    "show": True,
+                    "label": "QUERO ASSINAR",
+                    "target": "offers"
+                }
             }
-        except:
-            resposta = {"text": "Ocorreu um erro", "cta": {"show": False}}
-        
-        # 6. Exibição da resposta
-        try:
+
+            # 7. Exibir resposta
             with st.chat_message("assistant", avatar="💋"):
                 st.markdown(resposta["text"])
-                if resposta["cta"]["show"] and st.button(resposta["cta"]["label"]):
-                    st.session_state.current_page = resposta["cta"]["target"]
-                    st.rerun()
-        except:
-            pass
-        
-        # 7. Salvamento final
-        try:
-            st.session_state.messages.append({"role": "assistant", "content": json.dumps(resposta)})
-            DatabaseService.save_message(conn, get_user_id(), st.session_state.session_id, "assistant", json.dumps(resposta))
-        except:
-            pass
-        # --- FIM DA CORREÇÃO ---
+                if resposta["cta"]["show"]:
+                    if st.button(resposta["cta"]["label"]):
+                        st.session_state.current_page = resposta["cta"]["target"]
+                        st.rerun()
+
+            # 8. Salvar resposta
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": json.dumps(resposta, ensure_ascii=False)
+            })
+            
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+               -
 
     
 
@@ -1449,9 +1435,8 @@ def main():
     """, unsafe_allow_html=True)
     
     if 'db_conn' not in st.session_state:
-        st.session_state.db_conn = DatabaseService.init_db()
-    
-    conn = st.session_state.db_conn
+    st.session_state.db_conn = DatabaseService.init_db()
+conn = st.session_state.db_conn
     
     ChatService.initialize_session(conn)
     
