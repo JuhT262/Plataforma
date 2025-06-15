@@ -746,7 +746,7 @@ class UiService:
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
-    ">
+        ">
            <p style="margin: 0;">Conteúdo exclusivo disponível</p>
        </div>
        """, unsafe_allow_html=True)
@@ -1341,17 +1341,17 @@ class ChatService:
         load_persistent_data()
     
     # Garante que todos os estados necessários existam
-    defaults = {
-        'session_id': str(uuid.uuid4()),
-        'messages': [],
-        'request_count': 0,
-        'age_verified': False,
-        'connection_complete': False,
-        'chat_started': False,
-        'audio_sent': False,
-        'current_page': 'home',
-        'show_vip_offer': False,
-        'last_cta_time': 0
+        defaults = {
+            'session_id': str(uuid.uuid4()),
+            'messages': [],
+            'request_count': 0,
+            'age_verified': False,
+            'connection_complete': False,
+            'chat_started': False,
+            'audio_sent': False,
+            'current_page': 'home',
+            'show_vip_offer': False,
+            'last_cta_time': 0
     }
     
     for key, default in defaults.items():
