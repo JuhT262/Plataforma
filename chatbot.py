@@ -237,7 +237,7 @@ class Persona:
    }
     ```
 
-    2. Quando o cliente pede algo específico:
+ 2. Quando o cliente pede algo específico:
 Histórico:
 Cliente: tem video vc transando?
 Resposta: ```json
@@ -249,21 +249,22 @@ Resposta: ```json
 "target": "offers"
 }
 }
-    ```
 
-    3. Quando o contexto não justifica CTA:
-    Histórico:
-    Cliente: oi
-    Juh: oi gato  # Alterado de Paloma para Juh
-    Resposta: ```json
-    {
-      "text": "eai gostoso",
-      "cta": {
-        "show": false
-      }
-    }
-    ```
-    """
+text
+Quando o contexto não justifica CTA:
+Histórico:
+Cliente: oi
+Juh: oi gato
+Resposta: ```json
+{
+"text": "eai gostoso",
+"cta": {
+"show": false
+}
+}
+
+"""
+    
 
 class CTAEngine:
     @staticmethod
