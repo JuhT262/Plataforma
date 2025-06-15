@@ -78,7 +78,8 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # ======================
 class Config:
 
-    API_KEY = st.secrets["https://github.com/JuhT262/Plataforma/raw/refs/heads/main/.streamlit/secrets.toml"]
+    class Config:
+    API_KEY = st.secrets["API_KEY"]
     API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
     VIP_LINK = "https://exemplo.com/vip"
     CHECKOUT_PROMO = "https://pay.risepay.com.br/Pay/c7abdd05f91d43b9bbf54780d648d4f6"
