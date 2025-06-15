@@ -642,11 +642,12 @@ class UiService:
                 st.session_state.age_verified = True
                 save_persistent_data()
                 st.rerun()
-
+                
     @staticmethod
     def setup_sidebar():
-    with st.sidebar:
-        st.markdown("""
+    
+        with st.sidebar:
+            st.markdown("""
         <style>
             /* Estilos para mobile */
             @media (max-width: 768px) {
