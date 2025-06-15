@@ -1541,12 +1541,12 @@ def main():
                  <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
              </div>
              """, unsafe_allow_html=True)
-
-             if st.button("Iniciar Conversa", type="primary", use_container_width=True):
-                 st.session_state.update({
-                     'chat_started': True,
-                     'current_page': 'chat',
-                     'audio_sent': False
+             
+    if st.button("Iniciar Conversa", type="primary", use_container_width=True):
+        st.session_state.update({
+            'chat_started': True,
+            'current_page': 'chat',
+            'audio_sent': False
             })
             save_persistent_data()
             st.rerun()
