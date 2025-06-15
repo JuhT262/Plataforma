@@ -476,61 +476,54 @@ def get_chat_audio_player():
 
 @staticmethod
 def show_call_effect():
-    """Efeito de chamada com strings 100% seguras"""
-    # Tempos de espera
-    DELAY_LIGANDO = 5
-    DELAY_ATENDIDA = 3
+    """Efeito de chamada com template literal à prova de erros"""
+    # Configurações
+    DELAYS = (5, 3)  # (ligando, atendida)
     
-    # Templates HTML como strings puras em linha única
-    HTML_LIGANDO = '<div style="background:linear-gradient(135deg,#1e0033,#3c0066);border-radius:20px;padding:30px;max-width:300px;margin:0 auto;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:2px solid #ff66b3;text-align:center;color:white;animation:pulse-ring 2s infinite;"><div style="font-size:3rem;">📱</div><h3 style="color:#ff66b3;margin-bottom:5px;">Ligando para Juh...</h3><div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:15px;"><div style="width:10px;height:10px;background:#4CAF50;border-radius:50%;"></div><span style="font-size:0.9rem;">Online agora</span></div></div><style>@keyframes pulse-ring{0%{transform:scale(0.95);opacity:0.8;}50%{transform:scale(1.05);opacity:1;}100%{transform:scale(0.95);opacity:0.8;}}</style>'
-    
-    HTML_ATENDIDA = '<div style="background:linear-gradient(135deg,#1e0033,#3c0066);border-radius:20px;padding:30px;max-width:300px;margin:0 auto;box-shadow:0 10px 30px rgba(0,0,0,0.3);border:2px solid #4CAF50;text-align:center;color:white;"><div style="font-size:3rem;color:#4CAF50;">✓</div><h3 style="color:#4CAF50;margin-bottom:5px;">Chamada atendida!</h3><p style="font-size:0.9rem;margin:0;">Juh está te esperando...</p></div>'
+    # Template como função que retorna HTML seguro
+    def get_html_template(stage):
+        templates = {
+            'ligando': (
+                '<div style="background:linear-gradient(135deg,#1e0033,#3c0066);'
+                'border-radius:20px;padding:30px;max-width:300px;margin:0 auto;'
+                'box-shadow:0 10px 30px rgba(0,0,0,0.3);border:2px solid #ff66b3;'
+                'text-align:center;color:white;animation:pulse-ring 2s infinite;">'
+                '<div style="font-size:3rem;">📱</div>'
+                '<h3 style="color:#ff66b3;margin-bottom:5px;">Ligando para Juh...</h3>'
+                '<div style="display:flex;align-items:center;justify-content:center;'
+                'gap:8px;margin-top:15px;"><div style="width:10px;height:10px;'
+                'background:#4CAF50;border-radius:50%;"></div>'
+                '<span style="font-size:0.9rem;">Online agora</span></div></div>'
+                '<style>@keyframes pulse-ring{0%{transform:scale(0.95);opacity:0.8;}'
+                '50%{transform:scale(1.05);opacity:1;}100%{transform:scale(0.95);'
+                'opacity:0.8;}}</style>'
+            ),
+            'atendida': (
+                '<div style="background:linear-gradient(135deg,#1e0033,#3c0066);'
+                'border-radius:20px;padding:30px;max-width:300px;margin:0 auto;'
+                'box-shadow:0 10px 30px rgba(0,0,0,0.3);border:2px solid #4CAF50;'
+                'text-align:center;color:white;"><div style="font-size:3rem;'
+                'color:#4CAF50;">✓</div><h3 style="color:#4CAF50;margin-bottom:5px;">'
+                'Chamada atendida!</h3><p style="font-size:0.9rem;margin:0;">'
+                'Juh está te esperando...</p></div>'
+            )
+        }
+        return templates[stage]
 
     # Execução segura
     container = st.empty()
-    
     try:
         # Fase 1 - Ligando
-        container.markdown(HTML_LIGANDO, unsafe_allow_html=True)
-        time.sleep(DELAY_LIGANDO)
+        container.markdown(get_html_template('ligando'), unsafe_allow_html=True)
+        time.sleep(DELAYS[0])
         
         # Fase 2 - Atendida
-        container.markdown(HTML_ATENDIDA, unsafe_allow_html=True)
-        time.sleep(DELAY_ATENDIDA)
+        container.markdown(get_html_template('atendida'), unsafe_allow_html=True)
+        time.sleep(DELAYS[1])
         
     except Exception as e:
-        st.error(f"Erro no efeito de chamada: {str(e)}")
+        st.error(f"Erro no efeito visual: {str(e)}")
     finally:
-        container.empty()
-
-    @staticmethod
-    def show_audio_recording_effect(container):
-        message = "Gravando um áudio"
-        dots = ""
-        start_time = time.time()
-        
-        while time.time() - start_time < Config.AUDIO_DURATION:
-            elapsed = time.time() - start_time
-            dots = "." * (int(elapsed) % 4)
-            
-            container.markdown(f"""
-            <div style="
-                color: #888;
-                font-size: 0.8em;
-                padding: 2px 8px;
-                border-radius: 10px;
-                background: rgba(0,0,0,0.05);
-                display: inline-block;
-                margin-left: 10px;
-                vertical-align: middle;
-                font-style: italic;
-            ">
-                {message}{dots}
-            </div>
-            """, unsafe_allow_html=True)
-            
-            time.sleep(0.3)
-        
         container.empty()
 
             @staticmethod
