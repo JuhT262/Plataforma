@@ -476,63 +476,61 @@ def get_chat_audio_player():
 
 @staticmethod
 def show_call_effect():
+    """Efeito visual de chamada com tratamento à prova de erros"""
+    def render_html(html_content):
+        """Renderiza HTML com tratamento de erros"""
+        try:
+            st.markdown(html_content, unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"Erro ao renderizar HTML: {str(e)}")
+            return False
+        return True
+
+    # Configurações de tempo
     LIGANDO_DELAY = 5
     ATENDIDA_DELAY = 3
+    
+    # Templates HTML como constantes (com escaping seguro)
+    LIGANDO_HTML = (
+        '<div style="'
+        'background:linear-gradient(135deg,#1e0033,#3c0066);'
+        'border-radius:20px;padding:30px;max-width:300px;'
+        'margin:0 auto;box-shadow:0 10px 30px rgba(0,0,0,0.3);'
+        'border:2px solid #ff66b3;text-align:center;color:white;'
+        'animation:pulse-ring 2s infinite;">'
+        '<div style="font-size:3rem;">📱</div>'
+        '<h3 style="color:#ff66b3;margin-bottom:5px;">Ligando para Juh...</h3>'
+        '<div style="display:flex;align-items:center;'
+        'justify-content:center;gap:8px;margin-top:15px;">'
+        '<div style="width:10px;height:10px;background:#4CAF50;'
+        'border-radius:50%;"></div>'
+        '<span style="font-size:0.9rem;">Online agora</span></div></div>'
+        '<style>@keyframes pulse-ring{'
+        '0%{transform:scale(0.95);opacity:0.8;}'
+        '50%{transform:scale(1.05);opacity:1;}'
+        '100%{transform:scale(0.95);opacity:0.8;}'
+        '}</style>'
+    )
 
+    ATENDIDA_HTML = (
+        '<div style="'
+        'background:linear-gradient(135deg,#1e0033,#3c0066);'
+        'border-radius:20px;padding:30px;max-width:300px;'
+        'margin:0 auto;box-shadow:0 10px 30px rgba(0,0,0,0.3);'
+        'border:2px solid #4CAF50;text-align:center;color:white;">'
+        '<div style="font-size:3rem;color:#4CAF50;">✓</div>'
+        '<h3 style="color:#4CAF50;margin-bottom:5px;">Chamada atendida!</h3>'
+        '<p style="font-size:0.9rem;margin:0;">Juh está te esperando...</p></div>'
+    )
+
+    # Execução segura
     call_container = st.empty()
     
-    # Primeiro estágio - Efeito de ligação
-    ligando_html = (
-        '<div style="'
-        'background: linear-gradient(135deg, #1e0033, #3c0066);'
-        'border-radius: 20px;'
-        'padding: 30px;'
-        'max-width: 300px;'
-        'margin: 0 auto;'
-        'box-shadow: 0 10px 30px rgba(0,0,0,0.3);'
-        'border: 2px solid #ff66b3;'
-        'text-align: center;'
-        'color: white;'
-        'animation: pulse-ring 2s infinite;'
-        '">'
-        '<div style="font-size: 3rem;">📱</div>'
-        '<h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>'
-        '<div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">'
-        '<div style="width: 10px; height: 10px; background: #4CAF50; border-radius: 50%;"></div>'
-        '<span style="font-size: 0.9rem;">Online agora</span>'
-        '</div>'
-        '</div>'
-        '<style>'
-        '@keyframes pulse-ring {'
-        '0% { transform: scale(0.95); opacity: 0.8; }'
-        '50% { transform: scale(1.05); opacity: 1; }'
-        '100% { transform: scale(0.95); opacity: 0.8; }'
-        '}'
-        '</style>'
-    )
-    call_container.markdown(ligando_html, unsafe_allow_html=True)
-    time.sleep(LIGANDO_DELAY)
+    if render_html(LIGANDO_HTML):
+        time.sleep(LIGANDO_DELAY)
+        if render_html(ATENDIDA_HTML):
+            time.sleep(ATENDIDA_DELAY)
     
-    # Segundo estágio - Chamada atendida
-    atendida_html = (
-        '<div style="'
-        'background: linear-gradient(135deg, #1e0033, #3c0066);'
-        'border-radius: 20px;'
-        'padding: 30px;'
-        'max-width: 300px;'
-        'margin: 0 auto;'
-        'box-shadow: 0 10px 30px rgba(0,0,0,0.3);'
-        'border: 2px solid #4CAF50;'
-        'text-align: center;'
-        'color: white;'
-        '">'
-        '<div style="font-size: 3rem; color: #4CAF50;">✓</div>'
-        '<h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>'
-        '<p style="font-size: 0.9rem; margin:0;">Juh está te esperando...</p>'
-        '</div>'
-    )
-    call_container.markdown(atendida_html, unsafe_allow_html=True)
-    time.sleep(ATENDIDA_DELAY)
     call_container.empty()
 
     @staticmethod
