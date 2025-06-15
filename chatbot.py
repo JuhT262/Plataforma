@@ -789,8 +789,8 @@ class UiService:
     
     if st.button("Voltar ao chat", key="back_from_gallery"):
                st.session_state.current_page = "chat"
-                save_persistent_data()
-                st.rerun()
+               save_persistent_data()
+               st.rerun()
 
     @staticmethod
     def chat_shortcuts():
