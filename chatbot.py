@@ -1334,71 +1334,67 @@ class ChatService:
                 st.session_state[key] = default
 
     @staticmethod
-    def process_user_input(conn):
-        # Mostra o histórico de mensagens
-        for msg in st.session_state.messages[-12:]:
-            if msg["role"] == "user":
-                with st.chat_message("user", avatar="🧑"):
-                    st.markdown(msg["content"])
-            else:
-                with st.chat_message("assistant", avatar="💋"):
-                    st.markdown(msg["content"])
-        
-        # Pega a nova mensagem
-        user_input = st.chat_input("Digite sua mensagem...")
-        
-        if user_input:
-            # Limpa a mensagem
-            cleaned_input = user_input[:500]  # Limita a 500 caracteres
-            
-            # Adiciona a mensagem do usuário
-            st.session_state.messages.append({"role": "user", "content": cleaned_input})
-            
-            # Resposta para PIX
-            if "pix" in cleaned_input.lower() or "chave pix" in cleaned_input.lower():
-                resposta = {
-                    "text": """💰 PLANOS DISPONÍVEIS:
-                    
-                    • PROMO: R$ 12,50
-                    • START: R$ 19,50
-                    • PREMIUM: R$ 45,50
-                    • EXTREME: R$ 75,50
-                    
-                    Clique no botão para assinar!""",
-                    "cta": {
-                        "show": True,
-                        "label": "QUERO ASSINAR",
-                        "target": "offers"
-                    }
-                }
-            else:
-                resposta = {
-                    "text": "Oi amor! Quer ver meus conteúdos especiais? 😘",
-                    "cta": {
-                        "show": True,
-                        "label": "VER CONTEÚDOS",
-                        "target": "offers"
-                    }
-                }
-            
-            # Mostra a resposta
+def process_user_input(conn):
+    # Mostra o histórico de mensagens (últimas 12)
+    for msg in st.session_state.messages[-12:]:
+        if msg["role"] == "user":
+            with st.chat_message("user", avatar="🧑"):
+                st.markdown(msg["content"])
+        else:
             with st.chat_message("assistant", avatar="💋"):
-                st.markdown(resposta["text"])
-                if resposta["cta"]["show"]:
-                    if st.button(resposta["cta"]["label"]):
-                        st.session_state.current_page = resposta["cta"]["target"]
-                        st.rerun()
-            
-            # Salva a resposta
-            st.session_state.messages.append({"role": "assistant", "content": json.dumps(resposta)})
-            DatabaseService.save_message(
-                conn,
-                get_user_id(),
-                st.session_state.session_id,
-                "assistant",
-                json.dumps(resposta)
-            )
-            save_persistent_data()
+                if msg["content"] == "[ÁUDIO]":
+                    st.audio(Config.AUDIO_FILE)
+                else:
+                    st.markdown(msg["content"])
+    
+    # Pega nova mensagem do usuário
+    user_input = st.chat_input("Digite sua mensagem...")
+    
+    if user_input:
+        # Limita mensagem a 500 caracteres
+        cleaned_input = user_input[:500]
+        
+        # Adiciona mensagem do usuário ao histórico e banco de dados
+        st.session_state.messages.append({"role": "user", "content": cleaned_input})
+        DatabaseService.save_message(conn, get_user_id(), st.session_state.session_id, "user", cleaned_input)
+        
+        # Cria resposta baseada no conteúdo
+        if "pix" in cleaned_input.lower():
+            resposta = {
+                "text": "💰 Planos disponíveis:\n\n• PROMO: R$12,50\n• START: R$19,50\n• PREMIUM: R$45,50\n• EXTREME: R$75,50",
+                "cta": {
+                    "show": True,
+                    "label": "QUERO ASSINAR",
+                    "target": "offers"
+                }
+            }
+        else:
+            resposta = {
+                "text": "Oi amor! Quer ver meus conteúdos especiais? 😘",
+                "cta": {
+                    "show": True,
+                    "label": "VER CONTEÚDOS", 
+                    "target": "offers"
+                }
+            }
+        
+        # Mostra resposta
+        with st.chat_message("assistant", avatar="💋"):
+            st.markdown(resposta["text"])
+            if resposta["cta"]["show"] and st.button(resposta["cta"]["label"]):
+                st.session_state.current_page = resposta["cta"]["target"]
+                st.rerun()
+        
+        # Salva resposta no histórico e banco de dados
+        st.session_state.messages.append({"role": "assistant", "content": json.dumps(resposta)})
+        DatabaseService.save_message(
+            conn,
+            get_user_id(),
+            st.session_state.session_id,
+            "assistant",
+            json.dumps(resposta)
+        )
+        save_persistent_data()  # <--- CORREÇÃO APLICADA AQUI
 
     
 
