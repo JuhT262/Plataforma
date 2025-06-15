@@ -16,7 +16,6 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
-from streamlit_extras.bottom_container import bottom
 from streamlit_chat_widget import chat_input_widget
 
 
