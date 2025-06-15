@@ -548,12 +548,12 @@ def show_call_effect():
 
         @staticmethod
         def setup_sidebar():
-        with st.sidebar:
-            st.markdown("""
-            <style>
-                [data-testid="stSidebar"] {
-                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-                    border-right: 1px solid #ff66b3 !important;
+            with st.sidebar:
+                st.markdown("""
+                <style>
+                    [data-testid="stSidebar"] {
+                        background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+                        border-right: 1px solid #ff66b3 !important;
                 }
                 .sidebar-logo-container {
                     margin: -25px -25px 0px -25px;
