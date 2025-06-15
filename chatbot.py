@@ -780,7 +780,6 @@ class UiService:
     </div>
     """, unsafe_allow_html=True)
 
-    # BOTÃO CORRIGIDO - atenção na indentação
             if st.button("Tornar-se VIP 💎",
                          key="vip_button_gallery", 
                          use_container_width=True,
