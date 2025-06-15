@@ -779,15 +779,15 @@ class UiService:
         <p>Assine o plano VIP para ver todos os conteúdos</p>
     </div>
     """, unsafe_allow_html=True)
-
-            if st.button("Tornar-se VIP 💎",
+    
+    if st.button("Tornar-se VIP 💎",
                          key="vip_button_gallery", 
                          use_container_width=True,
                          type="primary"):
                 st.session_state.current_page = "offers"
                 st.rerun()
     
-            if st.button("Voltar ao chat", key="back_from_gallery"):
+     if st.button("Voltar ao chat", key="back_from_gallery"):
                st.session_state.current_page = "chat"
                 save_persistent_data()
                 st.rerun()
