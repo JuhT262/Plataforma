@@ -797,12 +797,13 @@ def show_gallery_page(conn):
     def chat_shortcuts():
         cols = st.columns(4)
         with cols[0]:
-            if st.button("Início 😘", key="shortcut_home", 
+            if st.button("Início 😘", key="shortcut_home",
                        help="Voltar para a página inicial",
                        use_container_width=True):
                 st.session_state.current_page = "home"
                 save_persistent_data()
                 st.rerun()
+                
         with cols[1]:
             if st.button("Galeria 📷", key="shortcut_gallery",
                        help="Acessar galeria privada",
