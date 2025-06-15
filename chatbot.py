@@ -1518,10 +1518,10 @@ def main():
     
  # NOVA VERIFICAÇÃO DE IDADE (ADICIONE ESTE BLOCO)
  
-if not st.session_state.get('age_verified', False):
-    UiService.age_verification()
-    save_persistent_data()  # Adicione esta linha para garantir a persistência
-    st.stop()
+    if not st.session_state.get('age_verified', False):
+       UiService.age_verification()
+       save_persistent_data()  # Adicione esta linha para garantir a persistência
+       st.stop()
     
     UiService.setup_sidebar()
     
@@ -1532,21 +1532,21 @@ if not st.session_state.get('age_verified', False):
         st.rerun()
 
     if not st.session_state.get('chat_started', False):
-    col1, col2, col3 = st.columns([1,3,1])
-    with col2:
-        st.markdown(f"""
-        <div style="text-align: center; margin: 50px 0;">
-            <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
-            <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
-            <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
-        </div>
-        """, unsafe_allow_html=True)
+       col1, col2, col3 = st.columns([1,3,1])
+       with col2:
+            st.markdown(f"""
+            <div style="text-align: center; margin: 50px 0;">
+                 <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
+                 <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
+                 <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
+             </div>
+             """, unsafe_allow_html=True)
 
-        if st.button("Iniciar Conversa", type="primary", use_container_width=True):
-            st.session_state.update({
-                'chat_started': True,
-                'current_page': 'chat',
-                'audio_sent': False
+             if st.button("Iniciar Conversa", type="primary", use_container_width=True):
+                 st.session_state.update({
+                     'chat_started': True,
+                     'current_page': 'chat',
+                     'audio_sent': False
             })
             save_persistent_data()
             st.rerun()
