@@ -892,22 +892,20 @@ class UiService:
             
         ChatService.process_user_input(conn)
         
-        st.sidebar.markdown(f"""
-        <div style="
-            background: rgba(255, 20, 147, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-        ">
-            <p style="margin:0; font-size:0.9em;">
-                Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
-            </p>
-            <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        ChatService.process_user_input(conn)
+st.sidebar.markdown(f"""
+<div style="
+    background: rgba(255, 20, 147, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+">
+    <p style="margin:0; font-size:0.9em;">
+        Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
+    </p>
+    <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
+</div>
+""", unsafe_allow_html=True)
         
         
         st.markdown("""
@@ -1311,10 +1309,29 @@ class NewPages:
 # ======================
 class ChatService:
     @staticmethod
-    # ======================
-# SERVIÇOS DE CHAT
-# ======================
-class ChatService:
+    def initialize_session(conn):
+        """Inicializa a sessão do chat"""
+        if 'session_id' not in st.session_state:
+            st.session_state.session_id = str(uuid.uuid4())
+        
+        if 'request_count' not in st.session_state:
+            st.session_state.request_count = 0
+            
+        if 'messages' not in st.session_state:
+            st.session_state.messages = DatabaseService.load_messages(
+                conn,
+                get_user_id(),
+                st.session_state.session_id
+            ) or []
+
+    @staticmethod
+    def format_conversation_history(messages):
+        """Formata o histórico para envio à API"""
+        return "\n".join(
+            f"{msg['role'].capitalize()}: {msg['content']}" 
+            for msg in messages[-8:]
+        )
+
     @staticmethod
     def process_user_input(conn):
         """Processa a entrada do usuário de forma segura"""
@@ -1394,6 +1411,12 @@ class ChatService:
                 conn,
                 get_user_id(),
                 st.session_state.session_id,
+                "assistant",
+                json.dumps(resposta, ensure_ascii=False)
+            )
+
+        except Exception as e:
+            st.error(f"Erro ao processar mensagem: {str(e)}")
                -
 
     
@@ -1405,6 +1428,10 @@ def main():
     if not Config.API_KEY or Config.API_KEY == "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g":
         st.error("❌ Chave API não configurada. Verifique o arquivo secrets.toml")
         st.stop()
+
+        if 'db_conn' not in st.session_state:
+        st.session_state.db_conn = DatabaseService.init_db()
+    conn = st.session_state.db_conn
 
     st.markdown("""
     <style>
