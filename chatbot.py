@@ -16,7 +16,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
-from streamlit_chat_widget import chat_input_widget
+
 
 
 
@@ -780,16 +780,16 @@ class UiService:
     """, unsafe_allow_html=True)
     
     if st.button("Tornar-se VIP 💎",
-                         key="vip_button_gallery", 
-                         use_container_width=True,
-                         type="primary"):
-                st.session_state.current_page = "offers"
-                st.rerun()
+                key="vip_button_gallery", 
+                use_container_width=True,
+                type="primary"):
+        st.session_state.current_page = "offers"
+        st.rerun()
     
     if st.button("Voltar ao chat", key="back_from_gallery"):
-               st.session_state.current_page = "chat"
-               save_persistent_data()
-               st.rerun()
+        st.session_state.current_page = "chat"
+        save_persistent_data()
+        st.rerun()
 
     @staticmethod
     def chat_shortcuts():
@@ -850,7 +850,7 @@ class UiService:
         def enhanced_chat_ui(conn):
     
             st.markdown("""    
-          <style>
+            <style>
         /* Estilos gerais do chat */
         .chat-header {
             background: linear-gradient(90deg, #ff66b3, #ff1493);
