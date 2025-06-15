@@ -546,7 +546,7 @@ def show_call_effect():
     finally:
         container.empty()
 
-    @staticmethod
+        @staticmethod
     def setup_sidebar():
         with st.sidebar:
             st.markdown("""
@@ -614,7 +614,7 @@ def show_call_effect():
             </style>
             """, unsafe_allow_html=True)
 
-                        st.markdown(f"""
+            st.markdown(f"""
             <div class="sidebar-logo-container">
                 <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
             </div>
