@@ -124,12 +124,10 @@ def get_db_connection():
 # BANCO DE DADOS DE HISTÓRICO
 # ======================
 class UserHistory:
-
- @staticmethod
- def init_db():
-    conn = get_db_connection()  # Use a função corrigida
-    c = conn.cursor()
-
+    @staticmethod
+    def init_db():
+        conn = get_db_connection()
+        c = conn.cursor()
         c.execute('''CREATE TABLE IF NOT EXISTS user_history (
                      user_id TEXT PRIMARY KEY,
                      first_visit TIMESTAMP,
@@ -476,21 +474,21 @@ class ApiService:
 # ======================
 # SERVIÇOS DE INTERFACE
 # ======================
-class UiService:
+class class UiService:
     @staticmethod
     def get_chat_audio_player():
-        return f"""
-        <div style="
+        return """
+        <div style='
             background: linear-gradient(45deg, #ff66b3, #ff1493);
             border-radius: 15px;
             padding: 12px;
             margin: 5px 0;
-        ">
-            <audio controls style="width:100%; height:40px;">
-                <source src="{Config.AUDIO_FILE}" type="audio/mp3">
+        '>
+            <audio controls style='width:100%; height:40px;'>
+                <source src='{}' type='audio/mp3'>
             </audio>
         </div>
-        """
+        """.format(Config.AUDIO_FILE)
 
     @staticmethod
     def show_call_effect():
@@ -499,7 +497,7 @@ class UiService:
 
         call_container = st.empty()
         call_container.markdown(f"""
-        <div style="
+        <div style='
             background: linear-gradient(135deg, #1e0033, #3c0066);
             border-radius: 20px;
             padding: 30px;
@@ -510,12 +508,12 @@ class UiService:
             text-align: center;
             color: white;
             animation: pulse-ring 2s infinite;
-        ">
-            <div style="font-size: 3rem;">📱</div>
-            <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>  <!-- Alterado de Paloma para Juh -->
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
-                <div style="width: 10px; height: 10px; background: #4CAF50; border-radius: 50%;"></div>
-                <span style="font-size: 0.9rem;">Online agora</span>
+        '>
+            <div style='font-size: 3rem;'>📱</div>
+            <h3 style='color: #ff66b3; margin-bottom: 5px;'>Ligando para Juh...</h3>
+            <div style='display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;'>
+                <div style='width: 10px; height: 10px; background: #4CAF50; border-radius: 50%;'></div>
+                <span style='font-size: 0.9rem;'>Online agora</span>
             </div>
         </div>
         <style>
@@ -529,7 +527,7 @@ class UiService:
         
         time.sleep(LIGANDO_DELAY)
         call_container.markdown(f"""
-        <div style="
+        <div style='
             background: linear-gradient(135deg, #1e0033, #3c0066);
             border-radius: 20px;
             padding: 30px;
@@ -539,10 +537,10 @@ class UiService:
             border: 2px solid #4CAF50;
             text-align: center;
             color: white;
-        ">
-            <div style="font-size: 3rem; color: #4CAF50;">✓</div>
-            <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
-            <p style="font-size: 0.9rem; margin:0;">Juh está te esperando...</p>  <!-- Alterado de Paloma para Juh -->
+        '>
+            <div style='font-size: 3rem; color: #4CAF50;'>✓</div>
+            <h3 style='color: #4CAF50; margin-bottom: 5px;'>Chamada atendida!</h3>
+            <p style='font-size: 0.9rem; margin:0;'>Juh está te esperando...</p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -1760,9 +1758,9 @@ def main():
     """, unsafe_allow_html=True)
     
     if 'db_conn' not in st.session_state:
-    st.session_state.db_conn = DatabaseService.init_db()  # Adicionei o =
+    st.session_state.db_conn = DatabaseService.init_db()
 
-conn = st.session_state.db_conn  # Atribui à variável conn
+conn = st.session_state.db_conn  
     
     ChatService.initialize_session(conn)
     
