@@ -1430,48 +1430,47 @@ class ChatService:
         cleaned_input = re.sub(r'<[^>]*>', '', user_input)
         return cleaned_input[:500]
 
-  @staticmethod
-def process_user_input(conn):
-    ChatService.display_chat_history()
-    
-    if not st.session_state.get("audio_sent") and st.session_state.chat_started:
-        status_container = st.empty()
-        UiService.show_audio_recording_effect(status_container)
+    @staticmethod
+    def process_user_input(conn):
+        # Mostra as mensagens antigas
+        for msg in st.session_state.messages:
+            if msg["role"] == "user":
+                st.chat_message("user").markdown(msg["content"])
+            else:
+                st.chat_message("assistant").markdown(msg["content"])
         
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": "[ÁUDIO]"
-        })
-        DatabaseService.save_message(
-            conn,
-            get_user_id(),
-            st.session_state.session_id,
-            "assistant",
-            "[ÁUDIO]"
-        )
-        st.session_state.audio_sent = True
-        save_persistent_data()
-        st.rerun()
-    
-    user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
-    
-    if user_input:
-        cleaned_input = ChatService.validate_input(user_input.lower())
+        # Pega a nova mensagem
+        user_msg = st.chat_input("Digite uma mensagem...")
         
-        if "pix" in cleaned_input or "chave pix" in cleaned_input:
-            resposta = {
-                "text": "💳 Aceitamos PIX amor! Temos esses planos especiais:\n\n"
-                        "✨ PROMO: R$ 12,50/mês\n"
-                        "✨ START: R$ 19,50/mês\n"
-                        "✨ PREMIUM: R$ 45,50/mês\n"
-                        "✨ EXTREME: R$ 75,50/mês\n\n"
-                        "Clique no botão pra ver todos 👇",
-                "cta": {
-                    "show": True,
-                    "label": "VER PLANOS COMPLETOS",
-                    "target": "offers"
-                }
-            }
+        if user_msg:
+            # Guarda a mensagem do usuário
+            st.session_state.messages.append({"role": "user", "content": user_msg})
+            
+            # Responde automaticamente
+            if "pix" in user_msg.lower():
+                resposta = """
+                💵 PLANOS DISPONÍVEIS:
+                
+                • PROMO: R$ 12,50
+                • START: R$ 19,50
+                • PREMIUM: R$ 45,50
+                • EXTREME: R$ 75,50
+                
+                [Clique abaixo para assinar]
+                """
+                btn_text = "QUERO ASSINAR"
+            else:
+                resposta = "Oi gato! Quer ver meus conteúdos quentes? 🔥"
+                btn_text = "VER CONTEÚDOS"
+            
+            # Mostra a resposta
+            with st.chat_message("assistant"):
+                st.markdown(resposta)
+                if st.button(btn_text):
+                    st.session_state.current_page = "offers"
+            
+            # Guarda a resposta
+            st.session_state.messages.append({"role": "assistant", "content": resposta})
             
             with st.chat_message("assistant", avatar="💋"):
                 st.markdown(f"""
