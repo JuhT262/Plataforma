@@ -740,25 +740,25 @@ class UiService:
 
     @staticmethod
     def show_gallery_page(conn):
-            st.markdown("""
-           <div style="
-                background: rgba(255, 20, 147, 0.1);
-                padding: 15px;
-                border-radius: 10px;
-                margin-bottom: 20px;
+        st.markdown("""
+        <div style="
+            background: rgba(255, 20, 147, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
     ">
-        <p style="margin: 0;">Conteúdo exclusivo disponível</p>
-    </div>
-    """, unsafe_allow_html=True)
+           <p style="margin: 0;">Conteúdo exclusivo disponível</p>
+       </div>
+       """, unsafe_allow_html=True)
     
-    cols = st.columns(3)
+       cols = st.columns(3)
     
-    for idx, col in enumerate(cols):
-        with col:
-            st.image(
-                Config.IMG_GALLERY[idx],
-                use_column_width=True,  # Corrigido para column_width
-                caption=f"Preview {idx+1}"
+       for idx, col in enumerate(cols):
+           with col:
+               st.image(
+                   Config.IMG_GALLERY[idx],
+                   use_column_width=True,  # Corrigido para column_width
+                   caption=f"Preview {idx+1}"
             )
             st.markdown(f"""
             <div style="
