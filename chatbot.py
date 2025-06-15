@@ -751,7 +751,7 @@ class UiService:
        </div>
        """, unsafe_allow_html=True)
     
-       cols = st.columns(3)
+        cols = st.columns(3)
     
        for idx, col in enumerate(cols):
            with col:
