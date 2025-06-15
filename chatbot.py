@@ -1548,10 +1548,10 @@ def main():
             'current_page': 'chat',
             'audio_sent': False
             })
-            save_persistent_data()
-            st.rerun()
-    st.stop()
-
+        save_persistent_data()
+        st.rerun()
+        st.stop()
+        
     if st.session_state.get('current_page', 'home') == "home":
         NewPages.show_home_page()
     elif st.session_state.current_page == "gallery":
