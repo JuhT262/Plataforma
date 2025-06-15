@@ -1557,47 +1557,48 @@ class ChatService:
             elif "text" not in resposta:
                 resposta = {"text": str(resposta), "cta": {"show": False}}
             
-            st.markdown(f"""
-            <div style="
-                background: linear-gradient(45deg, #ff66b3, #ff1493);
-                color: white;
-                padding: 12px;
-                border-radius: 18px 18px 18px 0;
-                margin: 5px 0;
-            ">
-                {resposta["text"]}
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdo    @staticmethod
+    def process_user_input(conn):
+        # Mostra as mensagens antigas
+        for msg in st.session_state.messages:
+            if msg["role"] == "user":
+                st.chat_message("user").markdown(msg["content"])
+            else:
+                st.chat_message("assistant").markdown(msg["content"])
+        
+        # Pega a nova mensagem
+        user_input = st.chat_input("Digite sua mensagem...")
+        
+        if user_input:
+            # Limpa e guarda a mensagem
+            cleaned_input = user_input[:500]  # Limita a 500 caracteres
+            st.session_state.messages.append({"role": "user", "content": cleaned_input})
             
-            if resposta.get("cta", {}).get("show"):
-                if st.button(
-                    resposta["cta"].get("label", "Ver Ofertas"),
-                    key=f"chat_button_{time.time()}",
-                    use_container_width=True
-                ):
-                    st.session_state.current_page = resposta["cta"].get("target", "offers")
-                    save_persistent_data()
-                    st.rerun()
-        
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": json.dumps(resposta)
-        })
-        DatabaseService.save_message(
-            conn,
-            get_user_id(),
-            st.session_state.session_id,
-            "assistant",
-            json.dumps(resposta)
-        )
-        
-        save_persistent_data()
-        
-        st.markdown("""
-        <script>
-            window.scrollTo(0, document.body.scrollHeight);
-        </script>
-        """, unsafe_allow_html=True)
+            # Resposta para PIX
+            if "pix" in cleaned_input.lower() or "chave pix" in cleaned_input.lower():
+                resposta = """
+                💰 PLANOS DISPONÍVEIS:
+                
+                • PROMO: R$ 12,50
+                • START: R$ 19,50
+                • PREMIUM: R$ 45,50
+                • EXTREME: R$ 75,50
+                
+                Clique no botão para assinar!
+                """
+                btn_text = "QUERO ASSINAR"
+            else:
+                resposta = "Oi amor! Quer ver meus conteúdos especiais? 😘"
+                btn_text = "VER CONTEÚDOS"
+            
+            # Mostra a resposta
+            with st.chat_message("assistant"):
+                st.markdown(resposta)
+                if st.button(btn_text):
+                    st.session_state.current_page = "offers"
+            
+            # Guarda a resposta
+            st.session_state.messages.append({"role": "assistant", "content": resposta})
 
     
 
