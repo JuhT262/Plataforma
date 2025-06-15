@@ -1532,8 +1532,8 @@ def main():
         st.rerun()
 
     if not st.session_state.get('chat_started', False):
-       col1, col2, col3 = st.columns([1,3,1])
-       with col2:
+        col1, col2, col3 = st.columns([1,3,1])
+        with col2:
             st.markdown(f"""
             <div style="text-align: center; margin: 50px 0;">
                  <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
