@@ -753,12 +753,12 @@ class UiService:
     
         cols = st.columns(3)
     
-       for idx, col in enumerate(cols):
-           with col:
-               st.image(
-                   Config.IMG_GALLERY[idx],
-                   use_column_width=True,  # Corrigido para column_width
-                   caption=f"Preview {idx+1}"
+        for idx, col in enumerate(cols):
+            with col:
+                st.image(
+                    Config.IMG_GALLERY[idx],
+                    use_column_width=True,  # Corrigido para column_width
+                    caption=f"Preview {idx+1}"
             )
             st.markdown(f"""
             <div style="
