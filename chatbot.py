@@ -96,16 +96,16 @@ class Config:
     REQUEST_TIMEOUT = 30
     AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/Juh%20of.mp3"
     AUDIO_DURATION = 8
-    IMG_PROFILE = "https://i.ibb.co/vvD2dkbQ/17.png"
+    IMG_PROFILE = "https://i.ibb.co/s9GgDRmP/Swapfaces-AI-091e78d3-634f-4a01-9676-8d62385a06f9.png"
     IMG_GALLERY = [
-        "https://i.ibb.co/DkXF5Wy/Swapfaces-AI-789cad8b-d632-473a-bb72-623c70724707.png",
+        "https://i.ibb.co/xtt4yMMM/Swapfaces-AI-2a6a4421-008f-411b-874c-a32e1cdbe892.png",
         "https://i.ibb.co/DfTmwHZb/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png",
-        "https://i.ibb.co/60nYTWfV/Swapfaces-AI-6fa11bfe-af4f-4aa9-bbe0-2edb97e67026.png"
+        "https://i.ibb.co/7JXFKM5H/Swapfaces-AI-e0167c19-a9b9-46a3-acf0-f82f6f2eefab.png"
     ]
     IMG_HOME_PREVIEWS = [
-        "https://i.ibb.co/rfK0DPBM/27.png",
-        "https://i.ibb.co/RpPBjFp1/image.png",
-        "https://i.ibb.co/1GcmQffP/11.png"
+        "https://i.ibb.co/Z17qTBfm/7.png",
+        "https://i.ibb.co/4ZsXW2WK/image-1.png",
+        "https://i.ibb.co/BVjZQBmx/Juh.png"
     ]
     LOGO_URL = "https://i.ibb.co/LX7x3tcB/Logo-Golden-Pepper-Letreiro-1.png"
 
