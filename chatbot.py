@@ -851,17 +851,17 @@ class UiService:
         """, unsafe_allow_html=True)
 
     @staticmethod
-def enhanced_chat_ui(conn):
-    st.markdown("""
-    <style>
-        .chat-header {
-            background: linear-gradient(90deg, #ff66b3, #ff1493);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    def enhanced_chat_ui(conn):
+        st.markdown("""    
+        <style>
+            .chat-header {
+                background: linear-gradient(90deg, #ff66b3, #ff1493);
+                color: white;
+                padding: 15px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                text-align: center;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .stAudio {
             border-radius: 20px !important;
