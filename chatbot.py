@@ -1530,7 +1530,7 @@ def main():
         st.session_state.connection_complete = True
         save_persistent_data()
         st.rerun()
-
+        
     if not st.session_state.get('chat_started', False):
         col1, col2, col3 = st.columns([1,3,1])
         with col2:
