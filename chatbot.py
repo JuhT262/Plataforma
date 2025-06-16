@@ -17,7 +17,7 @@ from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
 import traceback
-
+import sys
 
 def initialize_application_state():
     """Garante que todos os estados essenciais existam"""
@@ -1569,62 +1569,53 @@ def main():
 # ======================
 def handle_global_error(error):
     """Registra erros críticos e exibe mensagem amigável"""
-    error_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    error_info = {
-        'timestamp': error_time,
-        'type': type(error).__name__,
-        'message': str(error),
-        'traceback': traceback.format_exc(),
-        'session_state': dict(st.session_state)
-    }
+    try:
+        error_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        error_info = {
+            'timestamp': error_time,
+            'type': type(error).__name__,
+            'message': str(error),
+            'traceback': traceback.format_exc(),
+            'session_state': dict(st.session_state.items()) if hasattr(st, 'session_state') else {}
+        }
+        
+        # Registrar em arquivo de log
+        with open("error_log.txt", "a", encoding="utf-8") as f:
+            f.write(json.dumps(error_info, indent=2) + "\n")
+        
+        # Mensagem amigável com botão de recarregar
+        st.error("""
+        ⚠️ Ops! Ocorreu um erro inesperado
+
+        Por favor:
+        1. Clique no botão abaixo para recarregar
+        2. Se o problema persistir, contate o suporte
+        """)
+        
+        if st.button("🔄 Recarregar Página", key="reload_button"):
+            st.rerun()
+        
+        st.stop()
     
-    # Registrar em arquivo de log
-    with open("error_log.txt", "a", encoding="utf-8") as f:
-        f.write(json.dumps(error_info, indent=2))
-    
-    # Exibir mensagem amigável
-    st.error("""
-    ⚠️ Ops! Algo inesperado aconteceu
-    
-    Por favor:
-    1. Recarregue a página (F5)
-    2. Aguarde 1-2 minutos e tente novamente
-    3. Se persistir, contate o suporte com este código:
-       ERRO-{timestamp}
-    """.replace("{timestamp}", error_time))
-    
-    st.stop()
+    except Exception as fallback_error:
+        print(f"FALHA NO TRATAMENTO DE ERROS: {str(fallback_error)}")
+        st.stop()
 
 # ======================
-# WRAPPER SEGURO
+# PONTO DE ENTRADA SEGURO
 # ======================
-def safe_run():
-    """Executa a aplicação com tratamento global de erros"""
+if __name__ == "__main__":
     try:
-        # Verificação inicial do sistema
-        required_resources = [
-            Config.IMG_PROFILE,
-            Config.AUDIO_FILE,
-            Config.LOGO_URL
-        ]
+        # Configura handler global de exceções
+        sys.excepthook = lambda exctype, exc, tb: handle_global_error(exc)
         
-        for resource in required_resources:
-            if not resource.startswith(('http://', 'https://')):
-                raise ValueError(f"Configuração inválida para recurso: {resource}")
+        # Verificação inicial
+        if not all(hasattr(Config, attr) for attr in ['IMG_PROFILE', 'AUDIO_FILE', 'LOGO_URL']):
+            raise ValueError("Configurações essenciais faltando na classe Config")
         
         # Execução principal
         main()
-        
+    
     except Exception as e:
         handle_global_error(e)
-
-# ======================
-# PONTO DE ENTRADA
-# ======================
-if __name__ == "__main__":
-    # Configurar tratamento de exceções não capturadas
-    sys.excepthook = lambda exctype, exc, tb: handle_global_error(exc)
-    
-    # Executar aplicação
-    safe_run()
 
