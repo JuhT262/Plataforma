@@ -393,18 +393,23 @@ class DatabaseService:
         return conn
 
     @staticmethod
-    @staticmethod
-def save_message(conn, user_id, session_id, role, content):
-    try:
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO conversations (user_id, session_id, timestamp, role, content)
-            VALUES (?, ?, ?, ?, ?)
-        """, (user_id, session_id, datetime.now(), role, content))
-        conn.commit()
-    except sqlite3.Error as e:
-        st.error(f"Erro ao salvar mensagem: {e}")
-        st.session_state.error_count += 1  
+    def save_message(conn, user_id, session_id, role, content):
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO conversations (user_id, session_id, timestamp, role, content)
+                    VALUES (?, ?, ?, ?, ?)
+                """, (user_id, session_id, datetime.now(), role, content))
+                conn.commit()
+                return True
+            except sqlite3.Error as e:
+                if attempt == max_retries - 1:  # Última tentativa
+                    log_error(f"Falha ao salvar mensagem após {max_retries} tentativas: {str(e)}")
+                    st.session_state.error_count += 1
+                    return False
+                time.sleep(0.5 * (attempt + 1))  
 
     @staticmethod
     def load_messages(conn, user_id, session_id):
@@ -1351,16 +1356,21 @@ class ChatService:
     
     @staticmethod
     def process_user_input(conn):
-    
-    # Verifica se é a primeira mensagem e envia o áudio
-        if not st.session_state.get("audio_sent") and st.session_state.chat_started:
-            status_container = st.empty()
-            UiService.show_audio_recording_effect(status_container)
-        
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": "[ÁUDIO]"
-        })
+    # Verificação segura do estado do áudio
+        if not st.session_state.get("audio_sent", False) and st.session_state.get("chat_started", False):
+            try:
+                status_container = st.empty()
+                UiService.show_audio_recording_effect(status_container)
+            
+                if not DatabaseService.save_message(conn, get_user_id(), st.session_state.session_id, "assistant", "[ÁUDIO]"):
+                    st.error("Erro ao salvar áudio")
+            
+                st.session_state.audio_sent = True
+                save_persistent_data()
+            except Exception as e:
+                log_error(f"Erro no envio de áudio: {str(e)}")
+                st.session_state.audio_sent = True
+                
         DatabaseService.save_message(
             conn,
             get_user_id(),
@@ -1459,20 +1469,22 @@ class ChatService:
 def main():
 
 
+def main():
+# Inicialização robusta do estado (única chamada)
     initialize_application_state()
     
-    if 'db_conn' not in st.session_state:
-        st.session_state.db_conn = DatabaseService.init_db()
+    # Conexão com banco com verificação de erro
+    try:
+        if 'db_conn' not in st.session_state or st.session_state.db_conn is None:
+            st.session_state.db_conn = DatabaseService.init_db()
+        conn = st.session_state.db_conn
+    except Exception as e:
+        log_error(f"Erro na conexão com banco: {str(e)}")
+        st.error("Sistema temporariamente indisponível")
+        st.stop()
     
-    conn = st.session_state.db_conn
-    
-    # Inicializa a sessão do chat
-    
-    
-    initialize_application_state()
-    
-    # Verificação de idade
-    if not st.session_state.age_verified:
+    # Verificação de idade com fallback seguro
+    if not st.session_state.get('age_verified', False):
         UiService.age_verification()
         st.stop()
     
@@ -1487,16 +1499,39 @@ def main():
         st.rerun()
     
     # Página inicial antes do chat
-    if not st.session_state.chat_started:
-        col1, col2, col3 = st.columns([1,3,1])
-        with col2:
+    if not st.session_state.get('chat_started', False):
+        try:
+            col1, col2, col3 = st.columns([1,3,1])
+            with col2:
+            # Container seguro para o perfil
             st.markdown(f"""
             <div style="text-align: center; margin: 50px 0;">
-                <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
+                <img src="{Config.IMG_PROFILE}" 
+                     width="120" 
+                     style="border-radius: 50%; border: 3px solid #ff66b3;"
+                     onerror="this.src='https://via.placeholder.com/120?text=Juh'">
                 <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
                 <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
             </div>
             """, unsafe_allow_html=True)
+            
+            # Botão com tratamento de erro
+            if st.button("Iniciar Conversa", type="primary", use_container_width=True, key="start_chat"):
+                try:
+                    st.session_state.update({
+                        'chat_started': True,
+                        'current_page': 'chat',
+                        'audio_sent': False
+                    })
+                    save_persistent_data()
+                    st.rerun()
+                except Exception as e:
+                    log_error(f"Erro ao iniciar chat: {str(e)}")
+                    st.error("Erro ao iniciar conversa")
+    except Exception as e:
+        log_error(f"Erro na página inicial: {str(e)}")
+        st.error("Erro ao carregar a página")
+        st.stop()
             
             if st.button("Iniciar Conversa", type="primary", use_container_width=True):
                 st.session_state.update({
