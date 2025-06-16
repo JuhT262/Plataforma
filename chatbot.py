@@ -49,7 +49,7 @@ def log_error(error_msg):
 # Exemplo de uso:
 try:
     # Código que pode falhar
-    except Exception as e:
+except Exception as e:
     log_error(f"Erro em main(): {str(e)}")
     st.error("Ocorreu um erro. Já estamos resolvendo!")
 
