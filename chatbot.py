@@ -46,12 +46,7 @@ def log_error(error_msg):
     with open("error_log.txt", "a") as f:
         f.write(f"[{timestamp}] {error_msg}\n")
 
-# Exemplo de uso:
-try:
-    # Código que pode falhar
-except Exception as e:
-    log_error(f"Erro em main(): {str(e)}")
-    st.error("Ocorreu um erro. Já estamos resolvendo!")
+
 
 
 
@@ -1466,58 +1461,51 @@ class ChatService:
 # ======================
 # APLICAÇÃO PRINCIPAL
 # ======================
-def main():
 
 
+
 def main():
-# Inicialização robusta do estado (única chamada)
+    # Inicialização do estado
     initialize_application_state()
     
-    # Conexão com banco com verificação de erro
+    # Configuração do banco de dados
     try:
-        if 'db_conn' not in st.session_state or st.session_state.db_conn is None:
+        if 'db_conn' not in st.session_state:
             st.session_state.db_conn = DatabaseService.init_db()
         conn = st.session_state.db_conn
     except Exception as e:
-        log_error(f"Erro na conexão com banco: {str(e)}")
-        st.error("Sistema temporariamente indisponível")
-        st.stop()
+        log_error(f"Erro ao conectar ao banco: {str(e)}")
+        st.error("Erro de conexão com o banco de dados")
+        return
     
-    # Verificação de idade com fallback seguro
-    if not st.session_state.get('age_verified', False):
+    # Verificação de idade
+    if not st.session_state.age_verified:
         UiService.age_verification()
         st.stop()
     
-    # Configura o sidebar
+    # Restante da configuração inicial
     UiService.setup_sidebar()
     
-    # Efeito de chamada inicial
     if not st.session_state.connection_complete:
         UiService.show_call_effect()
         st.session_state.connection_complete = True
         save_persistent_data()
         st.rerun()
     
-    # Página inicial antes do chat
-    if not st.session_state.get('chat_started', False):
+    # Página inicial
+    if not st.session_state.chat_started:
         try:
             col1, col2, col3 = st.columns([1,3,1])
             with col2:
-            # Container seguro para o perfil
-            st.markdown(f"""
-            <div style="text-align: center; margin: 50px 0;">
-                <img src="{Config.IMG_PROFILE}" 
-                     width="120" 
-                     style="border-radius: 50%; border: 3px solid #ff66b3;"
-                     onerror="this.src='https://via.placeholder.com/120?text=Juh'">
-                <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
-                <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Botão com tratamento de erro
-            if st.button("Iniciar Conversa", type="primary", use_container_width=True, key="start_chat"):
-                try:
+                st.markdown(f"""
+                <div style="text-align: center; margin: 50px 0;">
+                    <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
+                    <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
+                    <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if st.button("Iniciar Conversa", type="primary", use_container_width=True):
                     st.session_state.update({
                         'chat_started': True,
                         'current_page': 'chat',
@@ -1525,46 +1513,54 @@ def main():
                     })
                     save_persistent_data()
                     st.rerun()
-                except Exception as e:
-                    log_error(f"Erro ao iniciar chat: {str(e)}")
-                    st.error("Erro ao iniciar conversa")
-    except Exception as e:
-        log_error(f"Erro na página inicial: {str(e)}")
-        st.error("Erro ao carregar a página")
-        st.stop()
-            
-            if st.button("Iniciar Conversa", type="primary", use_container_width=True):
-                st.session_state.update({
-                    'chat_started': True,
-                    'current_page': 'chat',
-                    'audio_sent': False
-                })
-                save_persistent_data()
-                st.rerun()
-        st.stop()
+            st.stop()
+        except Exception as e:
+            log_error(f"Erro na página inicial: {str(e)}")
+            st.error("Erro ao carregar a página inicial")
+            st.stop()
     
     # Navegação entre páginas
-    if st.session_state.current_page == "home":
-        NewPages.show_home_page()
-    elif st.session_state.current_page == "gallery":
-        UiService.show_gallery_page(conn)
-    elif st.session_state.current_page == "offers":
-        NewPages.show_offers_page()
-    elif st.session_state.current_page == "vip":
-        st.session_state.show_vip_offer = True
-        save_persistent_data()
-        st.rerun()
-    elif st.session_state.get("show_vip_offer", False):
-        st.warning("Página VIP em desenvolvimento")
-        if st.button("Voltar ao chat"):
-            st.session_state.show_vip_offer = False
+    try:
+        if st.session_state.current_page == "home":
+            NewPages.show_home_page()
+        elif st.session_state.current_page == "gallery":
+            UiService.show_gallery_page(conn)
+        elif st.session_state.current_page == "offers":
+            NewPages.show_offers_page()
+        elif st.session_state.current_page == "vip":
+            st.session_state.show_vip_offer = True
             save_persistent_data()
             st.rerun()
-    else:
-        UiService.enhanced_chat_ui(conn)
-    
-    save_persistent_data()
+        elif st.session_state.get("show_vip_offer", False):
+            st.warning("Página VIP em desenvolvimento")
+            if st.button("Voltar ao chat"):
+                st.session_state.show_vip_offer = False
+                save_persistent_data()
+                st.rerun()
+        else:
+            UiService.enhanced_chat_ui(conn)
+        
+        save_persistent_data()
+    except Exception as e:
+        log_error(f"Erro na navegação: {str(e)}")
+        st.error("Ocorreu um erro ao carregar a página")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        error_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        error_details = f"""
+        [ERRO GLOBAL] {error_time}
+        Tipo: {type(e).__name__}
+        Mensagem: {str(e)}
+        """
+        with open("error_log.txt", "a") as f:
+            f.write(error_details)
+        
+        st.error("""
+        ⚠️ Ocorreu um erro inesperado
+        Por favor, recarregue a página ou tente novamente mais tarde.
+        """)
+        st.stop()
 
