@@ -1466,103 +1466,104 @@ class ChatService:
 
 
 
+# ======================
+# APLICAÇÃO PRINCIPAL
+# ======================
 def main():
-    # Inicialização do estado
-    initialize_application_state()
-    
-    # Configuração do banco de dados
     try:
+        # Inicialização do sistema
+        initialize_application_state()
+        
+        # Conexão com banco de dados
         if 'db_conn' not in st.session_state:
-            st.session_state.db_conn = DatabaseService.init_db()
-        conn = st.session_state.db_conn
-    except Exception as e:
-        log_error(f"Erro ao conectar ao banco: {str(e)}")
-        st.error("Erro de conexão com o banco de dados")
-        return
-    
-    # Verificação de idade
-    if not st.session_state.age_verified:
-        UiService.age_verification()
-        st.stop()
-    
-    # Restante da configuração inicial
-    UiService.setup_sidebar()
-    
-    if not st.session_state.connection_complete:
-        UiService.show_call_effect()
-        st.session_state.connection_complete = True
-        save_persistent_data()
-        st.rerun()
-    
-    # Página inicial
-    if not st.session_state.chat_started:
-        try:
-            col1, col2, col3 = st.columns([1,3,1])
-            with col2:
-                st.markdown(f"""
-                <div style="text-align: center; margin: 50px 0;">
-                    <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
-                    <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
-                    <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                if st.button("Iniciar Conversa", type="primary", use_container_width=True):
-                    st.session_state.update({
-                        'chat_started': True,
-                        'current_page': 'chat',
-                        'audio_sent': False
-                    })
-                    save_persistent_data()
-                    st.rerun()
+            try:
+                st.session_state.db_conn = DatabaseService.init_db()
+            except Exception as db_error:
+                error_msg = f"""
+                [ERRO DE BANCO DE DADOS] {datetime.now()}
+                {str(db_error)}
+                {traceback.format_exc()}
+                """
+                with open("error_log.txt", "a") as f:
+                    f.write(error_msg)
+                st.error("Sistema temporariamente indisponível. Tente novamente em alguns minutos.")
+                st.stop()
+        
+        # Verificação de idade
+        if not st.session_state.get('age_verified', False):
+            UiService.age_verification()
             st.stop()
-        except Exception as e:
-            log_error(f"Erro na página inicial: {str(e)}")
-            st.error("Erro ao carregar a página inicial")
-            st.stop()
-    
-    # Navegação entre páginas
-    try:
-        if st.session_state.current_page == "home":
-            NewPages.show_home_page()
-        elif st.session_state.current_page == "gallery":
-            UiService.show_gallery_page(conn)
-        elif st.session_state.current_page == "offers":
-            NewPages.show_offers_page()
-        elif st.session_state.current_page == "vip":
-            st.session_state.show_vip_offer = True
-            save_persistent_data()
-            st.rerun()
-        elif st.session_state.get("show_vip_offer", False):
-            st.warning("Página VIP em desenvolvimento")
-            if st.button("Voltar ao chat"):
-                st.session_state.show_vip_offer = False
+        
+        # Configuração inicial
+        UiService.setup_sidebar()
+        
+        if not st.session_state.get('connection_complete', False):
+            try:
+                UiService.show_call_effect()
+                st.session_state.connection_complete = True
                 save_persistent_data()
                 st.rerun()
-        else:
-            UiService.enhanced_chat_ui(conn)
+            except Exception as effect_error:
+                log_error(f"Erro no efeito de chamada: {str(effect_error)}")
+                st.session_state.connection_complete = True  # Pula o efeito em caso de erro
+                st.rerun()
         
-        save_persistent_data()
-    except Exception as e:
-        log_error(f"Erro na navegação: {str(e)}")
-        st.error("Ocorreu um erro ao carregar a página")
-
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        error_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        error_details = f"""
-        [ERRO GLOBAL] {error_time}
-        Tipo: {type(e).__name__}
-        Mensagem: {str(e)}
+        # Controle de navegação
+        try:
+            page_handlers = {
+                'home': NewPages.show_home_page,
+                'gallery': UiService.show_gallery_page,
+                'offers': NewPages.show_offers_page,
+                'chat': UiService.enhanced_chat_ui
+            }
+            
+            current_page = st.session_state.get('current_page', 'home')
+            
+            if current_page == 'vip':
+                st.session_state.show_vip_offer = True
+                save_persistent_data()
+                st.rerun()
+            elif st.session_state.get('show_vip_offer', False):
+                st.warning("Página VIP em desenvolvimento")
+                if st.button("Voltar ao chat"):
+                    st.session_state.show_vip_offer = False
+                    save_persistent_data()
+                    st.rerun()
+            else:
+                handler = page_handlers.get(current_page)
+                if handler:
+                    if current_page == 'gallery':
+                        handler(st.session_state.db_conn)
+                    else:
+                        handler()
+            
+            save_persistent_data()
+            
+        except Exception as page_error:
+            log_error(f"Erro na página {st.session_state.get('current_page')}: {str(page_error)}")
+            st.error("Erro ao carregar o conteúdo. Recarregando...")
+            time.sleep(2)
+            st.rerun()
+            
+    except Exception as main_error:
+        critical_error = f"""
+        [ERRO CRÍTICO] {datetime.now()}
+        {str(main_error)}
+        {traceback.format_exc()}
+        Estado da Sessão: {json.dumps(st.session_state.to_dict(), indent=2)}
         """
         with open("error_log.txt", "a") as f:
-            f.write(error_details)
+            f.write(critical_error)
         
         st.error("""
-        ⚠️ Ocorreu um erro inesperado
-        Por favor, recarregue a página ou tente novamente mais tarde.
+        ⚠️ Falha crítica no sistema
+        Por favor:
+        1. Recarregue a página (F5)
+        2. Se persistir, espere 5 minutos
+        3. Entre em contato com o suporte se o problema continuar
         """)
         st.stop()
+
+if __name__ == "__main__":
+    main()
 
