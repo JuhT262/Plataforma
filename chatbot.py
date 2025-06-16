@@ -171,7 +171,10 @@ def load_persistent_data():
     
     for key, value in saved_data.items():
         if key not in st.session_state:
-            st.session_state[key] = value
+            if key == 'messages' and not isinstance(value, list):
+                st.session_state[key] = []
+            else:
+                st.session_state[key] = value
 
 def save_persistent_data():
     user_id = get_user_id()
@@ -1336,40 +1339,40 @@ class NewPages:
 # ======================
 class ChatService:
     @staticmethod
+    @staticmethod
     def initialize_session(conn):
         """Inicializa a sessão do chat corretamente"""
         load_persistent_data()
-    
-        # Garante que todos os estados necessários existam
+
+    # 1. Garante todos os estados padrão
         defaults = {
             'session_id': str(uuid.uuid4()),
-            'messages': [],
+            'messages': [],  # ← Garantia que messages existe como lista vazia
             'request_count': 0,
-            'age_verified': False,
-            'connection_complete': False,
-            'chat_started': False,
-            'audio_sent': False,
-            'current_page': 'home',
-            'show_vip_offer': False,
-            'last_cta_time': 0
-       }
-    
+        # ... outros defaults
+    }
+
+    # 2. Aplica os defaults se não existirem
         for key, default in defaults.items():
             if key not in st.session_state:
                 st.session_state[key] = default
-    
-    # Carrega mensagens do banco de dados
-        st.session_state.messages = DatabaseService.load_messages(
+
+    # 3. Só então carrega mensagens do banco
+        db_messages = DatabaseService.load_messages(
             conn,
             get_user_id(),
             st.session_state.session_id
-        ) or []
+        )
     
-    # Atualiza contador de requisições
-    st.session_state.request_count = len([
-        m for m in st.session_state.messages 
-        if m["role"] == "user"
-    ])
+        if db_messages:  # Se existir no banco, sobrescreve
+            st.session_state.messages = db_messages
+
+    # 4. Agora pode calcular o request_count com segurança
+        st.session_state.request_count = len([
+            m for m in st.session_state.messages 
+            if m["role"] == "user"
+        ])
+
 
     
     @staticmethod
@@ -1398,7 +1401,6 @@ class ChatService:
             # 1. Verificar e inicializar mensagens
             if 'messages' not in st.session_state:
                 st.session_state.messages = []
-            
             # 2. Exibir histórico (últimas 12 mensagens)
             for msg in st.session_state.messages[-12:]:
                 role = msg.get("role", "")
