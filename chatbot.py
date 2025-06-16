@@ -29,14 +29,29 @@ def initialize_application_state():
         'audio_sent': False,
         'current_page': 'home',
         'show_vip_offer': False,
-        'last_cta_time': 0
+        'last_cta_time': 0,
+        'user_id': get_user_id(),  # Garante que o user_id sempre exista
+        'db_conn': None,  # Conexão com o banco de dados
+        'last_action': None,  # Última ação registrada
+        'vip_access': False,  # Controle de acesso VIP
+        'error_count': 0  # Contador de erros (para debug)
     }
     
     for key, default in required_states.items():
         if key not in st.session_state:
             st.session_state[key] = default
 
+def log_error(error_msg):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open("error_log.txt", "a") as f:
+        f.write(f"[{timestamp}] {error_msg}\n")
 
+# Exemplo de uso:
+try:
+    # Código que pode falhar
+except Exception as e:
+    log_error(f"Erro em main(): {str(e)}")
+    st.error("Ocorreu um erro. Já estamos resolvendo!")
 
 
 
@@ -378,16 +393,18 @@ class DatabaseService:
         return conn
 
     @staticmethod
-    def save_message(conn, user_id, session_id, role, content):
-        try:
-            c = conn.cursor()
-            c.execute("""
-                INSERT INTO conversations (user_id, session_id, timestamp, role, content)
-                VALUES (?, ?, ?, ?, ?)
-            """, (user_id, session_id, datetime.now(), role, content))
-            conn.commit()
-        except sqlite3.Error as e:
-            st.error(f"Erro ao salvar mensagem: {e}")
+    @staticmethod
+def save_message(conn, user_id, session_id, role, content):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO conversations (user_id, session_id, timestamp, role, content)
+            VALUES (?, ?, ?, ?, ?)
+        """, (user_id, session_id, datetime.now(), role, content))
+        conn.commit()
+    except sqlite3.Error as e:
+        st.error(f"Erro ao salvar mensagem: {e}")
+        st.session_state.error_count += 1  
 
     @staticmethod
     def load_messages(conn, user_id, session_id):
@@ -412,56 +429,16 @@ class ApiService:
         return ApiService._call_gemini_api(prompt, session_id, conn)
 
     @staticmethod
-    def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
-        delay_time = random.uniform(3, 8)
-        time.sleep(delay_time)
-        
-        status_container = st.empty()
-        UiService.show_status_effect(status_container, "viewed")
-        UiService.show_status_effect(status_container, "typing")
-        
-        conversation_history = ChatService.format_conversation_history(st.session_state.messages)
-        
-        headers = {'Content-Type': 'application/json'}
-        data = {
-            "contents": [
-                {
-                    "role": "user",
-                    "parts": [{"text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
-                }
-            ],
-            "generationConfig": {
-                "temperature": 0.9,
-                "topP": 0.8,
-                "topK": 40
-            }
-        }
-        
-        try:
-            response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
-            response.raise_for_status()
-            gemini_response = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-            
+    def _call_gemini_api(prompt: str, session_id: str, conn, max_retries=3):
+        for attempt in range(max_retries):
             try:
-                if '```json' in gemini_response:
-                    resposta = json.loads(gemini_response.split('```json')[1].split('```')[0].strip())
-                else:
-                    resposta = json.loads(gemini_response)
-                
-                if resposta.get("cta", {}).get("show"):
-                    if not CTAEngine.should_show_cta(st.session_state.messages):
-                        resposta["cta"]["show"] = False
-                    else:
-                        st.session_state.last_cta_time = time.time()
-                
-                return resposta
-            
-            except json.JSONDecodeError:
-                return {"text": gemini_response, "cta": {"show": False}}
-                
-        except Exception as e:
-            st.error(f"Erro na API: {str(e)}")
-            return {"text": "Vamos continuar isso mais tarde...", "cta": {"show": False}}
+                response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
+                response.raise_for_status()
+                return response.json()  # Processa resposta normalmente
+            except (requests.Timeout, requests.ConnectionError) as e:
+                if attempt == max_retries - 1:  # Última tentativa falhou
+                    return {"text": "🔴 Desculpe, estou tendo problemas com a net, volto mais tarde mb", "cta": {"show": False}}
+                time.sleep(2 ** attempt)  
 
 # ======================
 # SERVIÇOS DE INTERFACE
