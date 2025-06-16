@@ -17,6 +17,25 @@ from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
 
+def initialize_application_state():
+    """Garante que todos os estados essenciais existam"""
+    required_states = {
+        'age_verified': False,
+        'messages': [],
+        'request_count': 0,
+        'session_id': str(uuid.uuid4()),
+        'connection_complete': False,
+        'chat_started': False,
+        'audio_sent': False,
+        'current_page': 'home',
+        'show_vip_offer': False,
+        'last_cta_time': 0
+    }
+    
+    for key, default in required_states.items():
+        if key not in st.session_state:
+            st.session_state[key] = default
+
 
 
 
@@ -1339,39 +1358,17 @@ class NewPages:
 # ======================
 class ChatService:
     @staticmethod
-    @staticmethod
     def initialize_session(conn):
-        """Inicializa a sessão do chat corretamente"""
-        load_persistent_data()
-
-    # 1. Garante todos os estados padrão
-        defaults = {
-            'session_id': str(uuid.uuid4()),
-            'messages': [],  # ← Garantia que messages existe como lista vazia
-            'request_count': 0,
-        # ... outros defaults
-    }
-
-    # 2. Aplica os defaults se não existirem
-        for key, default in defaults.items():
-            if key not in st.session_state:
-                st.session_state[key] = default
-
-    # 3. Só então carrega mensagens do banco
+        """Agora só carrega mensagens do banco"""
         db_messages = DatabaseService.load_messages(
             conn,
             get_user_id(),
             st.session_state.session_id
         )
-    
-        if db_messages:  # Se existir no banco, sobrescreve
+        if db_messages:
             st.session_state.messages = db_messages
 
-    # 4. Agora pode calcular o request_count com segurança
-        st.session_state.request_count = len([
-            m for m in st.session_state.messages 
-            if m["role"] == "user"
-        ])
+    
 
 
     
@@ -1483,14 +1480,19 @@ class ChatService:
 # APLICAÇÃO PRINCIPAL
 # ======================
 def main():
-    # Inicializa a conexão com o banco de dados
+
+
+    initialize_application_state()
+    
     if 'db_conn' not in st.session_state:
         st.session_state.db_conn = DatabaseService.init_db()
     
     conn = st.session_state.db_conn
     
     # Inicializa a sessão do chat
-    ChatService.initialize_session(conn)
+    
+    
+    initialize_application_state()
     
     # Verificação de idade
     if not st.session_state.age_verified:
