@@ -1564,6 +1564,67 @@ def main():
         """)
         st.stop()
 
+# ======================
+# HANDLER DE ERROS GLOBAIS
+# ======================
+def handle_global_error(error):
+    """Registra erros críticos e exibe mensagem amigável"""
+    error_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    error_info = {
+        'timestamp': error_time,
+        'type': type(error).__name__,
+        'message': str(error),
+        'traceback': traceback.format_exc(),
+        'session_state': dict(st.session_state)
+    }
+    
+    # Registrar em arquivo de log
+    with open("error_log.txt", "a", encoding="utf-8") as f:
+        f.write(json.dumps(error_info, indent=2)
+    
+    # Exibir mensagem amigável
+    st.error("""
+    ⚠️ Ops! Algo inesperado aconteceu
+    
+    Por favor:
+    1. Recarregue a página (F5)
+    2. Aguarde 1-2 minutos e tente novamente
+    3. Se persistir, contate o suporte com este código:
+       ERRO-{timestamp}
+    """.replace("{timestamp}", error_time))
+    
+    st.stop()
+
+# ======================
+# WRAPPER SEGURO
+# ======================
+def safe_run():
+    """Executa a aplicação com tratamento global de erros"""
+    try:
+        # Verificação inicial do sistema
+        required_resources = [
+            Config.IMG_PROFILE,
+            Config.AUDIO_FILE,
+            Config.LOGO_URL
+        ]
+        
+        for resource in required_resources:
+            if not resource.startswith(('http://', 'https://')):
+                raise ValueError(f"Configuração inválida para recurso: {resource}")
+        
+        # Execução principal
+        main()
+        
+    except Exception as e:
+        handle_global_error(e)
+
+# ======================
+# PONTO DE ENTRADA
+# ======================
 if __name__ == "__main__":
-    main()
+    # Configurar tratamento de exceções não capturadas
+    sys.excepthook = lambda exctype, exc, tb: handle_global_error(exc)
+    
+    # Executar aplicação
+    safe_run()
 
