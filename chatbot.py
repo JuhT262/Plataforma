@@ -1580,7 +1580,7 @@ def handle_global_error(error):
     
     # Registrar em arquivo de log
     with open("error_log.txt", "a", encoding="utf-8") as f:
-        f.write(json.dumps(error_info, indent=2)
+        f.write(json.dumps(error_info, indent=2))
     
     # Exibir mensagem amigável
     st.error("""
