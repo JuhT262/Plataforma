@@ -432,15 +432,22 @@ class ApiService:
 
     @staticmethod
     def _call_gemini_api(prompt: str, session_id: str, conn, max_retries=3):
+        api_data = {
+            "contents": [{
+                "parts": [{
+                    "text": prompt
+                }]
+            }]
+        }
+    
         for attempt in range(max_retries):
             try:
-                response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
-                response.raise_for_status()
-                return response.json()  # Processa resposta normalmente
-            except (requests.Timeout, requests.ConnectionError) as e:
-                if attempt == max_retries - 1:  # Última tentativa falhou
-                    return {"text": "🔴 Desculpe, estou tendo problemas com a net, volto mais tarde mb", "cta": {"show": False}}
-                time.sleep(2 ** attempt)  
+                response = requests.post(
+                    Config.API_URL,
+                    headers={"Content-Type": "application/json"},
+                    json=api_data,
+                    timeout=Config.REQUEST_TIMEOUT
+                )  
 
 # ======================
 # SERVIÇOS DE INTERFACE
@@ -847,22 +854,24 @@ class UiService:
         </style>
         """, unsafe_allow_html=True)
 
-        @staticmethod
-        def enhanced_chat_ui(conn):
-    
-            st.markdown("""    
-            <style>
-        /* Estilos gerais do chat */
-        .chat-header {
-            background: linear-gradient(90deg, #ff66b3, #ff1493);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        
+    @staticmethod
+    def enhanced_chat_ui(conn):
+        """Interface aprimorada do chat"""
+        st.markdown("""    
+        <style>
+            /* Estilos gerais do chat */
+            .chat-header {
+                 background: linear-gradient(90deg, #ff66b3, #ff1493);
+                 color: white;
+                 padding: 15px;
+                 border-radius: 10px;
+                 margin-bottom: 20px;
+                 text-align: center;
+                 box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+             }
+         </style>
+        """, unsafe_allow_html=True)
+            
         /* Estilos específicos para mobile */
         @media (max-width: 768px) {
             .chat-header {
