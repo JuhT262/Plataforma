@@ -1455,7 +1455,18 @@ class ChatService:
             )
     
         except Exception as e:
-            st.error(f"Erro ao processar mensagem: {str(e)}")
+        error_msg = f"Erro no chat: {str(e)}"
+        log_error(error_msg)  # ← Novo registro de log
+        st.error("""
+        ⚠️ Ops! Ocorreu um erro inesperado
+
+        Por favor:
+        1. Clique no botão abaixo para recarregar
+        2. Se o problema persistir, contate o suporte
+        """)
+    
+        if st.button("🔄 Recarregar Página", key="reload_chat_button"):  # ← Novo botão
+            st.rerun()
 
 
     
