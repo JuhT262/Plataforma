@@ -1447,11 +1447,11 @@ class ChatService:
             })
         
         DatabaseService.save_message(
-                conn,
-                get_user_id(),
-                st.session_state.session_id,
-                "assistant",
-                json.dumps(resposta, ensure_ascii=False)
+            conn,
+            get_user_id(),
+            st.session_state.session_id,
+            "assistant",
+            json.dumps(resposta, ensure_ascii=False)
             )
             
         except Exception as e:  # ← ISSO ESTAVA FALTANDO!
