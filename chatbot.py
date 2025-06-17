@@ -43,16 +43,15 @@ def initialize_application_state():
         if key not in st.session_state:
             st.session_state[key] = default
 
-def log_error(error_msg):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    error_info = {
-        'timestamp': timestamp,
-        'error': str(error_msg),
-        'session_id': st.session_state.get('session_id', 'unknown'),
-        'page': st.session_state.get('current_page', 'unknown')
+def log_error(error_data):
+    """Registra erros completos com contexto"""
+    error_entry = {
+        'timestamp': datetime.now().isoformat(),
+        **error_data  # Inclui todos os dados do erro
     }
-    with open("error_log.txt", "a") as f:
-        f.write(json.dumps(error_info) + "\n")
+    
+    with open("error_log.txt", "a", encoding='utf-8') as f:
+        f.write(json.dumps(error_entry, indent=2, ensure_ascii=False) + "\n")
 
 
 
@@ -1485,21 +1484,26 @@ class ChatService:
                         "assistant",
                         json.dumps(resposta, ensure_ascii=False)
                     )
+except Exception as e:
+    error_data = {
+        'location': "ChatService.process_user_input",
+        'error': str(e),
+        'type': type(e).__name__,
+        'traceback': traceback.format_exc(),
+        'user_input': user_input[:100] if 'user_input' in locals() else None
+    }
+    log_error(error_data)
     
-        except Exception as e:
-            error_msg = f"Erro no chat: {str(e)}"
-            log_error(error_msg)
-            st.error("""
-            ⚠️ Ops! Ocorreu um erro inesperado
-
-            Por favor:
-            1. Clique no botão abaixo para recarregar
-            2. Se o problema persistir, contate o suporte
-            """)
-        
-            if st.button("🔄 Recarregar Página", key="reload_chat_button"):
-                st.rerun()
-
+    st.error(f"""
+    💬 **ERRO NO CHAT**
+    
+    {str(e)}
+    
+    **Tipo:** `{type(e).__name__}`
+    """)
+    
+    if st.button("⟳ Continuar conversa", key="chat_retry"):
+        st.rerun()
 
     
     
@@ -1612,37 +1616,61 @@ def main():
 # HANDLER DE ERROS GLOBAIS
 # ======================
 def handle_global_error(error):
-    """Registra erros críticos e exibe mensagem amigável"""
+    """Mostra erros detalhados para diagnóstico"""
     try:
+        # Formata informações do erro
+        error_type = type(error).__name__
         error_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        error_info = {
-            'timestamp': error_time,
-            'type': type(error).__name__,
-            'message': str(error),
-            'traceback': traceback.format_exc(),
-            'session_state': dict(st.session_state.items()) if hasattr(st, 'session_state') else {}
-        }
+        error_trace = traceback.format_exc()
+        current_page = st.session_state.get('current_page', 'desconhecida')
         
-        # Registrar em arquivo de log
-        with open("error_log.txt", "a", encoding="utf-8") as f:
-            f.write(json.dumps(error_info, indent=2) + "\n")
+        # Mensagem detalhada para o usuário
+        st.error(f"""
+        🚨 ERRO DETALHADO - {error_time}
         
-        # Mensagem amigável com botão de recarregar
-        st.error("""
-        ⚠️ Ops! Ocorreu um erro inesperado
-
-        Por favor:
-        1. Clique no botão abaixo para recarregar
-        2. Se o problema persistir, contate o suporte
+        Tipo: {error_type}
+        Mensagem: {str(error)}
+        
+        Página atual: {current_page}
         """)
         
-        if st.button("🔄 Recarregar Página", key="reload_button"):
-            st.rerun()
+        # Seção expansível com detalhes técnicos
+        with st.expander("🔍 Detalhes técnicos (para suporte)"):
+            st.code(f"""
+            Tipo: {error_type}
+            Mensagem: {str(error)}
+            Página: {current_page}
+            
+            Traceback completo:
+            {error_trace}
+            """)
+        
+        # Log completo do erro
+        error_log = {
+            'timestamp': error_time,
+            'type': error_type,
+            'message': str(error),
+            'page': current_page,
+            'traceback': error_trace,
+            'session_state': dict(st.session_state.items())
+        }
+        
+        with open("error_log.txt", "a", encoding="utf-8") as f:
+            f.write(json.dumps(error_log, indent=2) + "\n")
+        
+        # Botões de ação
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🔄 Tentar novamente", key="error_retry"):
+                st.rerun()
+        with col2:
+            if st.button("📋 Copiar detalhes", key="error_copy"):
+                st.code(f"Erro: {error_type}\n{str(error)}\n\n{error_trace}")
         
         st.stop()
-    
+        
     except Exception as fallback_error:
-        print(f"FALHA NO TRATAMENTO DE ERROS: {str(fallback_error)}")
+        st.error(f"Falha ao processar erro: {str(fallback_error)}")
         st.stop()
 
 # ======================
@@ -1653,19 +1681,38 @@ def handle_global_error(error):
 # ======================
 if __name__ == "__main__":
     try:
-        # Configura handler global de exceções
-        sys.excepthook = lambda exctype, exc, tb: handle_global_error(exc)
+        # Verificação de configurações essenciais
+        required_configs = {
+            'API_KEY': "Chave da API (Google Gemini)",
+            'API_URL': "Endpoint da API",
+            'AUDIO_FILE': "Arquivo de áudio inicial",
+            'IMG_PROFILE': "Foto de perfil",
+            'LOGO_URL': "Logo do site"
+        }
         
-        # Verificação inicial
-        required_configs = ['IMG_PROFILE', 'AUDIO_FILE', 'LOGO_URL', 'API_KEY', 'API_URL']
-        if not all(hasattr(Config, attr) for attr in required_configs):
-            missing = [attr for attr in required_configs if not hasattr(Config, attr)]
-            raise ValueError(f"Configurações essenciais faltando: {', '.join(missing)}")
-        
-        # Execução principal
-        main()
-    
+        missing = [name for name in required_configs if not hasattr(Config, name)]
+        if missing:
+            missing_list = "\n".join([f"- {required_configs[name]} ({name})" for name in missing])
+            raise ValueError(f"Configurações faltando na classe Config:\n{missing_list}")
+
+        # Inicialização principal
+        with st.spinner("Iniciando ambiente premium..."):
+            main()
+
     except Exception as e:
-        handle_global_error(e)
-        st.stop()  # Adicione esta linha para garantir que o app pare em caso de erro
+        st.error(f"""
+        🔥 **FALHA NA INICIALIZAÇÃO**
+        
+        {str(e)}
+        
+        **Tipo:** `{type(e).__name__}`
+        """)
+        
+        if st.expander("⚠️ Detalhes do erro de inicialização"):
+            st.code(traceback.format_exc())
+        
+        if st.button("🔄 Tentar novamente", key="init_retry"):
+            st.rerun()
+        
+        st.stop()
 
