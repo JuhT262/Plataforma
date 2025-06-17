@@ -1351,8 +1351,8 @@ class ChatService:
     def process_user_input(conn):
     # Verificação segura do estado do áudio
             try:   
-        if not st.session_state.get("audio_sent", False) and st.session_state.get("chat_started", False):
-        if conn is None:
+            if not st.session_state.get("audio_sent", False) and st.session_state.get("chat_started", False):
+            if conn is None:
             st.error("Erro: Conexão com o banco de dados perdida!")
             return
                 status_container = st.empty()
