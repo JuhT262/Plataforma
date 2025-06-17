@@ -120,8 +120,8 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # ======================
 # CONSTANTES E CONFIGURAÇÕES
 # ======================
-class Config:
 
+class Config:
     API_KEY = "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g"
     API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
     VIP_LINK = "https://exemplo.com/vip"
@@ -136,18 +136,8 @@ class Config:
     REQUEST_TIMEOUT = 30
     AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/Juh%20of.mp3"
     AUDIO_DURATION = 8
-    # Na classe Config, atualize as URLs das imagens para garantir que sejam acessíveis:
-    IMG_PROFILE = "https://i.ibb.co/vvD2dkbQ/17.png"  # Verifique se esta URL ainda está válida
-    IMG_GALLERY = [
-    "https://i.ibb.co/DkXF5Wy/Swapfaces-AI-789cad8b-d632-473a-bb72-623c70724707.png",
-    "https://i.ibb.co/DfTmwHZb/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png",
-    "https://i.ibb.co/60nYTWfV/Swapfaces-AI-6fa11bfe-af4f-4aa9-bbe0-2edb97e67026.png"
-    ]
-    IMG_HOME_PREVIEWS = [
-    "https://i.ibb.co/rfK0DPBM/27.png",
-    "https://i.ibb.co/RpPBjFp1/image.png",
-    "https://i.ibb.co/1GcmQffP/11.png"
-    ]
+
+    IMG_PROFILE = "https://i.ibb.co/vvD2dkbQ/17.png"
     LOGO_URL = "https://i.ibb.co/LX7x3tcB/Logo-Golden-Pepper-Letreiro-1.png"
 
 # ======================
