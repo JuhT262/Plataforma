@@ -453,6 +453,7 @@ class ApiService:
 # SERVIÇOS DE INTERFACE
 # ======================
 class UiService:
+    
     @staticmethod
     def get_chat_audio_player():
         return f"""
