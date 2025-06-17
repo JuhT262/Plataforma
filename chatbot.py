@@ -1445,16 +1445,16 @@ class ChatService:
                 "role": "assistant",
                 "content": json.dumps(resposta, ensure_ascii=False)
             })
-        
-        DatabaseService.save_message(
-            conn,
-            get_user_id(),
-            st.session_state.session_id,
-            "assistant",
-            json.dumps(resposta, ensure_ascii=False)
+
+            DatabaseService.save_message(  # ← Agora corretamente indentado
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "assistant",
+                json.dumps(resposta, ensure_ascii=False)
             )
-            
-        except Exception as e:  # ← ISSO ESTAVA FALTANDO!
+    
+        except Exception as e:
             st.error(f"Erro ao processar mensagem: {str(e)}")
 
 
