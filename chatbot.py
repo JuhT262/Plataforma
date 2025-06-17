@@ -33,7 +33,7 @@ def initialize_application_state():
         'show_vip_offer': False,
         'last_cta_time': 0,
         'user_id': get_user_id(),  # Garante que o user_id sempre exista
-        'db_conn': None,  # Conexão com o banco de dados
+        'db_conn': DatabaseService.init_db(),
         'last_action': None,  # Última ação registrada
         'vip_access': False,  # Controle de acesso VIP
         'error_count': 0  # Contador de erros (para debug)
@@ -45,8 +45,14 @@ def initialize_application_state():
 
 def log_error(error_msg):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    error_info = {
+        'timestamp': timestamp,
+        'error': str(error_msg),
+        'session_id': st.session_state.get('session_id', 'unknown'),
+        'page': st.session_state.get('current_page', 'unknown')
+    }
     with open("error_log.txt", "a") as f:
-        f.write(f"[{timestamp}] {error_msg}\n")
+        f.write(json.dumps(error_info) + "\n")
 
 
 
@@ -1369,13 +1375,19 @@ class ChatService:
         if db_messages:
             st.session_state.messages = db_messages
 
+    
     @staticmethod
     def process_user_input(conn):
         try:
-        # Verificar conexão com banco de dados primeiro
-            if conn is None:
-                st.error("Erro: Conexão com o banco de dados perdida!")
-                return
+        # Verificação robusta de conexão
+            if conn is None or not hasattr(conn, 'cursor'):
+                st.session_state.db_conn = DatabaseService.init_db()  # Tenta reconectar
+                conn = st.session_state.db_conn
+                if conn is None:
+                    raise ConnectionError("Não foi possível conectar ao banco de dados")
+                save_persistent_data()  # Salva a nova conexão
+        
+        # Restante do código original...
 
         # Verificar e enviar áudio inicial se necessário
             if not st.session_state.get("audio_sent", False) and st.session_state.get("chat_started", False):
@@ -1636,18 +1648,24 @@ def handle_global_error(error):
 # ======================
 # PONTO DE ENTRADA SEGURO
 # ======================
+# ======================
+# PONTO DE ENTRADA SEGURO
+# ======================
 if __name__ == "__main__":
     try:
         # Configura handler global de exceções
         sys.excepthook = lambda exctype, exc, tb: handle_global_error(exc)
         
         # Verificação inicial
-        if not all(hasattr(Config, attr) for attr in ['IMG_PROFILE', 'AUDIO_FILE', 'LOGO_URL']):
-            raise ValueError("Configurações essenciais faltando na classe Config")
+        required_configs = ['IMG_PROFILE', 'AUDIO_FILE', 'LOGO_URL', 'API_KEY', 'API_URL']
+        if not all(hasattr(Config, attr) for attr in required_configs):
+            missing = [attr for attr in required_configs if not hasattr(Config, attr)]
+            raise ValueError(f"Configurações essenciais faltando: {', '.join(missing)}")
         
         # Execução principal
         main()
     
     except Exception as e:
         handle_global_error(e)
+        st.stop()  # Adicione esta linha para garantir que o app pare em caso de erro
 
