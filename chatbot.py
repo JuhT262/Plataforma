@@ -872,25 +872,27 @@ class UiService:
          </style>
         """, unsafe_allow_html=True)
             
-        /* Estilos específicos para mobile */
-        @media (max-width: 768px) {
-            .chat-header {
-                padding: 10px;
-                font-size: 0.9em;
-            }
-            [data-testid="stChatInput"] {
-                padding: 8px !important;
-            }
-            .stChatMessage {
-                max-width: 80% !important;
-            }
-            .stButton > button {
-                padding: 8px 12px !important;
-                font-size: 0.8rem !important;
-            }
-        }
-    </style>
-    """, unsafe_allow_html=True)
+            st.markdown("""
+            <style>
+            /* Estilos específicos para mobile */
+                @media (max-width: 768px) {
+                    .chat-header {
+                        padding: 10px;
+                        font-size: 0.9em;
+                    }
+                    [data-testid="stChatInput"] {
+                        padding: 8px !important;
+                    }
+                    .stChatMessage {
+                        max-width: 80% !important;
+                    }
+                    .stButton > button {
+                        padding: 8px 12px !important;
+                        font-size: 0.8rem !important;
+                    }
+                }
+            </style>
+            """, unsafe_allow_html=True)
     
     # Resto da implementação do chat...
         st.markdown("""    
