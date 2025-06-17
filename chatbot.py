@@ -1484,26 +1484,26 @@ class ChatService:
                         "assistant",
                         json.dumps(resposta, ensure_ascii=False)
                     )
-except Exception as e:
-    error_data = {
-        'location': "ChatService.process_user_input",
-        'error': str(e),
-        'type': type(e).__name__,
-        'traceback': traceback.format_exc(),
-        'user_input': user_input[:100] if 'user_input' in locals() else None
-    }
-    log_error(error_data)
-    
-    st.error(f"""
-    💬 **ERRO NO CHAT**
-    
-    {str(e)}
-    
-    **Tipo:** `{type(e).__name__}`
-    """)
-    
-    if st.button("⟳ Continuar conversa", key="chat_retry"):
-        st.rerun()
+        except Exception as e:
+            error_data = {
+                'location': "ChatService.process_user_input",
+                'error': str(e),
+                'type': type(e).__name__,
+                'traceback': traceback.format_exc(),
+                'user_input': user_input[:100] if 'user_input' in locals() else None
+            }
+            log_error(error_data)
+        
+            st.error(f"""
+            💬 **ERRO NO CHAT**
+        
+            {str(e)}
+        
+            **Tipo:** `{type(e).__name__}`
+            """)
+        
+            if st.button("⟳ Continuar conversa", key="chat_retry"):
+                st.rerun()
 
     
     
