@@ -883,7 +883,7 @@ class UiService:
          </style>
         """, unsafe_allow_html=True)
             
-            st.markdown("""
+        st.markdown("""
             <style>
             /* Estilos específicos para mobile */
                 @media (max-width: 768px) {
