@@ -1349,16 +1349,18 @@ class ChatService:
 
     @staticmethod
     def process_user_input(conn):
-    # Verificação segura do estado do áudio
-        try:   
-            if not st.session_state.get("audio_sent", False) and st.session_state.get("chat_started", False):
-            try:   
+        try:
+        # Verificar conexão com banco de dados primeiro
             if conn is None:
-            st.error("Erro: Conexão com o banco de dados perdida!")
-            return
-                status_container = st.empty()
+                st.error("Erro: Conexão com o banco de dados perdida!")
+                return
+
+        # Verificar e enviar áudio inicial se necessário
+            if not st.session_state.get("audio_sent", False) and st.session_state.get("chat_started", False):
+                try:
+                    status_container = st.empty()
                     UiService.show_audio_recording_effect(status_container)
-            
+                
                     DatabaseService.save_message(
                         conn,
                         get_user_id(),
@@ -1373,104 +1375,96 @@ class ChatService:
                     st.session_state.audio_sent = True
                     st.rerun()
 
-            try:
-        # 1. Verificar e inicializar mensagens
-                if 'messages' not in st.session_state:
-                    st.session_state.messages = []
+            # Restante da lógica do chat
+            if 'messages' not in st.session_state:
+                st.session_state.messages = []
             
-        # 2. Exibir histórico (últimas 12 mensagens)
-                for msg in st.session_state.messages[-12:]:
-                    role = msg.get("role", "")
-                    content = msg.get("content", "")
+        # Exibir histórico de mensagens
+            for msg in st.session_state.messages[-12:]:
+                role = msg.get("role", "")
+                content = msg.get("content", "")
             
-                    avatar = "🧑" if role == "user" else "💋"
-                    with st.chat_message(role, avatar=avatar):
-                        if content == "[ÁUDIO]":
-                            st.audio(Config.AUDIO_FILE)
-                        else:
-                            st.markdown(content)
+                avatar = "🧑" if role == "user" else "💋"
+                with st.chat_message(role, avatar=avatar):
+                    if content == "[ÁUDIO]":
+                        st.audio(Config.AUDIO_FILE)
+                    else:
+                        st.markdown(content)
 
-            # 3. Obter input do usuário
-                user_input = st.chat_input("Digite sua mensagem...")
-                if not user_input:
-                    return
-
-        # 4. Processar input
+        # Obter e processar input do usuário
+            user_input = st.chat_input("Digite sua mensagem...")
+            if user_input:
                 cleaned_input = str(user_input)[:500].strip()
-                if not cleaned_input:
-                    return
+                if cleaned_input:
+                # Salvar mensagem do usuário
+                    st.session_state.messages.append({
+                        "role": "user",
+                        "content": cleaned_input
+                    })
+                
+                    DatabaseService.save_message(
+                        conn,
+                        get_user_id(),
+                        st.session_state.session_id,
+                        "user",
+                        cleaned_input
+                    )
 
-        # 5. Salvar mensagem do usuário
-                st.session_state.messages.append({
-                    "role": "user",
-                    "content": cleaned_input
-                })
-        
-                DatabaseService.save_message(
-                    conn,
-                    get_user_id(),
-                    st.session_state.session_id,
-                    "user",
-                    cleaned_input
-                )
-
-        # 6. Gerar resposta baseada no input
-                user_input_lower = cleaned_input.lower()
-        
-                if any(word in user_input_lower for word in ["pix", "chave pix", "pagamento", "comprar", "quanto custa"]):
-                    resposta = {
-                        "text": "💰 Planos disponíveis:\n\n• PROMO: R$12,50\n• START: R$19,50\n• PREMIUM: R$45,50\n• EXTREME: R$75,50",
-                        "cta": {
-                            "show": True,
-                            "label": "QUERO ASSINAR",
-                            "target": "offers"
+                # Gerar resposta
+                    user_input_lower = cleaned_input.lower()
+                    if any(word in user_input_lower for word in ["pix", "chave pix", "pagamento", "comprar", "quanto custa"]):
+                        resposta = {
+                            "text": "💰 Planos disponíveis:\n\n• PROMO: R$12,50\n• START: R$19,50\n• PREMIUM: R$45,50\n• EXTREME: R$75,50",
+                            "cta": {
+                                "show": True,
+                                "label": "QUERO ASSINAR",
+                                "target": "offers"
+                            }
                         }
-                    }
-                else:
-                    resposta = {
-                        "text": "Oi amor! Quer ver meus conteúdos especiais? 😘",
-                        "cta": {
-                            "show": True,
-                            "label": "VER CONTEÚDOS",
-                            "target": "offers"
+                    else:
+                        resposta = {
+                            "text": "Oi amor! Quer ver meus conteúdos especiais? 😘",
+                            "cta": {
+                                "show": True,
+                                "label": "VER CONTEÚDOS",
+                                "target": "offers"
+                            }
                         }
-                    }
 
-        # 7. Exibir resposta
-                with st.chat_message("assistant", avatar="💋"):
-                    st.markdown(resposta["text"])
-                    if resposta["cta"]["show"]:
-                        if st.button(resposta["cta"]["label"]):
-                            st.session_state.current_page = resposta["cta"]["target"]
-                            st.rerun()
+                # Exibir e salvar resposta
+                    with st.chat_message("assistant", avatar="💋"):
+                        st.markdown(resposta["text"])
+                        if resposta["cta"]["show"]:
+                            if st.button(resposta["cta"]["label"]):
+                                st.session_state.current_page = resposta["cta"]["target"]
+                                st.rerun()
 
-        # 8. Salvar resposta
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": json.dumps(resposta, ensure_ascii=False)
-                })
+                    st.session_state.messages.append({
+                        "role": "assistant",
+                        "content": json.dumps(resposta, ensure_ascii=False)
+                    })
 
-                DatabaseService.save_message(  # ← Agora corretamente indentado
-                    conn,
-                    get_user_id(),
-                    st.session_state.session_id,
-                    "assistant",
-                    json.dumps(resposta, ensure_ascii=False)
-                )
+                    DatabaseService.save_message(
+                        conn,
+                        get_user_id(),
+                        st.session_state.session_id,
+                        "assistant",
+                        json.dumps(resposta, ensure_ascii=False)
+                    )
     
-            except Exception as e:
-                error_msg = f"Erro no chat: {str(e)}"
-                log_error(error_msg)  # ← Novo registro de log
-                st.error("""
-                ⚠️ Ops! Ocorreu um erro inesperado
+        except Exception as e:
+            error_msg = f"Erro no chat: {str(e)}"
+            log_error(error_msg)
+            st.error("""
+            ⚠️ Ops! Ocorreu um erro inesperado
 
-                Por favor:
-                1. Clique no botão abaixo para recarregar
-                2. Se o problema persistir, contate o suporte
-                """)
-    
-                if st.button("🔄 Recarregar Página", key="reload_chat_button"):  # ← Novo botão
-                    st.rerun()
+            Por favor:
+            1. Clique no botão abaixo para recarregar
+            2. Se o problema persistir, contate o suporte
+            """)
+        
+            if st.button("🔄 Recarregar Página", key="reload_chat_button"):
+                st.rerun()
 
 
     
