@@ -1452,6 +1452,7 @@ class ChatService:
                 st.session_state.session_id,
                 "assistant",
                 json.dumps(resposta, ensure_ascii=False)
+            )
             
         except Exception as e:  # ← ISSO ESTAVA FALTANDO!
             st.error(f"Erro ao processar mensagem: {str(e)}")
