@@ -1352,6 +1352,7 @@ class ChatService:
 
     
     @staticmethod
+    @staticmethod
     def process_user_input(conn):
     # Verificação segura do estado do áudio
         if not st.session_state.get("audio_sent", False) and st.session_state.get("chat_started", False):
@@ -1359,34 +1360,30 @@ class ChatService:
                 status_container = st.empty()
                 UiService.show_audio_recording_effect(status_container)
             
-                if not DatabaseService.save_message(conn, get_user_id(), st.session_state.session_id, "assistant", "[ÁUDIO]"):
-                    st.error("Erro ao salvar áudio")
-            
+                DatabaseService.save_message(
+                    conn,
+                    get_user_id(),
+                    st.session_state.session_id,
+                    "assistant",
+                    "[ÁUDIO]"
+                )
                 st.session_state.audio_sent = True
                 save_persistent_data()
             except Exception as e:
                 log_error(f"Erro no envio de áudio: {str(e)}")
                 st.session_state.audio_sent = True
-                
-        DatabaseService.save_message(
-            conn,
-            get_user_id(),
-            st.session_state.session_id,
-            "assistant",
-            "[ÁUDIO]"
-        )
-        st.session_state.audio_sent = True
-        save_persistent_data()
-        st.rerun()
+                st.rerun()
+
         try:
-            # 1. Verificar e inicializar mensagens
+        # 1. Verificar e inicializar mensagens
             if 'messages' not in st.session_state:
                 st.session_state.messages = []
-            # 2. Exibir histórico (últimas 12 mensagens)
+            
+        # 2. Exibir histórico (últimas 12 mensagens)
             for msg in st.session_state.messages[-12:]:
                 role = msg.get("role", "")
                 content = msg.get("content", "")
-                
+            
                 avatar = "🧑" if role == "user" else "💋"
                 with st.chat_message(role, avatar=avatar):
                     if content == "[ÁUDIO]":
@@ -1394,22 +1391,22 @@ class ChatService:
                     else:
                         st.markdown(content)
 
-            # 3. Obter input do usuário
+        # 3. Obter input do usuário
             user_input = st.chat_input("Digite sua mensagem...")
             if not user_input:
                 return
 
-            # 4. Processar input
+        # 4. Processar input
             cleaned_input = str(user_input)[:500].strip()
             if not cleaned_input:
                 return
 
-            # 5. Salvar mensagem do usuário
+        # 5. Salvar mensagem do usuário
             st.session_state.messages.append({
                 "role": "user",
                 "content": cleaned_input
             })
-            
+        
             DatabaseService.save_message(
                 conn,
                 get_user_id(),
@@ -1418,24 +1415,29 @@ class ChatService:
                 cleaned_input
             )
 
-            # 6. Gerar resposta
-            resposta = {
-                "text": "Oi amor! Quer ver meus conteúdos especiais? 😘",
-                "cta": {
-                    "show": True,
-                    "label": "VER CONTEÚDOS",
-                    "target": "offers"
+        # 6. Gerar resposta baseada no input
+            user_input_lower = cleaned_input.lower()
+        
+            if any(word in user_input_lower for word in ["pix", "chave pix", "pagamento", "comprar", "quanto custa"]):
+                resposta = {
+                    "text": "💰 Planos disponíveis:\n\n• PROMO: R$12,50\n• START: R$19,50\n• PREMIUM: R$45,50\n• EXTREME: R$75,50",
+                    "cta": {
+                        "show": True,
+                        "label": "QUERO ASSINAR",
+                        "target": "offers"
+                    }
                 }
-            } if "pix" not in cleaned_input.lower() else {
-                "text": "💰 Planos disponíveis:\n\n• PROMO: R$12,50\n• START: R$19,50\n• PREMIUM: R$45,50\n• EXTREME: R$75,50",
-                "cta": {
-                    "show": True,
-                    "label": "QUERO ASSINAR",
-                    "target": "offers"
+            else:
+                resposta = {
+                    "text": "Oi amor! Quer ver meus conteúdos especiais? 😘",
+                    "cta": {
+                        "show": True,
+                        "label": "VER CONTEÚDOS",
+                        "target": "offers"
+                    }
                 }
-            }
 
-            # 7. Exibir resposta
+        # 7. Exibir resposta
             with st.chat_message("assistant", avatar="💋"):
                 st.markdown(resposta["text"])
                 if resposta["cta"]["show"]:
@@ -1443,20 +1445,19 @@ class ChatService:
                         st.session_state.current_page = resposta["cta"]["target"]
                         st.rerun()
 
-            # 8. Salvar resposta
+        # 8. Salvar resposta
             st.session_state.messages.append({
                 "role": "assistant",
                 "content": json.dumps(resposta, ensure_ascii=False)
             })
-            
+        
             DatabaseService.save_message(
                 conn,
                 get_user_id(),
                 st.session_state.session_id,
                 "assistant",
                 json.dumps(resposta, ensure_ascii=False)
-            )
-
+            
         except Exception as e:
             st.error(f"Erro ao processar mensagem: {str(e)}")
 
