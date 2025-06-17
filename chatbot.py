@@ -447,7 +447,17 @@ class ApiService:
                     headers={"Content-Type": "application/json"},
                     json=api_data,
                     timeout=Config.REQUEST_TIMEOUT
-                )  
+                )
+                response.raise_for_status()
+                return response.json()
+            except (requests.Timeout, requests.ConnectionError) as e:
+                if attempt == max_retries - 1:
+                    return {"text": "🔴 Desculpe, estou tendo problemas com a net, volto mais tarde mb", "cta": {"show": False}}
+                time.sleep(2 ** attempt)
+
+# ======================
+# SERVIÇOS DE INTERFACE
+# ======================  
 
 # ======================
 # SERVIÇOS DE INTERFACE
