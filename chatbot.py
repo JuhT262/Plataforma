@@ -1347,11 +1347,6 @@ class ChatService:
         if db_messages:
             st.session_state.messages = db_messages
 
-    
-
-
-    
-    @staticmethod
     @staticmethod
     def process_user_input(conn):
     # Verificação segura do estado do áudio
@@ -1460,6 +1455,10 @@ class ChatService:
             
         except Exception as e:
             st.error(f"Erro ao processar mensagem: {str(e)}")
+
+
+    
+    
 
 # ======================
 # APLICAÇÃO PRINCIPAL
