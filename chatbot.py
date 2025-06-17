@@ -1352,7 +1352,7 @@ class ChatService:
     # Verificação segura do estado do áudio
         try:   
             if not st.session_state.get("audio_sent", False) and st.session_state.get("chat_started", False):
-        try:   
+            try:   
             if conn is None:
             st.error("Erro: Conexão com o banco de dados perdida!")
             return
