@@ -90,7 +90,36 @@ hide_streamlit_style = """
         max-width: 100% !important;
         height: auto !important;
         border-radius: 12px !important;
+        background-color: transparent !important;  /* LINHA NOVA */
     }
+    .stImage img, .stMarkdown img {
+        background: linear-gradient(180deg, #1e0033, #3c0066) !important;  /* LINHA NOVA */
+        padding: 5px !important;  /* LINHA NOVA */
+    }
+    /* ========== MOBILE ========== */
+@media (max-width: 768px) {
+    /* Empilha os pacotes verticalmente */
+    .package-container {
+        flex-direction: column !important;
+    }
+    /* Ajusta largura dos cards */
+    .package-box {
+        width: 100% !important;
+        margin-bottom: 20px !important;
+    }
+    /* Corrige layout das colunas */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+    }
+    [data-testid="stHorizontalBlock"] > div {
+        width: 100% !important;
+    }
+    /* Botões menores */
+    .stButton > button {
+        font-size: 0.9rem !important;
+        padding: 10px 15px !important;
+    }
+}
 </style>
 </style>
 """
@@ -312,16 +341,13 @@ class CTAEngine:
         user_input = user_input.lower()
 
         # Trata qualquer variação relacionada a pix/chave
-        pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência","manda a chave" ]
+        pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]
         if any(term in user_input for term in pix_terms):
             return {
-                "text": "💸 Esquece chave Pix, gostoso... Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\\n\\nVem ver tudo que preparei pra te deixar louco 🔥"
-
-
-"Vem ver tudo que preparei pra te deixar louco \U0001F525",
+                "text": "💸 Olha, eu não uso PIX, amor... Mas tenho um mundinho todo especial pra você! 😈\n\nAqui você pode ver:\n- Minhas fotos mais ousadas 🔥\n- Vídeos exclusivos me masturbando 💦\n- E muito mais...\n\nVem descobrir tudo que eu preparei!",
                 "cta": {
                     "show": True,
-                    "label": "💎 Ver Planos Exclusivos",
+                    "label": "👉 Ver Planos VIP",
                     "target": "offers"
                 }
             }
@@ -1051,12 +1077,7 @@ class NewPages:
     def show_offers_page():
         st.markdown("""
         <style>
-            .package-container {
-                display: flex;
-                justify-content: space-between;
-                margin: 30px 0;
-                gap: 20px;
-            }
+            
             .package-box {
                 flex: 1;
                 background: rgba(30, 0, 51, 0.3);
