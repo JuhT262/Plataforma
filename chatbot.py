@@ -296,7 +296,7 @@ class CTAEngine:
                 "text": "💸 Esquece chave Pix, gostoso... Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\\n\\nVem ver tudo que preparei pra te deixar louco 🔥"
 
 
-Vem ver tudo que preparei pra te deixar louco 🔥",
+"Vem ver tudo que preparei pra te deixar louco \U0001F525",
                 "cta": {
                     "show": True,
                     "label": "💎 Ver Planos Exclusivos",
