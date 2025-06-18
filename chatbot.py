@@ -291,33 +291,33 @@ class CTAEngine:
     pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência"]
 
     if any(term in user_input for term in pix_terms):
-    return {
-            "text": "💸 Esquece chave Pix, gostoso... Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
-            "cta": {
-                "show": True,
-                "label": "💎 Ver Planos Exclusivos",
-                "target": "offers"
+        return {
+                "text": "💸 Esquece chave Pix, gostoso... Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
+                "cta": {
+                    "show": True,
+                    "label": "💎 Ver Planos Exclusivos",
+                    "target": "offers"
+                }
             }
-        }
 
 
         
-        if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-                return {
-                    "text": random.choice([
-                        "to com fotos da minha buceta bem aberta quer ver",
+    if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+        return {
+                "text": random.choice([
+                    "to com fotos da minha buceta bem aberta quer ver",
                         "minha buceta ta chamando vc nas fotos",
                         "fiz um ensaio novo mostrando tudinho"
-                    ]),
-                    "cta": {
-                        "show": True,
-                        "label": "Ver Fotos Quentes",
-                        "target": "offers"
+                        ]),
+                        "cta": {
+                            "show": True,
+                            "label": "Ver Fotos Quentes",
+                            "target": "offers"
+                        }
                     }
-                }
         
     elif any(v in user_input for v in ["video", "transar", "masturbar"]):
-            return {
+          return {
                 "text": random.choice([
                     "tenho video me masturbando gostoso vem ver",
                     "to me tocando nesse video novo quer ver",
