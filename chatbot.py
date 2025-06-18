@@ -316,7 +316,7 @@ class CTAEngine:
                 }
             }
         
-        elif any(v in user_input for v in ["video", "transar", "masturbar"]):
+    elif any(v in user_input for v in ["video", "transar", "masturbar"]):
             return {
                 "text": random.choice([
                     "tenho video me masturbando gostoso vem ver",
@@ -330,7 +330,7 @@ class CTAEngine:
                 }
             }
         
-        else:
+    else:
             return {
                 "text": random.choice([
                     "quero te mostrar tudo que eu tenho aqui",
