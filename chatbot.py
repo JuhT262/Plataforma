@@ -302,19 +302,19 @@ class CTAEngine:
 
 
         
-    if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-            return {
-                "text": random.choice([
-                    "to com fotos da minha buceta bem aberta quer ver",
-                    "minha buceta ta chamando vc nas fotos",
-                    "fiz um ensaio novo mostrando tudinho"
-                ]),
-                "cta": {
-                    "show": True,
-                    "label": "Ver Fotos Quentes",
-                    "target": "offers"
+        if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+                return {
+                    "text": random.choice([
+                        "to com fotos da minha buceta bem aberta quer ver",
+                        "minha buceta ta chamando vc nas fotos",
+                        "fiz um ensaio novo mostrando tudinho"
+                    ]),
+                    "cta": {
+                        "show": True,
+                        "label": "Ver Fotos Quentes",
+                        "target": "offers"
+                    }
                 }
-            }
         
     elif any(v in user_input for v in ["video", "transar", "masturbar"]):
             return {
