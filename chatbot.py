@@ -288,7 +288,7 @@ class CTAEngine:
         user_input = user_input.lower()
 
         # Trata qualquer variação relacionada a pix/chave
-pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência"]
+    pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência"]
 
     if any(term in user_input for term in pix_terms):
         return {
