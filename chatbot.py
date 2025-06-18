@@ -302,7 +302,7 @@ class CTAEngine:
 
 
         
-        if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+    if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
             return {
                 "text": random.choice([
                     "to com fotos da minha buceta bem aberta quer ver",
