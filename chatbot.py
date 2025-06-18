@@ -291,14 +291,14 @@ class CTAEngine:
     pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência"]
 
     if any(term in user_input for term in pix_terms):
-        return {
-            "text": "💸 Esquece chave Pix, gostoso... Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
-            "cta": {
-                "show": True,
-                "label": "💎 Ver Planos Exclusivos",
-                "target": "offers"
+            return {
+                "text": "💸 Esquece chave Pix, gostoso... Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
+                "cta": {
+                    "show": True,
+                    "label": "💎 Ver Planos Exclusivos",
+                    "target": "offers"
+                }
             }
-        }
 
 
         
