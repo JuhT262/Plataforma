@@ -4,6 +4,7 @@
 # ======================
 # IMPORTAÇÕES
 # ======================
+# -*- coding: utf-8 -*-
 import streamlit as st
 import requests
 import json
