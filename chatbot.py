@@ -92,7 +92,7 @@ class Config:
     REQUEST_TIMEOUT = 30
     AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/Juh%20of.mp3"
     AUDIO_DURATION = 8
-    IMG_PROFILE = "https://i.ibb.co/vvD2dkbQ/17.png"
+    IMG_PROFILE = "https://i.ibb.co/zhwMhzvr/Swapfaces-AI-1d2f0d36-04ab-42a2-837c-08fe6c357656.png"
     IMG_GALLERY = [
         "https://i.ibb.co/DkXF5Wy/Swapfaces-AI-789cad8b-d632-473a-bb72-623c70724707.png",
         "https://i.ibb.co/DfTmwHZb/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png",
