@@ -1,4 +1,4 @@
-
+CODIGO CERTO 
 
 
 # ======================
@@ -16,50 +16,6 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
-import traceback
-import sys
-
-def initialize_application_state():
-    """Garante que todos os estados essenciais existam"""
-    required_states = {
-        'age_verified': False,
-        'messages': [],
-        'request_count': 0,
-        'session_id': str(uuid.uuid4()),
-        'connection_complete': False,
-        'chat_started': False,
-        'audio_sent': False,
-        'current_page': 'home',
-        'show_vip_offer': False,
-        'last_cta_time': 0,
-        'user_id': get_user_id(),  # Garante que o user_id sempre exista
-        'db_conn': DatabaseService.init_db(),
-        'last_action': None,  # Última ação registrada
-        'vip_access': False,  # Controle de acesso VIP
-        'error_count': 0  # Contador de erros (para debug)
-    }
-    
-    for key, default in required_states.items():
-        if key not in st.session_state:
-            st.session_state[key] = default
-
-def log_error(error_data):
-    """Registra erros completos com contexto"""
-    error_entry = {
-        'timestamp': datetime.now().isoformat(),
-        **error_data  # Inclui todos os dados do erro
-    }
-    
-    with open("error_log.txt", "a", encoding='utf-8') as f:
-        f.write(json.dumps(error_entry, indent=2, ensure_ascii=False) + "\n")
-
-
-
-
-
-
-
-
 
 # ======================
 # CONFIGURAÇÃO INICIAL DO STREAMLIT
@@ -120,7 +76,6 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # ======================
 # CONSTANTES E CONFIGURAÇÕES
 # ======================
-
 class Config:
     API_KEY = "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g"
     API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
@@ -136,8 +91,17 @@ class Config:
     REQUEST_TIMEOUT = 30
     AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/Juh%20of.mp3"
     AUDIO_DURATION = 8
-
     IMG_PROFILE = "https://i.ibb.co/vvD2dkbQ/17.png"
+    IMG_GALLERY = [
+        "https://i.ibb.co/DkXF5Wy/Swapfaces-AI-789cad8b-d632-473a-bb72-623c70724707.png",
+        "https://i.ibb.co/DfTmwHZb/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png",
+        "https://i.ibb.co/60nYTWfV/Swapfaces-AI-6fa11bfe-af4f-4aa9-bbe0-2edb97e67026.png"
+    ]
+    IMG_HOME_PREVIEWS = [
+        "https://i.ibb.co/rfK0DPBM/27.png",
+        "https://i.ibb.co/RpPBjFp1/image.png",
+        "https://i.ibb.co/1GcmQffP/11.png"
+    ]
     LOGO_URL = "https://i.ibb.co/LX7x3tcB/Logo-Golden-Pepper-Letreiro-1.png"
 
 # ======================
@@ -197,10 +161,7 @@ def load_persistent_data():
     
     for key, value in saved_data.items():
         if key not in st.session_state:
-            if key == 'messages' and not isinstance(value, list):
-                st.session_state[key] = []
-            else:
-                st.session_state[key] = value
+            st.session_state[key] = value
 
 def save_persistent_data():
     user_id = get_user_id()
@@ -325,6 +286,17 @@ class CTAEngine:
     @staticmethod
     def generate_response(user_input: str) -> dict:
         user_input = user_input.lower()
+
+        if "pix" in prompt.lower():
+            return {
+                "text": "💸 Você quer meu pix? Antes deixa eu te mostrar meus planos VIP, tem um que é a sua cara! 😘",
+                "cta": {
+                    "show": True,
+                    "label": "Ver Planos VIP",
+                    "target": "offers"
+                }
+            }
+
         
         if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
             return {
@@ -386,22 +358,15 @@ class DatabaseService:
 
     @staticmethod
     def save_message(conn, user_id, session_id, role, content):
-        max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                cursor = conn.cursor()
-                cursor.execute("""
-                    INSERT INTO conversations (user_id, session_id, timestamp, role, content)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (user_id, session_id, datetime.now(), role, content))
-                conn.commit()
-                return True
-            except sqlite3.Error as e:
-                if attempt == max_retries - 1:  # Última tentativa
-                    log_error(f"Falha ao salvar mensagem após {max_retries} tentativas: {str(e)}")
-                    st.session_state.error_count += 1
-                    return False
-                time.sleep(0.5 * (attempt + 1))  
+        try:
+            c = conn.cursor()
+            c.execute("""
+                INSERT INTO conversations (user_id, session_id, timestamp, role, content)
+                VALUES (?, ?, ?, ?, ?)
+            """, (user_id, session_id, datetime.now(), role, content))
+            conn.commit()
+        except sqlite3.Error as e:
+            st.error(f"Erro ao salvar mensagem: {e}")
 
     @staticmethod
     def load_messages(conn, user_id, session_id):
@@ -426,39 +391,61 @@ class ApiService:
         return ApiService._call_gemini_api(prompt, session_id, conn)
 
     @staticmethod
-    def _call_gemini_api(prompt: str, session_id: str, conn, max_retries=3):
-        api_data = {
-            "contents": [{
-                "parts": [{
-                    "text": prompt
-                }]
-            }]
+    def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
+        delay_time = random.uniform(3, 8)
+        time.sleep(delay_time)
+        
+        status_container = st.empty()
+        UiService.show_status_effect(status_container, "viewed")
+        UiService.show_status_effect(status_container, "typing")
+        
+        conversation_history = ChatService.format_conversation_history(st.session_state.messages)
+        
+        headers = {'Content-Type': 'application/json'}
+        data = {
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [{"text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
+                }
+            ],
+            "generationConfig": {
+                "temperature": 0.9,
+                "topP": 0.8,
+                "topK": 40
+            }
         }
-    
-        for attempt in range(max_retries):
+        
+        try:
+            response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
+            response.raise_for_status()
+            gemini_response = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+            
             try:
-                response = requests.post(
-                    Config.API_URL,
-                    headers={"Content-Type": "application/json"},
-                    json=api_data,
-                    timeout=Config.REQUEST_TIMEOUT
-                )
-                response.raise_for_status()
-                return response.json()
-            except (requests.Timeout, requests.ConnectionError) as e:
-                if attempt == max_retries - 1:
-                    return {"text": "🔴 Desculpe, estou tendo problemas com a net, volto mais tarde mb", "cta": {"show": False}}
-                time.sleep(2 ** attempt)
-
-# ======================
-# SERVIÇOS DE INTERFACE
-# ======================  
+                if '```json' in gemini_response:
+                    resposta = json.loads(gemini_response.split('```json')[1].split('```')[0].strip())
+                else:
+                    resposta = json.loads(gemini_response)
+                
+                if resposta.get("cta", {}).get("show"):
+                    if not CTAEngine.should_show_cta(st.session_state.messages):
+                        resposta["cta"]["show"] = False
+                    else:
+                        st.session_state.last_cta_time = time.time()
+                
+                return resposta
+            
+            except json.JSONDecodeError:
+                return {"text": gemini_response, "cta": {"show": False}}
+                
+        except Exception as e:
+            st.error(f"Erro na API: {str(e)}")
+            return {"text": "Vamos continuar isso mais tarde...", "cta": {"show": False}}
 
 # ======================
 # SERVIÇOS DE INTERFACE
 # ======================
 class UiService:
-    
     @staticmethod
     def get_chat_audio_player():
         return f"""
@@ -655,34 +642,74 @@ class UiService:
                 st.session_state.age_verified = True
                 save_persistent_data()
                 st.rerun()
-                
+
     @staticmethod
     def setup_sidebar():
-    
         with st.sidebar:
             st.markdown("""
-        <style>
-            /* Estilos para mobile */
-            @media (max-width: 768px) {
+            <style>
                 [data-testid="stSidebar"] {
-                    width: 100% !important;
-                    max-width: 100% !important;
+                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+                    border-right: 1px solid #ff66b3 !important;
+                }
+                .sidebar-logo-container {
+                    margin: -25px -25px 0px -25px;
+                    padding: 0;
+                    text-align: left;
                 }
                 .sidebar-logo {
-                    width: 200px !important;
+                    max-width: 100%;
+                    height: auto;
+                    margin-bottom: -10px;
+                }
+                .sidebar-header {
+                    text-align: center; 
+                    margin-bottom: 20px;
                 }
                 .sidebar-header img {
-                    width: 60px !important;
-                    height: 60px !important;
+                    border-radius: 50%; 
+                    border: 2px solid #ff66b3;
+                    width: 80px;
+                    height: 80px;
+                    object-fit: cover;
                 }
                 .vip-badge {
-                    padding: 10px !important;
-                    font-size: 0.9em !important;
+                    background: linear-gradient(45deg, #ff1493, #9400d3);
+                    padding: 15px;
+                    border-radius: 8px;
+                    color: white;
+                    text-align: center;
+                    margin: 10px 0;
                 }
-            }
-        </style>
-        """, unsafe_allow_html=True)
-        
+                .menu-item {
+                    transition: all 0.3s;
+                    padding: 10px;
+                    border-radius: 5px;
+                }
+                .menu-item:hover {
+                    background: rgba(255, 102, 179, 0.2);
+                }
+                .sidebar-logo {
+                    width: 280px;
+                    height: auto;
+                    object-fit: contain;
+                    margin-left: -15px;
+                    margin-top: -15px;
+                }
+                @media (min-width: 768px) {
+                    .sidebar-logo {
+                        width: 320px;
+                    }
+                }
+                [data-testid="stSidebarNav"] {
+                    margin-top: -50px;
+                }
+                .sidebar-logo-container {
+                    position: relative;
+                    z-index: 1;
+                }
+            </style>
+            """, unsafe_allow_html=True)
             
             st.markdown(f"""
             <div class="sidebar-logo-container">
@@ -761,61 +788,60 @@ class UiService:
             border-radius: 10px;
             margin-bottom: 20px;
         ">
-           <p style="margin: 0;">Conteúdo exclusivo disponível</p>
-       </div>
-       """, unsafe_allow_html=True)
-    
+            <p style="margin: 0;">Conteúdo exclusivo disponível</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
         cols = st.columns(3)
-    
+        
         for idx, col in enumerate(cols):
             with col:
                 st.image(
                     Config.IMG_GALLERY[idx],
-                    use_column_width=True,  # Corrigido para column_width
+                    use_container_width=True,
                     caption=f"Preview {idx+1}"
-            )
-            st.markdown(f"""
-            <div style="
-                text-align: center;
-                font-size: 0.8em;
-                color: #ff66b3;
-                margin-top: -10px;
-            ">
-                Conteúdo bloqueado
-            </div>
-            """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    st.markdown("""
-    <div style="text-align: center;">
-        <h4>Desbloqueie acesso completo</h4>
-        <p>Assine o plano VIP para ver todos os conteúdos</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if st.button("Tornar-se VIP 💎",
-                key="vip_button_gallery", 
-                use_container_width=True,
-                type="primary"):
-        st.session_state.current_page = "offers"
-        st.rerun()
-    
-    if st.button("Voltar ao chat", key="back_from_gallery"):
-        st.session_state.current_page = "chat"
-        save_persistent_data()
-        st.rerun()
+                )
+                st.markdown(f"""
+                <div style="
+                    text-align: center;
+                    font-size: 0.8em;
+                    color: #ff66b3;
+                    margin-top: -10px;
+                ">
+                    Conteúdo bloqueado
+                </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+        st.markdown("""
+        <div style="text-align: center;">
+            <h4>Desbloqueie acesso completo</h4>
+            <p>Assine o plano VIP para ver todos os conteúdos</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("Tornar-se VIP 💎",  # Adicionado emoji de diamante
+                    key="vip_button_gallery", 
+                    use_container_width=True,
+                    type="primary"):
+            st.session_state.current_page = "offers"
+            st.rerun()
+        
+        if st.button("Voltar ao chat", key="back_from_gallery"):
+            st.session_state.current_page = "chat"
+            save_persistent_data()
+            st.rerun()
 
     @staticmethod
     def chat_shortcuts():
         cols = st.columns(4)
         with cols[0]:
-            if st.button("Início 😘", key="shortcut_home",
+            if st.button("Início 😘", key="shortcut_home", 
                        help="Voltar para a página inicial",
                        use_container_width=True):
                 st.session_state.current_page = "home"
                 save_persistent_data()
                 st.rerun()
-                
         with cols[1]:
             if st.button("Galeria 📷", key="shortcut_gallery",
                        help="Acessar galeria privada",
@@ -862,46 +888,7 @@ class UiService:
 
     @staticmethod
     def enhanced_chat_ui(conn):
-        """Interface aprimorada do chat"""
-        st.markdown("""    
-        <style>
-            /* Estilos gerais do chat */
-            .chat-header {
-                 background: linear-gradient(90deg, #ff66b3, #ff1493);
-                 color: white;
-                 padding: 15px;
-                 border-radius: 10px;
-                 margin-bottom: 20px;
-                 text-align: center;
-                 box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-             }
-         </style>
-        """, unsafe_allow_html=True)
-            
         st.markdown("""
-            <style>
-            /* Estilos específicos para mobile */
-                @media (max-width: 768px) {
-                    .chat-header {
-                        padding: 10px;
-                        font-size: 0.9em;
-                    }
-                    [data-testid="stChatInput"] {
-                        padding: 8px !important;
-                    }
-                    .stChatMessage {
-                        max-width: 80% !important;
-                    }
-                    .stButton > button {
-                        padding: 8px 12px !important;
-                        font-size: 0.8rem !important;
-                    }
-                }
-            </style>
-            """, unsafe_allow_html=True)
-    
-    # Resto da implementação do chat...
-        st.markdown("""    
         <style>
             .chat-header {
                 background: linear-gradient(90deg, #ff66b3, #ff1493);
@@ -923,20 +910,14 @@ class UiService:
             }
         </style>
         """, unsafe_allow_html=True)
-    
+        
         UiService.chat_shortcuts()
         
         st.markdown(f"""
         <div class="chat-header">
-            <h2 style="margin:0; font-size:1.5em; display:inline-block;">Chat Privado com Juh 💎</h2>
+            <h2 style="margin:0; font-size:1.5em; display:inline-block;">Chat Privado com Juh 💎</h2>  <!-- Alterado e adicionado emoji de diamante -->
         </div>
         """, unsafe_allow_html=True)
-
-        if conn is None:
-            st.error("ERRO: Conexão com banco de dados é None!")
-            return
-            
-        ChatService.process_user_input(conn)
         
         st.sidebar.markdown(f"""
         <div style="
@@ -949,9 +930,14 @@ class UiService:
             <p style="margin:0; font-size:0.9em;">
                 Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
             </p>
+            <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}</strong>
+            </p>
             <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
         </div>
         """, unsafe_allow_html=True)
+        
+        ChatService.process_user_input(conn)
+        save_persistent_data()
         
         st.markdown("""
         <div style="
@@ -1128,7 +1114,6 @@ class NewPages:
                 padding: 5px 10px;
                 border-radius: 5px;
                 font-weight: bold;
-            }
         </style>
         """, unsafe_allow_html=True)
 
@@ -1296,15 +1281,16 @@ class NewPages:
                 "link": Config.CHECKOUT_PROMO + "?plan=Promo"
             },
             {
-                "name": "3 Meses",
+              "name": "3 Meses",
                 "price": "R$ 69,90",
                 "original": "R$ 149,70",
                 "benefits": ["25% de desconto", "Bônus: 1 vídeo exclusivo", "Prioridade no chat"],
                 "tag": "MAIS POPULAR",
                 "link": Config.CHECKOUT_VIP_3MESES + "?plan=3meses"
+        
             },
             {
-                "name": "1 Ano",
+                 "name": "1 Ano",
                 "price": "R$ 199,90",
                 "original": "R$ 598,80",
                 "benefits": ["66% de desconto", "Presente surpresa mensal", "Acesso a conteúdos raros"],
@@ -1355,354 +1341,357 @@ class NewPages:
 class ChatService:
     @staticmethod
     def initialize_session(conn):
-        """Agora só carrega mensagens do banco"""
-        db_messages = DatabaseService.load_messages(
-            conn,
-            get_user_id(),
-            st.session_state.session_id
-        )
-        if db_messages:
-            st.session_state.messages = db_messages
+        load_persistent_data()
+        
+        if "session_id" not in st.session_state:
+            st.session_state.session_id = str(random.randint(100000, 999999))
+        
+        if "messages" not in st.session_state:
+            st.session_state.messages = DatabaseService.load_messages(
+                conn,
+                get_user_id(),
+                st.session_state.session_id
+            )
+        
+        if "request_count" not in st.session_state:
+            st.session_state.request_count = len([
+                m for m in st.session_state.messages 
+                if m["role"] == "user"
+            ])
+        
+        defaults = {
+            'age_verified': False,
+            'connection_complete': False,
+            'chat_started': False,
+            'audio_sent': False,
+            'current_page': 'home',
+            'show_vip_offer': False,
+            'last_cta_time': 0  # Novo campo adicionado
+        }
+        
+        for key, default in defaults.items():
+            if key not in st.session_state:
+                st.session_state[key] = default
 
-    
+    @staticmethod
+    def format_conversation_history(messages, max_messages=10):
+        formatted = []
+        
+        for msg in messages[-max_messages:]:
+            role = "Cliente" if msg["role"] == "user" else "Juh"
+            content = msg["content"]
+            if content == "[ÁUDIO]":
+                content = "[Enviou um áudio sensual]"
+            elif content.startswith('{"text"'):
+                try:
+                    content = json.loads(content).get("text", content)
+                except:
+                    pass
+            
+            formatted.append(f"{role}: {content}")
+        
+        return "\n".join(formatted)
+
+    @staticmethod
+    def display_chat_history():
+        chat_container = st.container()
+        with chat_container:
+            for idx, msg in enumerate(st.session_state.messages[-12:]):
+                if msg["role"] == "user":
+                    with st.chat_message("user", avatar="🧑"):
+                        st.markdown(f"""
+                        <div style="
+                            background: rgba(0, 0, 0, 0.1);
+                            padding: 12px;
+                            border-radius: 18px 18px 0 18px;
+                            margin: 5px 0;
+                        ">
+                            {msg["content"]}
+                        </div>
+                        """, unsafe_allow_html=True)
+                elif msg["content"] == "[ÁUDIO]":
+                    with st.chat_message("assistant", avatar="💋"):
+                        st.markdown(UiService.get_chat_audio_player(), unsafe_allow_html=True)
+                else:
+                    try:
+                        content_data = json.loads(msg["content"])
+                        if isinstance(content_data, dict):
+                            with st.chat_message("assistant", avatar="💋"):
+                                st.markdown(f"""
+                                <div style="
+                                    background: linear-gradient(45deg, #ff66b3, #ff1493);
+                                    color: white;
+                                    padding: 12px;
+                                    border-radius: 18px 18px 18px 0;
+                                    margin: 5px 0;
+                                ">
+                                    {content_data.get("text", "")}
+                                </div>
+                                """, unsafe_allow_html=True)
+                                
+                                # Mostrar botão apenas na última mensagem
+                                if content_data.get("cta", {}).get("show") and idx == len(st.session_state.messages[-12:]) - 1:
+                                    if st.button(
+                                        content_data.get("cta", {}).get("label", "Ver Ofertas"),
+                                        key=f"cta_button_{hash(msg['content'])}",  # Chave única baseada no conteúdo
+                                        use_container_width=True
+                                    ):
+                                        st.session_state.current_page = content_data.get("cta", {}).get("target", "offers")
+                                        save_persistent_data()
+                                        st.rerun()
+                        else:
+                            with st.chat_message("assistant", avatar="💋"):
+                                st.markdown(f"""
+                                <div style="
+                                    background: linear-gradient(45deg, #ff66b3, #ff1493);
+                                    color: white;
+                                    padding: 12px;
+                                    border-radius: 18px 18px 18px 0;
+                                    margin: 5px 0;
+                                ">
+                                    {msg["content"]}
+                                </div>
+                                """, unsafe_allow_html=True)
+                    except json.JSONDecodeError:
+                        with st.chat_message("assistant", avatar="💋"):
+                            st.markdown(f"""
+                            <div style="
+                                background: linear-gradient(45deg, #ff66b3, #ff1493);
+                                color: white;
+                                padding: 12px;
+                                border-radius: 18px 18px 18px 0;
+                                margin: 5px 0;
+                            ">
+                                {msg["content"]}
+                            </div>
+                            """, unsafe_allow_html=True)
+
+    @staticmethod
+    def validate_input(user_input):
+        cleaned_input = re.sub(r'<[^>]*>', '', user_input)
+        return cleaned_input[:500]
+
     @staticmethod
     def process_user_input(conn):
-        try:
-        # Verificação robusta de conexão
-            if conn is None or not hasattr(conn, 'cursor'):
-                st.session_state.db_conn = DatabaseService.init_db()  # Tenta reconectar
-                conn = st.session_state.db_conn
-                if conn is None:
-                    raise ConnectionError("Não foi possível conectar ao banco de dados")
-                save_persistent_data()  # Salva a nova conexão
+        ChatService.display_chat_history()
         
-        # Restante do código original...
-
-        # Verificar e enviar áudio inicial se necessário
-            if not st.session_state.get("audio_sent", False) and st.session_state.get("chat_started", False):
-                try:
-                    status_container = st.empty()
-                    UiService.show_audio_recording_effect(status_container)
-                
-                    DatabaseService.save_message(
-                        conn,
-                        get_user_id(),
-                        st.session_state.session_id,
-                        "assistant",
-                        "[ÁUDIO]"
-                    )
-                    st.session_state.audio_sent = True
-                    save_persistent_data()
-                except Exception as e:
-                    log_error(f"Erro no envio de áudio: {str(e)}")
-                    st.session_state.audio_sent = True
-                    st.rerun()
-
-            # Restante da lógica do chat
-            if 'messages' not in st.session_state:
-                st.session_state.messages = []
+        if not st.session_state.get("audio_sent") and st.session_state.chat_started:
+            status_container = st.empty()
+            UiService.show_audio_recording_effect(status_container)
             
-        # Exibir histórico de mensagens
-            for msg in st.session_state.messages[-12:]:
-                role = msg.get("role", "")
-                content = msg.get("content", "")
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": "[ÁUDIO]"
+            })
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "assistant",
+                "[ÁUDIO]"
+            )
+            st.session_state.audio_sent = True
+            save_persistent_data()
+            st.rerun()
+        
+        user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
+        
+        if user_input:
+            cleaned_input = ChatService.validate_input(user_input)
             
-                avatar = "🧑" if role == "user" else "💋"
-                with st.chat_message(role, avatar=avatar):
-                    if content == "[ÁUDIO]":
-                        st.audio(Config.AUDIO_FILE)
-                    else:
-                        st.markdown(content)
-
-        # Obter e processar input do usuário
-            user_input = st.chat_input("Digite sua mensagem...")
-            if user_input:
-                cleaned_input = str(user_input)[:500].strip()
-                if cleaned_input:
-                # Salvar mensagem do usuário
-                    st.session_state.messages.append({
-                        "role": "user",
-                        "content": cleaned_input
-                    })
-                
-                    DatabaseService.save_message(
-                        conn,
-                        get_user_id(),
-                        st.session_state.session_id,
-                        "user",
-                        cleaned_input
-                    )
-
-                # Gerar resposta
-                    user_input_lower = cleaned_input.lower()
-                    if any(word in user_input_lower for word in ["pix", "chave pix", "pagamento", "comprar", "quanto custa"]):
-                        resposta = {
-                            "text": "💰 Planos disponíveis:\n\n• PROMO: R$12,50\n• START: R$19,50\n• PREMIUM: R$45,50\n• EXTREME: R$75,50",
-                            "cta": {
-                                "show": True,
-                                "label": "QUERO ASSINAR",
-                                "target": "offers"
-                            }
-                        }
-                    else:
-                        resposta = {
-                            "text": "Oi amor! Quer ver meus conteúdos especiais? 😘",
-                            "cta": {
-                                "show": True,
-                                "label": "VER CONTEÚDOS",
-                                "target": "offers"
-                            }
-                        }
-
-                # Exibir e salvar resposta
-                    with st.chat_message("assistant", avatar="💋"):
-                        st.markdown(resposta["text"])
-                        if resposta["cta"]["show"]:
-                            if st.button(resposta["cta"]["label"]):
-                                st.session_state.current_page = resposta["cta"]["target"]
-                                st.rerun()
-
-                    st.session_state.messages.append({
-                        "role": "assistant",
-                        "content": json.dumps(resposta, ensure_ascii=False)
-                    })
-
-                    DatabaseService.save_message(
-                        conn,
-                        get_user_id(),
-                        st.session_state.session_id,
-                        "assistant",
-                        json.dumps(resposta, ensure_ascii=False)
-                    )
-        except Exception as e:
-            error_data = {
-                'location': "ChatService.process_user_input",
-                'error': str(e),
-                'type': type(e).__name__,
-                'traceback': traceback.format_exc(),
-                'user_input': user_input[:100] if 'user_input' in locals() else None
-            }
-            log_error(error_data)
-        
-            st.error(f"""
-            💬 **ERRO NO CHAT**
-        
-            {str(e)}
-        
-            **Tipo:** `{type(e).__name__}`
-            """)
-        
-            if st.button("⟳ Continuar conversa", key="chat_retry"):
+            if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": "Vou ficar ocupada agora, me manda mensagem depois?"
+                })
+                DatabaseService.save_message(
+                    conn,
+                    get_user_id(),
+                    st.session_state.session_id,
+                    "assistant",
+                    "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
+                )
+                save_persistent_data()
                 st.rerun()
-
-    
-    
-
-# ======================
-# APLICAÇÃO PRINCIPAL
-# ======================
-
-
+                return
+            
+            st.session_state.messages.append({
+                "role": "user",
+                "content": cleaned_input
+            })
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "user",
+                cleaned_input
+            )
+            
+            st.session_state.request_count += 1
+            
+            with st.chat_message("user", avatar="🧑"):
+                st.markdown(f"""
+                <div style="
+                    background: rgba(0, 0, 0, 0.1);
+                    padding: 12px;
+                    border-radius: 18px 18px 0 18px;
+                    margin: 5px 0;
+                ">
+                    {cleaned_input}
+                </div>
+                """, unsafe_allow_html=True)
+            
+            with st.chat_message("assistant", avatar="💋"):
+                resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
+                
+                if isinstance(resposta, str):
+                    resposta = {"text": resposta, "cta": {"show": False}}
+                elif "text" not in resposta:
+                    resposta = {"text": str(resposta), "cta": {"show": False}}
+                
+                st.markdown(f"""
+                <div style="
+                    background: linear-gradient(45deg, #ff66b3, #ff1493);
+                    color: white;
+                    padding: 12px;
+                    border-radius: 18px 18px 18px 0;
+                    margin: 5px 0;
+                ">
+                    {resposta["text"]}
+                </div>
+                """, unsafe_allow_html=True)
+                
+                if resposta.get("cta", {}).get("show"):
+                    if st.button(
+                        resposta["cta"].get("label", "Ver Ofertas"),
+                        key=f"chat_button_{time.time()}",
+                        use_container_width=True
+                    ):
+                        st.session_state.current_page = resposta["cta"].get("target", "offers")
+                        save_persistent_data()
+                        st.rerun()
+            
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": json.dumps(resposta)
+            })
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "assistant",
+                json.dumps(resposta)
+            )
+            
+            save_persistent_data()
+            
+            st.markdown("""
+            <script>
+                window.scrollTo(0, document.body.scrollHeight);
+            </script>
+            """, unsafe_allow_html=True)
 
 # ======================
 # APLICAÇÃO PRINCIPAL
 # ======================
 def main():
-    try:
-        # Inicialização do sistema
-        initialize_application_state()
-        
-        # Conexão com banco de dados
-        if 'db_conn' not in st.session_state:
-            try:
-                st.session_state.db_conn = DatabaseService.init_db()
-            except Exception as db_error:
-                error_msg = f"""
-                [ERRO DE BANCO DE DADOS] {datetime.now()}
-                {str(db_error)}
-                {traceback.format_exc()}
-                """
-                with open("error_log.txt", "a") as f:
-                    f.write(error_msg)
-                st.error("Sistema temporariamente indisponível. Tente novamente em alguns minutos.")
-                st.stop()
-        
-        # Verificação de idade
-        if not st.session_state.get('age_verified', False):
-            UiService.age_verification()
-            st.stop()
-        
-        # Configuração inicial
-        UiService.setup_sidebar()
-        
-        if not st.session_state.get('connection_complete', False):
-            try:
-                UiService.show_call_effect()
-                st.session_state.connection_complete = True
-                save_persistent_data()
-                st.rerun()
-            except Exception as effect_error:
-                log_error(f"Erro no efeito de chamada: {str(effect_error)}")
-                st.session_state.connection_complete = True  # Pula o efeito em caso de erro
-                st.rerun()
-        
-        # Controle de navegação
-        try:
-            page_handlers = {
-                'home': NewPages.show_home_page,
-                'gallery': UiService.show_gallery_page,
-                'offers': NewPages.show_offers_page,
-                'chat': UiService.enhanced_chat_ui
-            }
-            
-            current_page = st.session_state.get('current_page', 'home')
-            
-            if current_page == 'vip':
-                st.session_state.show_vip_offer = True
-                save_persistent_data()
-                st.rerun()
-            elif st.session_state.get('show_vip_offer', False):
-                st.warning("Página VIP em desenvolvimento")
-                if st.button("Voltar ao chat"):
-                    st.session_state.show_vip_offer = False
-                    save_persistent_data()
-                    st.rerun()
-            else:
-                handler = page_handlers.get(current_page)
-                if handler:
-                    if current_page == 'gallery':
-                        handler(st.session_state.db_conn)
-                    else:
-                        handler()
-            
-            save_persistent_data()
-            
-        except Exception as page_error:
-            log_error(f"Erro na página {st.session_state.get('current_page')}: {str(page_error)}")
-            st.error("Erro ao carregar o conteúdo. Recarregando...")
-            time.sleep(2)
-            st.rerun()
-            
-    except Exception as main_error:
-        critical_error = f"""
-        [ERRO CRÍTICO] {datetime.now()}
-        {str(main_error)}
-        {traceback.format_exc()}
-        Estado da Sessão: {json.dumps(st.session_state.to_dict(), indent=2)}
-        """
-        with open("error_log.txt", "a") as f:
-            f.write(critical_error)
-        
-        st.error("""
-        ⚠️ Falha crítica no sistema
-        Por favor:
-        1. Recarregue a página (F5)
-        2. Se persistir, espere 5 minutos
-        3. Entre em contato com o suporte se o problema continuar
-        """)
-        st.stop()
-
-# ======================
-# HANDLER DE ERROS GLOBAIS
-# ======================
-def handle_global_error(error):
-    """Mostra erros detalhados para diagnóstico"""
-    try:
-        # Formata informações do erro
-        error_type = type(error).__name__
-        error_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        error_trace = traceback.format_exc()
-        current_page = st.session_state.get('current_page', 'desconhecida')
-        
-        # Mensagem detalhada para o usuário
-        st.error(f"""
-        🚨 ERRO DETALHADO - {error_time}
-        
-        Tipo: {error_type}
-        Mensagem: {str(error)}
-        
-        Página atual: {current_page}
-        """)
-        
-        # Seção expansível com detalhes técnicos
-        with st.expander("🔍 Detalhes técnicos (para suporte)"):
-            st.code(f"""
-            Tipo: {error_type}
-            Mensagem: {str(error)}
-            Página: {current_page}
-            
-            Traceback completo:
-            {error_trace}
-            """)
-        
-        # Log completo do erro
-        error_log = {
-            'timestamp': error_time,
-            'type': error_type,
-            'message': str(error),
-            'page': current_page,
-            'traceback': error_trace,
-            'session_state': dict(st.session_state.items())
+    st.markdown("""
+    <style>
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+            border-right: 1px solid #ff66b3 !important;
         }
-        
-        with open("error_log.txt", "a", encoding="utf-8") as f:
-            f.write(json.dumps(error_log, indent=2) + "\n")
-        
-        # Botões de ação
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("🔄 Tentar novamente", key="error_retry"):
-                st.rerun()
+        .stButton button {
+            background: rgba(255, 20, 147, 0.2) !important;
+            color: white !important;
+            border: 1px solid #ff66b3 !important;
+            transition: all 0.3s !important;
+        }
+        .stButton button:hover {
+            background: rgba(255, 20, 147, 0.4) !important;
+            transform: translateY(-2px) !important;
+        }
+        [data-testid="stChatInput"] {
+            background: rgba(255, 102, 179, 0.1) !important;
+            border: 1px solid #ff66b3 !important;
+        }
+        div.stButton > button:first-child {
+            background: linear-gradient(45deg, #ff1493, #9400d3) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 20px !important;
+            padding: 10px 24px !important;
+            font-weight: bold !important;
+            transition: all 0.3s !important;
+            box-shadow: 0 4px 8px rgba(255, 20, 147, 0.3) !important;
+        }
+        div.stButton > button:first-child:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 12px rgba(255, 20, 147, 0.4) !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    if 'db_conn' not in st.session_state:
+        st.session_state.db_conn = DatabaseService.init_db()
+    
+    conn = st.session_state.db_conn
+    
+    ChatService.initialize_session(conn)
+    
+    if not st.session_state.age_verified:
+        UiService.age_verification()
+        st.stop()
+    
+    UiService.setup_sidebar()
+    
+    if not st.session_state.connection_complete:
+        UiService.show_call_effect()
+        st.session_state.connection_complete = True
+        save_persistent_data()
+        st.rerun()
+    
+    if not st.session_state.chat_started:
+        col1, col2, col3 = st.columns([1,3,1])
         with col2:
-            if st.button("📋 Copiar detalhes", key="error_copy"):
-                st.code(f"Erro: {error_type}\n{str(error)}\n\n{error_trace}")
-        
+            st.markdown("""
+            <div style="text-align: center; margin: 50px 0;">
+                <img src="{profile_img}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
+                <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
+                <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
+            </div>
+            """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
+            
+            if st.button("Iniciar Conversa", type="primary", use_container_width=True):
+                st.session_state.update({
+                    'chat_started': True,
+                    'current_page': 'chat',
+                    'audio_sent': False
+                })
+                save_persistent_data()
+                st.rerun()
         st.stop()
-        
-    except Exception as fallback_error:
-        st.error(f"Falha ao processar erro: {str(fallback_error)}")
-        st.stop()
-
-# ======================
-# PONTO DE ENTRADA SEGURO
-# ======================
-# ======================
-# PONTO DE ENTRADA SEGURO
-# ======================
-if __name__ == "__main__":
-    try:
-        # Verificação de configurações essenciais
-        required_configs = {
-            'API_KEY': "Chave da API (Google Gemini)",
-            'API_URL': "Endpoint da API",
-            'AUDIO_FILE': "Arquivo de áudio inicial",
-            'IMG_PROFILE': "Foto de perfil",
-            'LOGO_URL': "Logo do site"
-        }
-        
-        missing = [name for name in required_configs if not hasattr(Config, name)]
-        if missing:
-            missing_list = "\n".join([f"- {required_configs[name]} ({name})" for name in missing])
-            raise ValueError(f"Configurações faltando na classe Config:\n{missing_list}")
-
-        # Inicialização principal
-        with st.spinner("Iniciando ambiente premium..."):
-            main()
-
-    except Exception as e:
-        st.error(f"""
-        🔥 **FALHA NA INICIALIZAÇÃO**
-        
-        {str(e)}
-        
-        **Tipo:** `{type(e).__name__}`
-        """)
-        
-        if st.expander("⚠️ Detalhes do erro de inicialização"):
-            st.code(traceback.format_exc())
-        
-        if st.button("🔄 Tentar novamente", key="init_retry"):
+    
+    if st.session_state.current_page == "home":
+        NewPages.show_home_page()
+    elif st.session_state.current_page == "gallery":
+        UiService.show_gallery_page(conn)
+    elif st.session_state.current_page == "offers":
+        NewPages.show_offers_page()
+    elif st.session_state.current_page == "vip":
+        st.session_state.show_vip_offer = True
+        save_persistent_data()
+        st.rerun()
+    elif st.session_state.get("show_vip_offer", False):
+        st.warning("Página VIP em desenvolvimento")
+        if st.button("Voltar ao chat"):
+            st.session_state.show_vip_offer = False
+            save_persistent_data()
             st.rerun()
-        
-        st.stop()
+    else:
+        UiService.enhanced_chat_ui(conn)
+    
+    save_persistent_data()
 
+if __name__ == "__main__":
+    main()
