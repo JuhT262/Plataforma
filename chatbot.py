@@ -287,15 +287,19 @@ class CTAEngine:
     def generate_response(user_input: str) -> dict:
         user_input = user_input.lower()
 
-        if "pix" in user_input:
-            return {
-                "text": "💸 Você quer meu pix? Antes dá uma olhada nesses planos VIPs maravilhosos que preparei pra você 😘",
-                "cta": {
-                    "show": True,
-                    "label": "Ver Planos VIP",
-                    "target": "offers"
-                }
+        # Trata qualquer variação relacionada a pix/chave
+pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência"]
+
+    if any(term in user_input for term in pix_terms):
+        return {
+            "text": "💸 Esquece chave Pix, gostoso... Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
+            "cta": {
+                "show": True,
+                "label": "💎 Ver Planos Exclusivos",
+                "target": "offers"
             }
+        }
+
 
         
         if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
