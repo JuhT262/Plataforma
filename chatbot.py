@@ -1,6 +1,3 @@
-CODIGO CERTO 
-
-
 # ======================
 # IMPORTAÇÕES
 # ======================
@@ -286,17 +283,6 @@ class CTAEngine:
     @staticmethod
     def generate_response(user_input: str) -> dict:
         user_input = user_input.lower()
-
-        if "pix" in prompt.lower():
-            return {
-                "text": "💸 Você quer meu pix? Antes deixa eu te mostrar meus planos VIP, tem um que é a sua cara! 😘",
-                "cta": {
-                    "show": True,
-                    "label": "Ver Planos VIP",
-                    "target": "offers"
-                }
-            }
-
         
         if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
             return {
