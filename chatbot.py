@@ -72,24 +72,24 @@ hide_streamlit_style = """
     }
 
 <style>
-    html, body, [data-testid="stAppViewContainer"] {
-        max-width: 100vw !important;
-        overflow-x: hidden !important;
-        font-size: 16px;
+    html, body, .stApp {
+        background: linear-gradient(180deg, #1e0033, #3c0066) !important;
+        color: #fff !important;
     }
     .stButton>button {
-        font-size: 1.1em !important;
-        padding: 12px 20px !important;
+        font-size: 1rem !important;
+        padding: 14px 20px !important;
+    }
+    .chat-header h2, .stTextInput>div>input {
+        font-size: 1.2rem !important;
+    }
+    .block-container {
+        padding: 0.5rem 1rem !important;
     }
     img {
         max-width: 100% !important;
         height: auto !important;
-        border-radius: 12px;
-    }
-    @media (max-width: 768px) {
-        .chat-header h2 {
-            font-size: 1.2em !important;
-        }
+        border-radius: 12px !important;
     }
 </style>
 </style>
