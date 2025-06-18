@@ -283,16 +283,18 @@ class CTAEngine:
         
         return (hot_count >= 3) or has_direct_ask
 
+    
     @staticmethod
     def generate_response(user_input: str) -> dict:
         user_input = user_input.lower()
 
         # Trata qualquer variação relacionada a pix/chave
-    pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência"]
+        pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência"]
+        if any(term in user_input for term in pix_terms):
+            return {
+                "text": "💸 Esquece chave Pix, gostoso... Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈
 
-    if any(term in user_input for term in pix_terms):
-        return {
-                "text": "💸 Esquece chave Pix, gostoso... Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
+Vem ver tudo que preparei pra te deixar louco 🔥",
                 "cta": {
                     "show": True,
                     "label": "💎 Ver Planos Exclusivos",
@@ -300,24 +302,22 @@ class CTAEngine:
                 }
             }
 
-
-        
-    if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-        return {
+        if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+            return {
                 "text": random.choice([
                     "to com fotos da minha buceta bem aberta quer ver",
-                        "minha buceta ta chamando vc nas fotos",
-                        "fiz um ensaio novo mostrando tudinho"
-                        ]),
-                        "cta": {
-                            "show": True,
-                            "label": "Ver Fotos Quentes",
-                            "target": "offers"
-                        }
-                    }
-        
-    elif any(v in user_input for v in ["video", "transar", "masturbar"]):
-          return {
+                    "minha buceta ta chamando vc nas fotos",
+                    "fiz um ensaio novo mostrando tudinho"
+                ]),
+                "cta": {
+                    "show": True,
+                    "label": "Ver Fotos Quentes",
+                    "target": "offers"
+                }
+            }
+
+        elif any(v in user_input for v in ["video", "transar", "masturbar"]):
+            return {
                 "text": random.choice([
                     "tenho video me masturbando gostoso vem ver",
                     "to me tocando nesse video novo quer ver",
@@ -329,8 +329,8 @@ class CTAEngine:
                     "target": "offers"
                 }
             }
-        
-    else:
+
+        else:
             return {
                 "text": random.choice([
                     "quero te mostrar tudo que eu tenho aqui",
@@ -341,6 +341,7 @@ class CTAEngine:
                     "show": False
                 }
             }
+
 
 # ======================
 # SERVIÇOS DE BANCO DE DADOS
