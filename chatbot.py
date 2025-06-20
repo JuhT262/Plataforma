@@ -351,7 +351,9 @@ class CTAEngine:
         # Trata qualquer variação relacionada a pix/chave
         pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]
         if any(term in user_input for term in pix_terms):
+            time.sleep(3)
             return {
+            time.sleep(3)
                 "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
 
                 "cta": {
@@ -362,6 +364,7 @@ class CTAEngine:
             }
 
         if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+            time.sleep(3)
             return {
                 "text": random.choice([
                     "to com fotos da minha buceta bem aberta quer ver",
@@ -377,6 +380,7 @@ class CTAEngine:
 
             
         elif any(p in user_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
+            time.sleep(3)
             return {
                 "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
                 "cta": {
@@ -388,6 +392,7 @@ class CTAEngine:
 
 
         elif any(v in user_input for v in ["video", "transar", "masturbar"]):
+            time.sleep(3)
             return {
                 "text": random.choice([
                     "tenho video me masturbando gostoso vem ver",
