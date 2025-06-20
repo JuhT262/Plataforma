@@ -937,16 +937,56 @@ class UiService:
 
     @staticmethod
     def show_gallery_page(conn):
-        st.markdown("<h2 style='text-align:center;'>🌟 Galeria VIP 🌟</h2>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.image("https://i.imgur.com/XpYjAoH.jpeg", use_column_width=True)
-        with col2:
-            st.image("https://i.imgur.com/q7gQdBb.jpeg", use_column_width=True)
-        with col3:
-            st.image("https://i.imgur.com/wrgZdCm.jpeg", use_column_width=True)
+        st.markdown("""
+        <div style="
+            background: rgba(255, 20, 147, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        ">
+            <p style="margin: 0;">Conteúdo exclusivo disponível</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        cols = st.columns(3)
+        
+        for idx, col in enumerate(cols):
+            with col:
+                st.image(
+                    Config.IMG_GALLERY[idx],
+                    use_container_width=True,
+                    caption=f"Preview {idx+1}"
+                )
+                st.markdown(f"""
+                <div style="
+                    text-align: center;
+                    font-size: 0.8em;
+                    color: #ff66b3;
+                    margin-top: -10px;
+                ">
+                    Conteúdo bloqueado
+                </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown("---")
+        st.markdown("""
+        <div style="text-align: center;">
+            <h4>Desbloqueie acesso completo</h4>
+            <p>Assine o plano VIP para ver todos os conteúdos</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-        st.markdown("<p style='text-align:center;'>Entre na área VIP para mais conteúdo exclusivo.</p>", unsafe_allow_html=True)
+        if st.button("Tornar-se VIP", 
+                    key="vip_button_gallery", 
+                    use_container_width=True,
+                    type="primary"):
+            st.session_state.current_page = "offers"
+            st.rerun()
+        
+        if st.button("Voltar ao chat", key="back_from_gallery"):
+            st.session_state.current_page = "chat"
+            save_persistent_data()
+            st.rerun()
 
 class NewPages:
     @staticmethod
