@@ -782,7 +782,7 @@ class UiService:
             <div class="sidebar-logo-container">
                 <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
             </div>
-            """, unsafe_allow_html=True)
+           
 
 
             <div class="sidebar-header">
