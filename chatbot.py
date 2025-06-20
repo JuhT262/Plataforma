@@ -718,247 +718,131 @@ class UiService:
 
     @staticmethod
     def setup_sidebar():
-        
-
-            st.markdown("""
-            <style>
-                [data-testid="stSidebar"] {
-                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-                    border-right: 1px solid #ff66b3 !important;
-                }
-                .sidebar-logo-container {
-                    margin: -25px -25px 0px -25px;
-                    padding: 0;
-                    text-align: left;
-                }
-                .sidebar-logo {
-                    max-width: 100%;
-                    height: auto;
-                    margin-bottom: -10px;
-                }
-                .sidebar-header {
-                    text-align: center; 
-                    margin-bottom: 20px;
-                }
-                .sidebar-header img {
-                    border-radius: 50%; 
-                    border: 2px solid #ff66b3;
-                    width: 80px;
-                    height: 80px;
-                    object-fit: cover;
-                }
-                .vip-badge {
-                    background: linear-gradient(45deg, #ff1493, #9400d3);
-                    padding: 15px;
-                    border-radius: 8px;
-                    color: white;
-                    text-align: center;
-                    margin: 10px 0;
-                }
-                .menu-item {
-                    transition: all 0.3s;
-                    padding: 10px;
-                    border-radius: 5px;
-                }
-                .menu-item:hover {
-                    background: rgba(255, 102, 179, 0.2);
-                }
-                .sidebar-logo {
-                    width: 280px;
-                    height: auto;
-                    object-fit: contain;
-                    margin-left: -15px;
-                    margin-top: -15px;
-                }
-                @media (min-width: 768px) {
-                    .sidebar-logo {
-                        width: 320px;
-                    }
-                }
-                [data-testid="stSidebarNav"] {
-                    margin-top: -50px;
-                }
-                .sidebar-logo-container {
-                    position: relative;
-                    z-index: 1;
-                }
-            </style>
-            """, unsafe_allow_html=True)
-            
-            st.markdown(f"""
-            <div class="sidebar-logo-container">
-                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
-            </div>
-            """, unsafe_allow_html=True)
-            
-            st.markdown("""
-            <div class="sidebar-header">
-                <img src="{profile_img}" alt="Juh">  <!-- Alterado de Juh para Juh -->
-                <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>  <!-- Alterado e adicionado emoji de diamante -->
-            </div>
-            """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
-            
-            st.markdown("---")
-            st.markdown("### Menu Exclusivo")
-            
-            menu_options = {
-                "Início": "home",
-                "Galeria Privada": "gallery",
-                "Mensagens": "messages",
-                "Ofertas Especiais": "offers"
-            }
-            
-            for option, page in menu_options.items():
-                if st.button(option, use_container_width=True, key=f"menu_{page}"):
-                    if st.session_state.current_page != page:
-                        st.session_state.current_page = page
-                        st.session_state.last_action = f"page_change_to_{page}"
-                        save_persistent_data()
-                        st.rerun()
-            
-            st.markdown("---")
-            st.markdown("### Sua Conta")
-            
-            st.markdown("""
-            <div style="
-                background: rgba(255, 20, 147, 0.1);
-                padding: 10px;
+    with st.sidebar:
+        st.markdown(f"""
+        <style>
+            [data-testid="stSidebar"] {{
+                background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+                border-right: 1px solid #ff66b3 !important;
+            }}
+            .sidebar-logo-container {{
+                margin: -25px -25px 0px -25px;
+                padding: 0;
+                text-align: left;
+                position: relative;
+                z-index: 1;
+            }}
+            .sidebar-logo {{
+                width: 280px;
+                height: auto;
+                object-fit: contain;
+                margin-left: -15px;
+                margin-top: -15px;
+            }}
+            @media (min-width: 768px) {{
+                .sidebar-logo {{
+                    width: 320px;
+                }}
+            }}
+            .sidebar-header {{
+                text-align: center; 
+                margin: 20px 0;
+            }}
+            .sidebar-header img {{
+                border-radius: 50%;
+                border: 2px solid #ff66b3;
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                margin-bottom: 0.5rem;
+            }}
+            .vip-badge {{
+                background: linear-gradient(45deg, #ff1493, #9400d3);
+                padding: 15px;
                 border-radius: 8px;
+                color: white;
                 text-align: center;
-            ">
-                <p style="margin:0;">Acesse conteúdo exclusivo</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            st.markdown("---")
-            st.markdown("### Upgrade VIP 💎")  # Adicionado emoji de diamante
-            st.markdown("""
-            <div class="vip-badge">
-                <p style="margin: 0 0 10px; font-weight: bold;">Acesso ao Promo por apenas</p>
-                <p style="margin: 0; font-size: 1.5em; font-weight: bold;">R$ 12,50/mês</p>
-                <p style="margin: 10px 0 0; font-size: 0.8em;">Cancele quando quiser</p>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            if st.button("Tornar-se VIP 💎", use_container_width=True, type="primary"):  # Adicionado emoji de diamante
-                st.session_state.current_page = "offers"
-                save_persistent_data()
-                st.rerun()
-            
-            st.markdown("---")
-            st.markdown("""
-            <div style="text-align: center; font-size: 0.7em; color: #888;">
-                <p>© 2024 Juh Premium</p>  <!-- Alterado de Juh Premium para Juh Premium -->
-                <p>Conteúdo para maiores de 18 anos</p>
-            </div>
-            """, unsafe_allow_html=True)
+                margin: 10px 0;
+            }}
+            .menu-item {{
+                transition: all 0.3s;
+                padding: 10px;
+                border-radius: 5px;
+            }}
+            .menu-item:hover {{
+                background: rgba(255, 102, 179, 0.2);
+            }}
+            [data-testid="stSidebarNav"] {{
+                margin-top: -50px;
+            }}
+        </style>
 
-    @staticmethod
-    def show_gallery_page(conn):
+        <div class="sidebar-logo-container">
+            <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
+        </div>
+
+        <div class="sidebar-header">
+            <img src="{Config.IMG_PROFILE}" alt="Juh">
+            <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("---")
+        st.markdown("### Menu Exclusivo")
+
+        menu_options = {
+            "Início": "home",
+            "Galeria Privada": "gallery",
+            "Mensagens": "messages",
+            "Ofertas Especiais": "offers"
+        }
+
+        for option, page in menu_options.items():
+            if st.button(option, use_container_width=True, key=f"menu_{page}"):
+                if st.session_state.current_page != page:
+                    st.session_state.current_page = page
+                    st.session_state.last_action = f"page_change_to_{page}"
+                    save_persistent_data()
+                    st.rerun()
+
+        st.markdown("---")
+        st.markdown("### Sua Conta")
+
         st.markdown("""
         <div style="
             background: rgba(255, 20, 147, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
         ">
-            <p style="margin: 0;">Conteúdo exclusivo disponível</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        cols = st.columns(3)
-        
-        for idx, col in enumerate(cols):
-            with col:
-                st.image(
-                    Config.IMG_GALLERY[idx],
-                    use_container_width=True,
-                    caption=f"Preview {idx+1}"
-                )
-                st.markdown(f"""
-                <div style="
-                    text-align: center;
-                    font-size: 0.8em;
-                    color: #ff66b3;
-                    margin-top: -10px;
-                ">
-                    Conteúdo bloqueado
-                </div>
-                """, unsafe_allow_html=True)
-        
-        st.markdown("---")
-        st.markdown("""
-        <div style="text-align: center;">
-            <h4>Desbloqueie acesso completo</h4>
-            <p>Assine o plano VIP para ver todos os conteúdos</p>
+            <p style="margin:0;">Acesse conteúdo exclusivo</p>
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button("Tornar-se VIP 💎",  # Adicionado emoji de diamante
-                    key="vip_button_gallery", 
-                    use_container_width=True,
-                    type="primary"):
+        st.markdown("---")
+        st.markdown("### Upgrade VIP 💎")
+
+        st.markdown("""
+        <div class="vip-badge">
+            <p style="margin: 0 0 10px; font-weight: bold;">Acesso ao Promo por apenas</p>
+            <p style="margin: 0; font-size: 1.5em; font-weight: bold;">R$ 12,50/mês</p>
+            <p style="margin: 10px 0 0; font-size: 0.8em;">Cancele quando quiser</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("Tornar-se VIP 💎", use_container_width=True, type="primary"):
             st.session_state.current_page = "offers"
-            st.rerun()
-        
-        if st.button("Voltar ao chat", key="back_from_gallery"):
-            st.session_state.current_page = "chat"
             save_persistent_data()
             st.rerun()
 
-    @staticmethod
-    def chat_shortcuts():
-        cols = st.columns(4)
-        with cols[0]:
-            if st.button("Início 😘", key="shortcut_home", 
-                       help="Voltar para a página inicial",
-                       use_container_width=True):
-                st.session_state.current_page = "home"
-                save_persistent_data()
-                st.rerun()
-        with cols[1]:
-            if st.button("Galeria 📷", key="shortcut_gallery",
-                       help="Acessar galeria privada",
-                       use_container_width=True):
-                st.session_state.current_page = "gallery"
-                save_persistent_data()
-                st.rerun()
-        with cols[2]:
-            if st.button("Ofertas 🎉", key="shortcut_offers",  # Adicionado emoji de diamante
-                       help="Ver ofertas especiais",
-                       use_container_width=True):
-                st.session_state.current_page = "offers"
-                save_persistent_data()
-                st.rerun()
-        with cols[3]:
-            if st.button("VIP 💎", key="shortcut_vip",  # Adicionado emoji de diamante
-                       help="Acessar área VIP",
-                       use_container_width=True):
-                st.session_state.current_page = "vip"
-                save_persistent_data()
-                st.rerun()
-
+        st.markdown("---")
         st.markdown("""
-        <style>
-            div[data-testid="stHorizontalBlock"] > div > div > button {
-                color: white !important;
-                border: 1px solid #ff66b3 !important;
-                background: rgba(255, 102, 179, 0.15) !important;
-                transition: all 0.3s !important;
-                font-size: 0.8rem !important;
-            }
-            div[data-testid="stHorizontalBlock"] > div > div > button:hover {
-                transform: translateY(-2px) !important;
-                box-shadow: 0 2px 8px rgba(255, 102, 179, 0.3) !important;
-            }
-            @media (max-width: 400px) {
-                div[data-testid="stHorizontalBlock"] > div > div > button {
-                    font-size: 0.7rem !important;
-                    padding: 6px 2px !important;
-                }
-            }
-        </style>
+        <div style="text-align: center; font-size: 0.7em; color: #888;">
+            <p>© 2024 Juh Premium</p>
+            <p>Conteúdo para maiores de 18 anos</p>
+        </div>
         """, unsafe_allow_html=True)
+
 
     @staticmethod
     def enhanced_chat_ui(conn):
