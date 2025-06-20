@@ -1556,12 +1556,8 @@ if any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
   placeholder.markdown("💬 Digitando...")  # mensagem temporária
   time.sleep(3)  # espera 3 segundos
   placeholder.empty()  # limpa o placeholder
-
-
-
-
-    resposta = {
-        "text": random.choice([
+  resposta = {
+  "text": random.choice([
             "tô com fotos da minha buceta bem aberta, quer ver?",
             "minha buceta tá chamando você nas fotos...",
             "fiz um ensaio novo mostrando tudinho 🔥"
@@ -1671,7 +1667,7 @@ st.markdown("""
 </script>
 """, unsafe_allow_html=True)
 
-
+       
 
 
 
