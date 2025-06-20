@@ -1635,7 +1635,7 @@ class NewPages:
     
             conn = st.session_state.db_conn
     
-                ChatService.initialize_session(conn)
+            ChatService.initialize_session(conn)
     
             if not st.session_state.age_verified:
                 UiService.age_verification()
