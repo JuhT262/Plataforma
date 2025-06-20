@@ -1513,7 +1513,7 @@ class ChatService:
     
         if last_time:
             if isinstance(last_time, str):
-                last_time = datetime.datetime.fromisoformat(last_time)
+                last_time = datetime.fromisoformat(last_time)
             elapsed = now - last_time
     
             if elapsed.total_seconds() > 86400:
@@ -1608,7 +1608,7 @@ class ChatService:
                     "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
                 )
                 save_persistent_data()
-                st.session_state.last_user_msg_time = datetime.datetime.utcnow().isoformat()
+                st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
                 return
     
             # Define a resposta
