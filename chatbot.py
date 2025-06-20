@@ -935,9 +935,19 @@ class UiService:
         </div>
         """, unsafe_allow_html=True)
 
-# ======================
-# PÁGINAS
-# ======================
+    @staticmethod
+    def show_gallery_page(conn):
+        st.markdown("<h2 style='text-align:center;'>🌟 Galeria VIP 🌟</h2>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.image("https://i.imgur.com/XpYjAoH.jpeg", use_column_width=True)
+        with col2:
+            st.image("https://i.imgur.com/q7gQdBb.jpeg", use_column_width=True)
+        with col3:
+            st.image("https://i.imgur.com/wrgZdCm.jpeg", use_column_width=True)
+
+        st.markdown("<p style='text-align:center;'>Entre na área VIP para mais conteúdo exclusivo.</p>", unsafe_allow_html=True)
+
 class NewPages:
     @staticmethod
     def show_home_page():
