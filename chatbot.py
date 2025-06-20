@@ -108,7 +108,7 @@ hide_streamlit_style = """
      }
 
  [data-testid="stSidebar"] img {
-    border-radius: 0 !important;
+    border-radius: 50 !important;
     border: 2px solid #ff66b3;
     width: 80px !important;
     height: 80px !important;
