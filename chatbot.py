@@ -844,29 +844,30 @@ class UiService:
                 <p>Conteúdo para maiores de 18 anos</p>
             </div>
             """, unsafe_allow_html=True)
-            @staticmethod
-            def chat_shortcuts():
-                cols = st.columns(4)
-                with cols[0]:
-                    if st.button("Início", key="shortcut_home", use_container_width=True):
-                        st.session_state.current_page = "home"
-                        save_persistent_data()
-                        st.rerun()
-                with cols[1]:
-                    if st.button("Galeria", key="shortcut_gallery", use_container_width=True):
-                        st.session_state.current_page = "gallery"
-                        save_persistent_data()
-                        st.rerun()
-                with cols[2]:
-                    if st.button("Ofertas", key="shortcut_offers", use_container_width=True):
-                        st.session_state.current_page = "offers"
-                        save_persistent_data()
-                        st.rerun()
-                with cols[3]:
-                    if st.button("VIP", key="shortcut_vip", use_container_width=True):
-                        st.session_state.current_page = "vip"
-                        save_persistent_data()
-                        st.rerun()
+            
+    @staticmethod
+    def chat_shortcuts():
+        cols = st.columns(4)
+        with cols[0]:
+            if st.button("Início", key="shortcut_home", use_container_width=True):
+                st.session_state.current_page = "home"
+                save_persistent_data()
+                st.rerun()
+        with cols[1]:
+            if st.button("Galeria", key="shortcut_gallery", use_container_width=True):
+                st.session_state.current_page = "gallery"
+                save_persistent_data()
+                 st.rerun()
+        with cols[2]:
+             if st.button("Ofertas", key="shortcut_offers", use_container_width=True):
+                 st.session_state.current_page = "offers"
+                 save_persistent_data()
+                 st.rerun()
+         with cols[3]:
+             if st.button("VIP", key="shortcut_vip", use_container_width=True):
+                st.session_state.current_page = "vip"
+                save_persistent_data()
+                 st.rerun()
 
 
     @staticmethod
