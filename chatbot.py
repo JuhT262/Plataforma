@@ -734,6 +734,7 @@ class UiService:
                 }}
                 .sidebar-logo {{
                     border-radius: 0 !important;
+                    border: none !important;
                     width: 280px;
                     height: auto;
                     object-fit: contain;
@@ -780,7 +781,7 @@ class UiService:
             </style>
 
             <div class="sidebar-logo-container">
-                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo" style="border-radius: 0 !important;">
+                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
             </div>
 
             <div class="sidebar-header">
