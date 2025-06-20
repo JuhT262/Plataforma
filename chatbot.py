@@ -729,7 +729,7 @@ class UiService:
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    padding: 30px 0;
+                    padding: 40px 0;
                     margin: 0 auto;
                     text-align: center;
                     position: relative;
@@ -737,7 +737,7 @@ class UiService:
                 }}
                 .sidebar-logo {{
                     width: 100%;
-                    max-width: 350px;
+                    max-width: 450px;
                     height: auto;
                     object-fit: contain;
                     margin: 0 auto;
