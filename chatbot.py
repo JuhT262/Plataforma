@@ -32,7 +32,6 @@ st._config.set_option('client.caching', True)
 st._config.set_option('client.showErrorDetails', False)
 
 
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 
 # ======================
