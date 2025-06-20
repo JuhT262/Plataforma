@@ -736,7 +736,7 @@ class UiService:
                     z-index: 1;
                     
                 }}
-                .sidebar-logo {
+                .sidebar-logo {{
                     display: block;
                     width: 100% !important;
                     height: auto !important;
