@@ -1582,6 +1582,9 @@ class ChatService:
             
             # Palavras-chave: VOCÊ É REAL / IA
             elif any(p in lower_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
+                placeholder = st.empty()
+                placeholder.markdown("💬 Digitando...")
+                time.sleep(5)
                 resposta = {
                     "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
                     "cta": {
