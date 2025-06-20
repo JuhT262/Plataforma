@@ -729,13 +729,12 @@ class UiService:
                     margin: -25px -25px 0px -25px;
                     padding: 0;
                     text-align: left;
-                    position: relative;
-                    z-index: 1;
+                    
                 }}
                 .sidebar-logo {{
                     border-radius: 0 !important;
                     border: none !important;
-                    width: 280px;
+                    width: 400px;
                     height: auto;
                     object-fit: contain;
                     margin-left: -15px;
