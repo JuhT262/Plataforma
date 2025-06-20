@@ -1562,101 +1562,122 @@ class ChatService:
                 }
     
                      
-        elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-            placeholder = st.empty()
-            placeholder.markdown("💬 Digitando...")
-            time.sleep(3)
-            resposta = {
-                "text": random.choice([
-                    "to com fotos da minha buceta bem aberta quer ver",
-                    "minha buceta ta chamando vc nas fotos",
-                    "fiz um ensaio novo mostrando tudinho"
-                ]),
-                "cta": {
-                    "show": True,
-                    "label": "Ver Fotos Quentes",
-                    "target": "offers"
-                }
-            }
-            placeholder.empty()  # limpa o placeholder antes de mostrar a resposta no chat_message
-        
-        elif any(p in lower_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
-            resposta = {
-                "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
-                "cta": {
-                    "show": True,
-                    "label": "💎 Quero Ver Tudo",
-                    "target": "offers"
-                }
-            }
-        
-        elif any(v in lower_input for v in ["video", "transar", "masturbar"]):
-            resposta = {
-                "text": random.choice([
-                    "tenho video me masturbando gostoso vem ver",
-                    "to me tocando nesse video novo quer ver",
-                    "gravei um video especial pra vc"
-                ]),
-                "cta": {
-                    "show": True,
-                    "label": "Ver Vídeos Exclusivos",
-                    "target": "offers"
-                }
-            }
-        
-        else:
-            resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
-        
-            if isinstance(resposta, str):
-                resposta = {"text": resposta, "cta": {"show": False}}
-            elif "text" not in resposta:
-                resposta = {"text": str(resposta), "cta": {"show": False}}
-        
-        # Exibe resposta da IA ou resposta fixa
-        with st.chat_message("assistant", avatar="💋"):
-            st.markdown(f"""
-            <div style="
-                background: linear-gradient(45deg, #ff66b3, #ff1493);
-                color: white;
-                padding: 12px;
-                border-radius: 18px 18px 18px 0;
-                margin: 5px 0;
-            ">
-                {resposta["text"]}
-            </div>
-            """, unsafe_allow_html=True)
-        
-            if resposta.get("cta", {}).get("show"):
-                if st.button(
-                    resposta["cta"].get("label", "Ver Ofertas"),
-                    key=f"chat_button_{time.time()}",
-                    use_container_width=True
-                ):
-                    st.session_state.current_page = resposta["cta"].get("target", "offers")
-                    save_persistent_data()
-                    st.rerun()
-        
-        # Salva resposta
-        st.session_state.messages.append({
-            "role": "assistant",
-            "content": json.dumps(resposta)
-        })
-        DatabaseService.save_message(
-            conn,
-            get_user_id(),
-            st.session_state.session_id,
-            "assistant",
-            json.dumps(resposta)
-        )
-        
-        save_persistent_data()
-        
-        # Scroll automático para o final
-        st.markdown("""
-        <script>
-            window.scrollTo(0, document.body.scrollHeight);
-        </script>
-        """, unsafe_allow_html=True)
+        # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
+elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+    placeholder = st.empty()
+    placeholder.markdown("💬 Digitando...")
+    time.sleep(3)
+    resposta = {
+        "text": random.choice([
+            "tô com fotos da minha buceta bem aberta, quer ver?",
+            "minha buceta tá chamando você nas fotos...",
+            "fiz um ensaio novo mostrando tudinho 🔥"
+        ]),
+        "cta": {
+            "show": True,
+            "label": "Ver Fotos Quentes",
+            "target": "offers"
+        }
+    }
+
+# Palavras-chave: VOCÊ É REAL / IA
+elif any(p in lower_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
+    resposta = {
+        "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
+        "cta": {
+            "show": True,
+            "label": "💎 Quero Ver Tudo",
+            "target": "offers"
+        }
+    }
+
+# Palavras-chave: VÍDEO / MASTURBAR / TRANSAR
+elif any(v in lower_input for v in ["video", "transar", "masturbar"]):
+    placeholder = st.empty()
+    placeholder.markdown("💬 Digitando...")
+    time.sleep(3)
+    resposta = {
+        "text": random.choice([
+            "tenho vídeo me masturbando gostoso, vem ver 😈",
+            "tô me tocando nesse vídeo novo, quer ver?",
+            "gravei um vídeo especial só pra você 🥵"
+        ]),
+        "cta": {
+            "show": True,
+            "label": "Ver Vídeos Exclusivos",
+            "target": "offers"
+        }
+    }
+
+# Palavras-chave: PIX / CHAVE / TRANSFERÊNCIA
+elif any(pix in lower_input for pix in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
+    placeholder = st.empty()
+    placeholder.markdown("💬 Digitando...")
+    time.sleep(3)
+    resposta = {
+        "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
+        "cta": {
+            "show": True,
+            "label": "👉 Ver Planos VIP",
+            "target": "offers"
+        }
+    }
+
+# Mensagem padrão — IA responde (sem delay)
+else:
+    resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
+
+    if isinstance(resposta, str):
+        resposta = {"text": resposta, "cta": {"show": False}}
+    elif "text" not in resposta:
+        resposta = {"text": str(resposta), "cta": {"show": False}}
+
+# Exibe resposta da IA ou resposta fixa
+with st.chat_message("assistant", avatar="💋"):
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(45deg, #ff66b3, #ff1493);
+        color: white;
+        padding: 12px;
+        border-radius: 18px 18px 18px 0;
+        margin: 5px 0;
+    ">
+        {resposta["text"]}
+    </div>
+    """, unsafe_allow_html=True)
+
+    if resposta.get("cta", {}).get("show"):
+        if st.button(
+            resposta["cta"].get("label", "Ver Ofertas"),
+            key=f"chat_button_{time.time()}",
+            use_container_width=True
+        ):
+            st.session_state.current_page = resposta["cta"].get("target", "offers")
+            save_persistent_data()
+            st.rerun()
+
+# Salva resposta
+st.session_state.messages.append({
+    "role": "assistant",
+    "content": json.dumps(resposta)
+})
+DatabaseService.save_message(
+    conn,
+    get_user_id(),
+    st.session_state.session_id,
+    "assistant",
+    json.dumps(resposta)
+)
+
+save_persistent_data()
+
+# Scroll automático
+st.markdown("""
+<script>
+    window.scrollTo(0, document.body.scrollHeight);
+</script>
+""", unsafe_allow_html=True)
+
 
 
 
