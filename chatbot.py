@@ -659,6 +659,10 @@ class UiService:
         with st.sidebar:
             st.markdown(f"""
             <style>
+                section[data-testid="stSidebar"] {
+                    min-width: 320px !important;
+                    max-width: 400px !important;
+                    width: 100% !important;
                 [data-testid="stSidebar"] {{
                     background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
                     border-right: 1px solid #ff66b3 !important;
