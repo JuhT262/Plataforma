@@ -736,17 +736,15 @@ class UiService:
                     z-index: 1;
                     
                 }}
-                .sidebar-logo {
-                    display: block;
-                    width: 100% !important;
-                    height: auto !important;
-                    object-fit: contain !important;
-                    margin: 0 auto !important;
-                    border: none !important;
-                    border-radius: 0 !important;
-                    padding: 10px 0 !important;
-                }
-
+                img.sidebar-logo {{
+                display: block;
+                width: 100% !important;
+                max-width: 1200px !important;  /* Aqui você controla o tamanho real */
+                height: auto !important;
+                object-fit: contain !important;
+                margin: 0 auto !important;
+                border: none !important;
+                border-radius: 0 !important;
                 }}
                 @media (min-width: 768px) {{
                     img.sidebar-logo {{
