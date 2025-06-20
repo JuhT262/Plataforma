@@ -780,7 +780,7 @@ class UiService:
             </style>
 
             <div class="sidebar-logo-container">
-                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
+                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo" style="border-radius: 0 !important;">
             </div>
 
             <div class="sidebar-header">
