@@ -724,26 +724,33 @@ class UiService:
                 [data-testid="stSidebar"] {{
                     background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
                     border-right: 1px solid #ff66b3 !important;
+                    min-width: 380px !important;
+                    max-width: 480px !important;
+                    width: 100% !important;
                 }}
                 .sidebar-logo-container {{
-                    margin: -25px -25px 0px -25px;
+                    margin: 0px;
                     padding: 0;
-                    text-align: left;
+                    text-align: center;
+                    position: relative;
+                    z-index: 1;
                     
                 }}
-                .sidebar-logo {{
-                    border-radius: 0 !important;
+                .sidebar-logo {
+                    display: block;
+                    width: 100% !important;
+                    height: auto !important;
+                    object-fit: contain !important;
+                    margin: 0 auto !important;
                     border: none !important;
-                    width: 400px;
-                    height: auto;
-                    object-fit: contain;
-                    margin-left: -15px;
-                    margin-top: -15px;
+                    border-radius: 0 !important;
+                    padding: 10px 0 !important;
+                }
+
                 }}
                 @media (min-width: 768px) {{
-                    .sidebar-logo {{
-                        border-radius: 0 !important;
-                        width: 320px;
+                    img.sidebar-logo {{
+                        max-width: 1000px !important;
                     }}
                 }}
                 .sidebar-header {{
