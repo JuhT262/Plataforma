@@ -945,6 +945,22 @@ class UiService:
 # ======================
 # PÁGINAS
 # ======================
+
+    @staticmethod
+    def show_gallery_page(conn):
+        st.markdown("<h2 style='text-align:center;'>🌟 Galeria VIP 🌟</h2>", unsafe_allow_html=True)
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.image("https://i.ibb.co/s9GgDRmP/Swapfaces-AI-091e78d3-634f-4a01-9676-8d62385a06f9.png", use_column_width=True)
+        with col2:
+            st.image("https://i.ibb.co/xtt4yMMM/Swapfaces-AI-2a6a4421-008f-411b-874c-a32e1cdbe892.png", use_column_width=True)
+        with col3:
+            st.image("https://i.ibb.co/7JXFKM5H/Swapfaces-AI-e0167c19-a9b9-46a3-acf0-f82f6f2eefab.png", use_column_width=True)
+
+        st.markdown("<p style='text-align:center;'>Entre na área VIP para mais conteúdo exclusivo.</p>", unsafe_allow_html=True)
+
+
 class NewPages:
     @staticmethod
     def show_home_page():
@@ -1580,7 +1596,7 @@ class ChatService:
 # ======================
 # APLICAÇÃO PRINCIPAL
 # ======================
-def main():
+    def main():
     st.markdown("""
     <style>
         [data-testid="stSidebar"] {
