@@ -1655,7 +1655,7 @@ class ChatService:
     
             if not st.session_state.chat_started:
                 col1, col2, col3 = st.columns([1,3,1])
-                    with col2:
+                with col2:
                     st.markdown("""
                     <div style="text-align: center; margin: 50px 0;">
                         <img src="{profile_img}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
