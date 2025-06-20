@@ -1508,7 +1508,7 @@ class ChatService:
 
     @staticmethod
     def process_user_input(conn):
-        now = datetime.datetime.utcnow()
+        now = datetime.utcnow()
         last_time = st.session_state.get("last_user_msg_time")
     
         if last_time:
