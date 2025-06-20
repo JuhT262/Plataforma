@@ -667,22 +667,19 @@ class UiService:
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    padding: 60px 0;
-                    margin: 0 auto;
-                    text-align: center;
-                    position: relative;
-                    z-index: 1;
+                    padding: 40px 10;
                     width: 100%;  /* garantir largura total */
                 }}
                 .sidebar-logo {{
                       width: 100% !important;      /* ocupa toda largura do container */
-                      max-width: 600px !important; /* limita a um tamanho grande */
+                      max-width: 100% !important; /* limita a um tamanho grande */
                       height: auto !important;
                       object-fit: contain;
                       margin: 0 auto;
                       display: block;
-                }}
-                @media (min-width: 768px) {{
+                      border: none !important;
+                      box-shadow: none !important;
+                      border-radius: 0 !important;
                     .sidebar-logo {{
                         max-width: 500px;
                     }}
