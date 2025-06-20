@@ -742,6 +742,7 @@ class UiService:
                 }}
                 @media (min-width: 768px) {{
                     .sidebar-logo {{
+                        border-radius: 0 !important;
                         width: 320px;
                     }}
                 }}
