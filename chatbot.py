@@ -751,6 +751,7 @@ class UiService:
                     margin: 20px 0;
                 }}
                 .sidebar-header img {{
+                    border-radius: 0 !important;
                     border: 2px solid #ff66b3;
                     width: 80px;
                     height: 80px;
