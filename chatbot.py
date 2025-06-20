@@ -106,13 +106,14 @@ hide_streamlit_style = """
            padding: 5px !important;
      }
 
-     .sidebar-header img {
-         border-radius: 50% !important;
-         border: 2px solid #ff66b3;
-         width: 80px;
-         height: 80px;
-         object-fit: cover;
-     }
+ [data-testid="stSidebar"] img {
+    border-radius: 50% !important;
+    border: 2px solid #ff66b3;
+    width: 80px !important;
+    height: 80px !important;
+    object-fit: cover !important;
+}
+
 
      @media (max-width: 768px) {
          .package-container,
