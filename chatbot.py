@@ -745,7 +745,7 @@ class UiService:
                     border: none !important;
                     border-radius: 0 !important;
                     padding: 10px 0 !important;
-                }
+                }}
 
                 }}
                 @media (min-width: 768px) {{
