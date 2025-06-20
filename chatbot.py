@@ -733,6 +733,7 @@ class UiService:
                     z-index: 1;
                 }}
                 .sidebar-logo {{
+                    border-radius: 0 !important;
                     width: 280px;
                     height: auto;
                     object-fit: contain;
