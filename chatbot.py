@@ -729,11 +729,11 @@ class UiService:
                     margin: -25px -25px 0px -25px;
                     padding: 0;
                     text-align: left;
+                    position: relative;
+                    z-index: 1;
                     
                 }}
                 .sidebar-logo {{
-                    border-radius: 0 !important;
-                    border: none !important;
                     width: 400px;
                     height: auto;
                     object-fit: contain;
@@ -742,13 +742,13 @@ class UiService:
                 }}
                 @media (min-width: 768px) {{
                     .sidebar-logo {{
-                        border-radius: 0 !important;
+                    
                         width: 320px;
                     }}
                 }}
                 .sidebar-header {{
                     text-align: center; 
-                    margin: 20px 0;
+                    margin: 20px ;
                 }}
                 .sidebar-header img {{
                     border-radius: 50% !important;
@@ -782,6 +782,8 @@ class UiService:
             <div class="sidebar-logo-container">
                 <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
             </div>
+            """, unsafe_allow_html=True)
+
 
             <div class="sidebar-header">
                 <img src="{Config.IMG_PROFILE}" alt="Juh">
