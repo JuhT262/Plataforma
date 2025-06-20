@@ -684,9 +684,7 @@ class UiService:
                       border: none !important;
                       box-shadow: none !important;
                       border-radius: 0 !important;
-                    .sidebar-logo {{
-                        max-width: 500px;
-                    }}
+                    
                 }}
                 .sidebar-header {{
                     text-align: center; 
