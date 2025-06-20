@@ -1530,6 +1530,15 @@ class ChatService:
         
         if user_input:
             cleaned_input = ChatService.validate_input(user_input)
+
+            pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]
+            if any(term in cleaned_input.lower() for term in pix_terms):
+                resposta = {
+                    "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
+                    "cta": {
+                        "show": True,
+                        "label": "👉 Ver Planos VIP",
+                        "target": "offers"
             
             if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
                 st.session_state.messages.append({
