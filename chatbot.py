@@ -863,8 +863,8 @@ class UiService:
                  st.session_state.current_page = "offers"
                  save_persistent_data()
                  st.rerun()
-         with cols[3]:
-             if st.button("VIP", key="shortcut_vip", use_container_width=True):
+        with cols[3]:
+            if st.button("VIP", key="shortcut_vip", use_container_width=True):
                 st.session_state.current_page = "vip"
                 save_persistent_data()
                 st.rerun()
