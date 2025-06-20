@@ -672,15 +672,15 @@ class UiService:
                     text-align: center;
                     position: relative;
                     z-index: 1;
+                    width: 100%;  /* garantir largura total */
                 }}
                 .sidebar-logo {{
-                    width: auto;
-                    max-width: 600px; !important;
-                    height: auto; !important;
-                    object-fit: contain;
-                    margin: 0 auto;
-                    border: none !important;
-                    box-shadow: none !important;
+                      width: 100% !important;      /* ocupa toda largura do container */
+                      max-width: 600px !important; /* limita a um tamanho grande */
+                      height: auto !important;
+                      object-fit: contain;
+                      margin: 0 auto;
+                      display: block;
                 }}
                 @media (min-width: 768px) {{
                     .sidebar-logo {{
