@@ -1549,7 +1549,7 @@ class ChatService:
             
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
-elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+if any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
     placeholder = st.empty()
     placeholder.markdown("💬 Digitando...")
     time.sleep(3)
