@@ -27,7 +27,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 st._config.set_option('client.caching', True)
 st._config.set_option('client.showErrorDetails', False)
 
