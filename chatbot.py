@@ -1550,7 +1550,7 @@ class ChatService:
             if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
                 placeholder = st.empty()
                 placeholder.markdown("💬 Digitando...")
-                time.sleep(3)
+                time.sleep(5)
                 placeholder.empty()
                 resposta = {
                     "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
@@ -1566,7 +1566,7 @@ class ChatService:
             elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
                 placeholder = st.empty()
                 placeholder.markdown("💬 Digitando...")
-                time.sleep(3)
+                time.sleep(5)
                 resposta = {
                     "text": random.choice([
                         "tô com fotos da minha buceta bem aberta, quer ver?",
@@ -1595,7 +1595,7 @@ class ChatService:
             elif any(v in lower_input for v in ["video", "transar", "masturbar"]):
                 placeholder = st.empty()
                 placeholder.markdown("💬 Digitando...")
-                time.sleep(3)
+                time.sleep(5)
                 resposta = {
                     "text": random.choice([
                         "tenho vídeo me masturbando gostoso, vem ver 😈",
@@ -1609,19 +1609,7 @@ class ChatService:
                     }
                 }
             
-            # Palavras-chave: PIX / CHAVE / TRANSFERÊNCIA
-            elif any(pix in lower_input for pix in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(3)
-                resposta = {
-                    "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
-                    "cta": {
-                        "show": True,
-                        "label": "👉 Ver Planos VIP",
-                        "target": "offers"
-                    }
-                }
+            
             
             # Mensagem padrão — IA responde (sem delay)
             else:
