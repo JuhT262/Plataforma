@@ -717,6 +717,8 @@ class UiService:
 
     @staticmethod
     def setup_sidebar():
+        global IMG_PROFILE
+
         with st.sidebar:
             st.markdown('<div class="sidebar-header">', unsafe_allow_html=True)
             st.image(IMG_PROFILE, width=80)
