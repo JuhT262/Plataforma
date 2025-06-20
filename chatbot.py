@@ -675,7 +675,7 @@ class UiService:
                 }}
                 .sidebar-logo {{
                     width: 100%;
-                    max-width: 450px;
+                    max-width: 600px;
                     height: auto;
                     object-fit: contain;
                     margin: 0 auto;
@@ -684,7 +684,7 @@ class UiService:
                 }}
                 @media (min-width: 768px) {{
                     .sidebar-logo {{
-                        max-width: 320px;
+                        max-width: 500px;
                     }}
                 }}
                 .sidebar-header {{
