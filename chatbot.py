@@ -1584,6 +1584,7 @@ class ChatService:
 # APLICAÇÃO PRINCIPAL
 # ======================
 def main():
+    # Estilos CSS customizados para sidebar e botões
     st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -1621,35 +1622,40 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
+    # Inicializa conexão com banco de dados na sessão
     if 'db_conn' not in st.session_state:
         st.session_state.db_conn = DatabaseService.init_db()
-    
     conn = st.session_state.db_conn
     
+    # Inicializa sessão de chat
     ChatService.initialize_session(conn)
     
-    if not st.session_state.age_verified:
+    # Verifica idade (exemplo: maioridade)
+    if not st.session_state.get('age_verified', False):
         UiService.age_verification()
         st.stop()
     
+    # Configura barra lateral
     UiService.setup_sidebar()
     
-    if not st.session_state.connection_complete:
+    # Animação ou efeito inicial na conexão
+    if not st.session_state.get('connection_complete', False):
         UiService.show_call_effect()
         st.session_state.connection_complete = True
         save_persistent_data()
         st.rerun()
     
-    if not st.session_state.chat_started:
-        col1, col2, col3 = st.columns([1,3,1])
+    # Tela inicial (antes de iniciar conversa)
+    if not st.session_state.get('chat_started', False):
+        col1, col2, col3 = st.columns([1, 3, 1])
         with col2:
-            st.markdown("""
+            st.markdown(f"""
             <div style="text-align: center; margin: 50px 0;">
-                <img src="{profile_img}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
+                <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
                 <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
                 <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
             </div>
-            """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
             
             if st.button("Iniciar Conversa", type="primary", use_container_width=True):
                 st.session_state.update({
@@ -1661,25 +1667,28 @@ def main():
                 st.rerun()
         st.stop()
     
-    if st.session_state.current_page == "home":
+    # Navegação entre páginas via current_page e show_vip_offer
+    if st.session_state.get('current_page') == "home":
         NewPages.show_home_page()
-    elif st.session_state.current_page == "gallery":
+    elif st.session_state.get('current_page') == "gallery":
         UiService.show_gallery_page(conn)
-    elif st.session_state.current_page == "offers":
+    elif st.session_state.get('current_page') == "offers":
         NewPages.show_offers_page()
-    elif st.session_state.current_page == "vip":
+    elif st.session_state.get('current_page') == "vip":
         st.session_state.show_vip_offer = True
         save_persistent_data()
         st.rerun()
-    elif st.session_state.get("show_vip_offer", False):
+    elif st.session_state.get('show_vip_offer', False):
         st.warning("Página VIP em desenvolvimento")
         if st.button("Voltar ao chat"):
             st.session_state.show_vip_offer = False
             save_persistent_data()
             st.rerun()
     else:
+        # Página padrão do chat
         UiService.enhanced_chat_ui(conn)
     
+    # Salva estado persistente no fim da execução
     save_persistent_data()
 
 if __name__ == "__main__":
