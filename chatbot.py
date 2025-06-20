@@ -787,7 +787,7 @@ class UiService:
 
             <div class="sidebar-header">
                 <img src="{Config.IMG_PROFILE}" alt="Juh">
-                <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>
+                <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium </h3>
             </div>
             """, unsafe_allow_html=True)
 
