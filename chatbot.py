@@ -1530,15 +1530,57 @@ class ChatService:
     
         if user_input:
             cleaned_input = ChatService.validate_input(user_input)
-    
-            # Verifica termos relacionados a Pix/chave para resposta customizada
+            lower_input = cleaned_input.lower()
+
+            # Pix / chave - resposta fixa
             pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]
-            if any(term in cleaned_input.lower() for term in pix_terms):
+            if any(term in lower_input for term in pix_terms):
                 resposta = {
                     "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
                     "cta": {
                         "show": True,
                         "label": "👉 Ver Planos VIP",
+                        "target": "offers"
+                    }
+                }
+            
+            # Fotos
+            elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+                resposta = {
+                    "text": random.choice([
+                        "to com fotos da minha buceta bem aberta quer ver",
+                        "minha buceta ta chamando vc nas fotos",
+                        "fiz um ensaio novo mostrando tudinho"
+                    ]),
+                    "cta": {
+                        "show": True,
+                        "label": "Ver Fotos Quentes",
+                        "target": "offers"
+                    }
+                }
+        
+            # Perguntas se é real / ia
+            elif any(p in lower_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
+                resposta = {
+                    "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
+                    "cta": {
+                        "show": True,
+                        "label": "💎 Quero Ver Tudo",
+                        "target": "offers"
+                    }
+                }
+            
+            # Vídeos e temas relacionados
+            elif any(v in lower_input for v in ["video", "transar", "masturbar"]):
+                resposta = {
+                    "text": random.choice([
+                        "tenho video me masturbando gostoso vem ver",
+                        "to me tocando nesse video novo quer ver",
+                        "gravei um video especial pra vc"
+                    ]),
+                    "cta": {
+                        "show": True,
+                        "label": "Ver Vídeos Exclusivos",
                         "target": "offers"
                     }
                 }
