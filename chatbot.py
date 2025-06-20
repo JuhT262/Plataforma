@@ -718,6 +718,10 @@ class UiService:
     @staticmethod
     def setup_sidebar():
         with st.sidebar:
+            st.markdown('<div class="sidebar-header">', unsafe_allow_html=True)
+            st.image(IMG_PROFILE, width=80)
+            st.markdown('</div>', unsafe_allow_html=True)
+
             st.markdown("""
             <style>
                 [data-testid="stSidebar"] {
