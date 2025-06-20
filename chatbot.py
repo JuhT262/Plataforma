@@ -674,7 +674,7 @@ class UiService:
                     z-index: 1;
                 }}
                 .sidebar-logo {{
-                    width: 100%;
+                    width: auto;
                     max-width: 600px;
                     height: auto;
                     object-fit: contain;
