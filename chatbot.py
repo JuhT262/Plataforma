@@ -731,14 +731,15 @@ class UiService:
                     text-align: left;
                     
                 }}
-                .sidebar-logo {{
-                    border-radius: 0 !important;
-                    border: none !important;
-                    width: 800px;
-                    height: auto;
-                    object-fit: contain;
-                    margin-left: -15px;
-                    margin-top: -15px;
+                img.sidebar-logo {{
+                display: block;
+                width: 100% !important;
+                max-width: 420px !important;  /* Aqui você controla o tamanho real */
+                height: auto !important;
+                object-fit: contain !important;
+                margin: 0 auto !important;
+                border: none !important;
+                border-radius: 0 !important;
                 }}
                 @media (min-width: 768px) {{
                     .sidebar-logo {{
