@@ -1336,23 +1336,23 @@ class NewPages:
 # ======================
 # SERVIÇOS DE CHAT
 # ======================
-class ChatService:
-    @staticmethod
-    def initialize_session(conn):
-        load_persistent_data()
-        
-        if "session_id" not in st.session_state:
-            st.session_state.session_id = str(random.randint(100000, 999999))
-        
-        if "messages" not in st.session_state:
-            st.session_state.messages = DatabaseService.load_messages(
-                conn,
-                get_user_id(),
-                st.session_state.session_id
-            )
-        
-        if "request_count" not in st.session_state:
-            st.session_state.request_count = len([
+    class ChatService:
+        @staticmethod
+        def initialize_session(conn):
+            load_persistent_data()
+            
+            if "session_id" not in st.session_state:
+                st.session_state.session_id = str(random.randint(100000, 999999))
+            
+            if "messages" not in st.session_state:
+                st.session_state.messages = DatabaseService.load_messages(
+                    conn,
+                    get_user_id(),
+                    st.session_state.session_id
+                )
+            
+            if "request_count" not in st.session_state:
+                st.session_state.request_count = len([
                 m for m in st.session_state.messages 
                 if m["role"] == "user"
             ])
@@ -1635,7 +1635,7 @@ class ChatService:
     
             conn = st.session_state.db_conn
     
-            ChatService.initialize_session(conn)
+                ChatService.initialize_session(conn)
     
             if not st.session_state.age_verified:
                 UiService.age_verification()
