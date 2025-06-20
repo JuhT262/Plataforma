@@ -659,7 +659,7 @@ class UiService:
         with st.sidebar:
             st.markdown(f"""
             <style>
-                section[data-testid="stSidebar"] {
+                section[data-testid="stSidebar"] {{
                     min-width: 320px !important;
                     max-width: 400px !important;
                     width: 100% !important;
