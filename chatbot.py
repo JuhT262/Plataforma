@@ -348,34 +348,6 @@ class CTAEngine:
     def generate_response(user_input: str) -> dict:
         user_input = user_input.lower()
 
-        
-
-        if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-            time.sleep(5)
-            return {
-                "text": random.choice([
-                    "to com fotos da minha buceta bem aberta quer ver",
-                    "minha buceta ta chamando vc nas fotos",
-                    "fiz um ensaio novo mostrando tudinho"
-                ]),
-                "cta": {
-                    "show": True,
-                    "label": "Ver Fotos Quentes",
-                    "target": "offers"
-                }
-            }
-
-            
-        elif any(p in user_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
-            time.sleep(5)
-            return {
-                "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
-                "cta": {
-                    "show": True,
-                    "label": "💎 Quero Ver Tudo",
-                    "target": "offers"
-                }
-            }
 
 
         elif any(v in user_input for v in ["video", "transar", "masturbar"]):
@@ -1619,6 +1591,9 @@ class ChatService:
                 }
     
             elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+                  placeholder = st.empty()
+                  placeholder.markdown("💬 Digitando...")
+                  time.sleep(3)
                 resposta = {
                     "text": random.choice([
                         "to com fotos da minha buceta bem aberta quer ver",
