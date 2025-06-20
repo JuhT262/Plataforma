@@ -1592,104 +1592,104 @@ class NewPages:
 # ======================
 # APLICAÇÃO PRINCIPAL
 # ======================
-    def main():
-            st.markdown("""
-            <style>
-                [data-testid="stSidebar"] {
-                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-                    border-right: 1px solid #ff66b3 !important;
-                }
-                .stButton button {
-                    background: rgba(255, 20, 147, 0.2) !important;
-                    color: white !important;
-                    border: 1px solid #ff66b3 !important;
-                    transition: all 0.3s !important;
-                }
-                .stButton button:hover {
-                    background: rgba(255, 20, 147, 0.4) !important;
-                    transform: translateY(-2px) !important;
-                }
-                [data-testid="stChatInput"] {
-                    background: rgba(255, 102, 179, 0.1) !important;
-                    border: 1px solid #ff66b3 !important;
-                }
-                div.stButton > button:first-child {
-                    background: linear-gradient(45deg, #ff1493, #9400d3) !important;
-                    color: white !important;
-                    border: none !important;
-                    border-radius: 20px !important;
-                    padding: 10px 24px !important;
-                    font-weight: bold !important;
-                    transition: all 0.3s !important;
-                    box-shadow: 0 4px 8px rgba(255, 20, 147, 0.3) !important;
-                }
-                div.stButton > button:first-child:hover {
-                    transform: translateY(-2px) !important;
-                    box-shadow: 0 6px 12px rgba(255, 20, 147, 0.4) !important;
-                }
-            </style>
-            """, unsafe_allow_html=True)
-    
-            if 'db_conn' not in st.session_state:
-                st.session_state.db_conn = DatabaseService.init_db()
-    
-            conn = st.session_state.db_conn
-    
-            ChatService.initialize_session(conn)
-    
-            if not st.session_state.age_verified:
-                UiService.age_verification()
-                st.stop()
-    
-            UiService.setup_sidebar()
-    
-            if not st.session_state.connection_complete:
-                UiService.show_call_effect()
-                st.session_state.connection_complete = True
-                save_persistent_data()
-                st.rerun()
-    
-            if not st.session_state.chat_started:
-                col1, col2, col3 = st.columns([1,3,1])
-                with col2:
-                    st.markdown("""
-                    <div style="text-align: center; margin: 50px 0;">
-                        <img src="{profile_img}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
-                        <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
-                        <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
-                    </div>
-                    """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
-            
-                    if st.button("Iniciar Conversa", type="primary", use_container_width=True):
-                        st.session_state.update({
-                            'chat_started': True,
-                            'current_page': 'chat',
-                            'audio_sent': False
-                        })
-                        save_persistent_data()
-                        st.rerun()
-                st.stop()
-    
-            if st.session_state.current_page == "home":
-                NewPages.show_home_page()
-            elif st.session_state.current_page == "gallery":
-                UiService.show_gallery_page(conn)
-            elif st.session_state.current_page == "offers":
-                NewPages.show_offers_page()
-            elif st.session_state.current_page == "vip":
-                st.session_state.show_vip_offer = True
-                save_persistent_data()
-                st.rerun()
-            elif st.session_state.get("show_vip_offer", False):
-                st.warning("Página VIP em desenvolvimento")
-                if st.button("Voltar ao chat"):
-                    st.session_state.show_vip_offer = False
+        def main():
+                st.markdown("""
+                <style>
+                    [data-testid="stSidebar"] {
+                        background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+                        border-right: 1px solid #ff66b3 !important;
+                    }
+                    .stButton button {
+                        background: rgba(255, 20, 147, 0.2) !important;
+                        color: white !important;
+                        border: 1px solid #ff66b3 !important;
+                        transition: all 0.3s !important;
+                    }
+                    .stButton button:hover {
+                        background: rgba(255, 20, 147, 0.4) !important;
+                        transform: translateY(-2px) !important;
+                    }
+                    [data-testid="stChatInput"] {
+                        background: rgba(255, 102, 179, 0.1) !important;
+                        border: 1px solid #ff66b3 !important;
+                    }
+                    div.stButton > button:first-child {
+                        background: linear-gradient(45deg, #ff1493, #9400d3) !important;
+                        color: white !important;
+                        border: none !important;
+                        border-radius: 20px !important;
+                        padding: 10px 24px !important;
+                        font-weight: bold !important;
+                        transition: all 0.3s !important;
+                        box-shadow: 0 4px 8px rgba(255, 20, 147, 0.3) !important;
+                    }
+                    div.stButton > button:first-child:hover {
+                        transform: translateY(-2px) !important;
+                        box-shadow: 0 6px 12px rgba(255, 20, 147, 0.4) !important;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
+        
+                if 'db_conn' not in st.session_state:
+                    st.session_state.db_conn = DatabaseService.init_db()
+        
+                conn = st.session_state.db_conn
+        
+                ChatService.initialize_session(conn)
+        
+                if not st.session_state.age_verified:
+                    UiService.age_verification()
+                    st.stop()
+        
+                UiService.setup_sidebar()
+        
+                if not st.session_state.connection_complete:
+                    UiService.show_call_effect()
+                    st.session_state.connection_complete = True
                     save_persistent_data()
                     st.rerun()
-            else:
-                UiService.enhanced_chat_ui(conn)
-    
-            save_persistent_data()
-
+        
+                if not st.session_state.chat_started:
+                    col1, col2, col3 = st.columns([1,3,1])
+                    with col2:
+                        st.markdown("""
+                        <div style="text-align: center; margin: 50px 0;">
+                            <img src="{profile_img}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
+                            <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
+                            <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
+                        </div>
+                        """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
+                
+                        if st.button("Iniciar Conversa", type="primary", use_container_width=True):
+                            st.session_state.update({
+                                'chat_started': True,
+                                'current_page': 'chat',
+                                'audio_sent': False
+                            })
+                            save_persistent_data()
+                            st.rerun()
+                    st.stop()
+        
+                if st.session_state.current_page == "home":
+                    NewPages.show_home_page()
+                elif st.session_state.current_page == "gallery":
+                    UiService.show_gallery_page(conn)
+                elif st.session_state.current_page == "offers":
+                    NewPages.show_offers_page()
+                elif st.session_state.current_page == "vip":
+                    st.session_state.show_vip_offer = True
+                    save_persistent_data()
+                    st.rerun()
+                elif st.session_state.get("show_vip_offer", False):
+                    st.warning("Página VIP em desenvolvimento")
+                    if st.button("Voltar ao chat"):
+                        st.session_state.show_vip_offer = False
+                        save_persistent_data()
+                        st.rerun()
+                else:
+                    UiService.enhanced_chat_ui(conn)
+        
+                save_persistent_data()
+            
 if __name__ == "__main__":
     main()
