@@ -667,7 +667,7 @@ class UiService:
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    padding: 40px 0;
+                    padding: 60px 0;
                     margin: 0 auto;
                     text-align: center;
                     position: relative;
@@ -675,8 +675,8 @@ class UiService:
                 }}
                 .sidebar-logo {{
                     width: auto;
-                    max-width: 600px;
-                    height: auto;
+                    max-width: 600px; !important;
+                    height: auto; !important;
                     object-fit: contain;
                     margin: 0 auto;
                     border: none !important;
