@@ -726,19 +726,22 @@ class UiService:
                     border-right: 1px solid #ff66b3 !important;
                 }}
                 .sidebar-logo-container {{
-                    margin: -25px -25px 0px -25px;
-                    padding: 0;
-                    text-align: left;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 20px 0;
+                    margin: 0 auto;
+                    text-align: center;
                     position: relative;
                     z-index: 1;
                     
                 }}
                 .sidebar-logo {{
-                    width: 400px;
+                    width: 100%;
+                    max-width: 280px;
                     height: auto;
                     object-fit: contain;
-                    margin-left: -15px;
-                    margin-top: -15px;
+                    margin: 0 auto;
                 }}
                 @media (min-width: 768px) {{
                     .sidebar-logo {{
@@ -786,7 +789,9 @@ class UiService:
 
 
             <div class="sidebar-header">
-                <img src="{Config.IMG_PROFILE}" alt="Juh">
+                <img src="{Config.IMG_PROFILE}" alt="Juh 
+                
+                💎">
                 <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium </h3>
             </div>
             """, unsafe_allow_html=True)
