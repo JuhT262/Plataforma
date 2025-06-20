@@ -1546,9 +1546,7 @@ class ChatService:
                 save_persistent_data()
                 st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
                 return
-    
-        user_input = st.session_state.user_input.strip()
-        lower_input = user_input.lower()  
+     
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
 if any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
