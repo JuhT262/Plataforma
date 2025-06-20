@@ -17,7 +17,8 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
-import datetime
+from datetime import datetime
+
 
 
 
@@ -438,7 +439,7 @@ class DatabaseService:
             c.execute("""
                 INSERT INTO conversations (user_id, session_id, timestamp, role, content)
                 VALUES (?, ?, ?, ?, ?)
-            """, (user_id, session_id, datetime.now(), role, content))
+            """, (user_id, session_id, datetime.datetime.now(), role, content))
             conn.commit()
         except sqlite3.Error as e:
             st.error(f"Erro ao salvar mensagem: {e}")
