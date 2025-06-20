@@ -344,40 +344,11 @@ class CTAEngine:
         return (hot_count >= 3) or has_direct_ask
 
     
-    @staticmethod
-    def generate_response(user_input: str) -> dict:
-        user_input = user_input.lower()
+  
 
 
 
-        elif any(v in user_input for v in ["video", "transar", "masturbar"]):
-            time.sleep(5)
-            return {
-                "text": random.choice([
-                    "tenho video me masturbando gostoso vem ver",
-                    "to me tocando nesse video novo quer ver",
-                    "gravei um video especial pra vc"
-                ]),
-                "cta": {
-                    "show": True,
-                    "label": "Ver Vídeos Exclusivos",
-                    "target": "offers"
-                }
-            }
-
-        else:
-            return {
-                "text": random.choice([
-                    "quero te mostrar tudo que eu tenho aqui",
-                    "meu privado ta cheio de surpresas pra vc",
-                    "vem ver o que eu fiz pensando em voce"
-                ]),
-                "cta": {
-                    "show": False
-                }
-            }
-
-
+        
 # ======================
 # SERVIÇOS DE BANCO DE DADOS
 # ======================
