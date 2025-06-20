@@ -867,7 +867,7 @@ class UiService:
              if st.button("VIP", key="shortcut_vip", use_container_width=True):
                 st.session_state.current_page = "vip"
                 save_persistent_data()
-                 st.rerun()
+                st.rerun()
 
 
     @staticmethod
