@@ -1506,7 +1506,7 @@ class ChatService:
     @staticmethod
     def process_user_input(conn):
         ChatService.display_chat_history()
-    
+
         if not st.session_state.get("audio_sent") and st.session_state.chat_started:
             status_container = st.empty()
             UiService.show_audio_recording_effect(status_container)
@@ -1531,10 +1531,49 @@ class ChatService:
         if user_input:
             cleaned_input = ChatService.validate_input(user_input)
             lower_input = cleaned_input.lower()
-
-            # Pix / chave - resposta fixa
-            pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]
-            if any(term in lower_input for term in pix_terms):
+    
+            # Mostra mensagem do usuário imediatamente
+            with st.chat_message("user", avatar="🧑"):
+                st.markdown(f"""
+                <div style="
+                    background: rgba(0, 0, 0, 0.1);
+                    padding: 12px;
+                    border-radius: 18px 18px 0 18px;
+                    margin: 5px 0;
+                ">
+                    {cleaned_input}
+                </div>
+                """, unsafe_allow_html=True)
+    
+            st.session_state.messages.append({
+                "role": "user",
+                "content": cleaned_input
+            })
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "user",
+                cleaned_input
+            )
+            st.session_state.request_count += 1
+    
+            # Verifica limite
+            if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
+                with st.chat_message("assistant", avatar="💋"):
+                    st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
+                DatabaseService.save_message(
+                    conn,
+                    get_user_id(),
+                    st.session_state.session_id,
+                    "assistant",
+                    "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
+                )
+                save_persistent_data()
+                return
+    
+            # Define a resposta
+            if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
                 resposta = {
                     "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
                     "cta": {
@@ -1543,8 +1582,7 @@ class ChatService:
                         "target": "offers"
                     }
                 }
-            
-            # Fotos
+    
             elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
                 resposta = {
                     "text": random.choice([
@@ -1558,8 +1596,7 @@ class ChatService:
                         "target": "offers"
                     }
                 }
-        
-            # Perguntas se é real / ia
+    
             elif any(p in lower_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
                 resposta = {
                     "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
@@ -1569,8 +1606,7 @@ class ChatService:
                         "target": "offers"
                     }
                 }
-            
-            # Vídeos e temas relacionados
+    
             elif any(v in lower_input for v in ["video", "transar", "masturbar"]):
                 resposta = {
                     "text": random.choice([
@@ -1584,81 +1620,40 @@ class ChatService:
                         "target": "offers"
                     }
                 }
+    
             else:
-                # Caso não seja Pix, consulta o ApiService normalmente
-                if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
-                    st.session_state.messages.append({
-                        "role": "assistant",
-                        "content": "Vou ficar ocupada agora, me manda mensagem depois?"
-                    })
-                    DatabaseService.save_message(
-                        conn,
-                        get_user_id(),
-                        st.session_state.session_id,
-                        "assistant",
-                        "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
-                    )
-                    save_persistent_data()
-                    st.rerun()
-                    return
+                resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
     
-                st.session_state.messages.append({
-                    "role": "user",
-                    "content": cleaned_input
-                })
-                DatabaseService.save_message(
-                    conn,
-                    get_user_id(),
-                    st.session_state.session_id,
-                    "user",
-                    cleaned_input
-                )
+                if isinstance(resposta, str):
+                    resposta = {"text": resposta, "cta": {"show": False}}
+                elif "text" not in resposta:
+                    resposta = {"text": str(resposta), "cta": {"show": False}}
     
-                st.session_state.request_count += 1
+            # Exibe resposta da IA ou resposta fixa
+            with st.chat_message("assistant", avatar="💋"):
+                st.markdown(f"""
+                <div style="
+                    background: linear-gradient(45deg, #ff66b3, #ff1493);
+                    color: white;
+                    padding: 12px;
+                    border-radius: 18px 18px 18px 0;
+                    margin: 5px 0;
+                ">
+                    {resposta["text"]}
+                </div>
+                """, unsafe_allow_html=True)
     
-                with st.chat_message("user", avatar="🧑"):
-                    st.markdown(f"""
-                    <div style="
-                        background: rgba(0, 0, 0, 0.1);
-                        padding: 12px;
-                        border-radius: 18px 18px 0 18px;
-                        margin: 5px 0;
-                    ">
-                        {cleaned_input}
-                    </div>
-                    """, unsafe_allow_html=True)
+                if resposta.get("cta", {}).get("show"):
+                    if st.button(
+                        resposta["cta"].get("label", "Ver Ofertas"),
+                        key=f"chat_button_{time.time()}",
+                        use_container_width=True
+                    ):
+                        st.session_state.current_page = resposta["cta"].get("target", "offers")
+                        save_persistent_data()
+                        st.rerun()
     
-                with st.chat_message("assistant", avatar="💋"):
-                    resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
-    
-                    if isinstance(resposta, str):
-                        resposta = {"text": resposta, "cta": {"show": False}}
-                    elif "text" not in resposta:
-                        resposta = {"text": str(resposta), "cta": {"show": False}}
-    
-                    st.markdown(f"""
-                    <div style="
-                        background: linear-gradient(45deg, #ff66b3, #ff1493);
-                        color: white;
-                        padding: 12px;
-                        border-radius: 18px 18px 18px 0;
-                        margin: 5px 0;
-                    ">
-                        {resposta["text"]}
-                    </div>
-                    """, unsafe_allow_html=True)
-    
-                    if resposta.get("cta", {}).get("show"):
-                        if st.button(
-                            resposta["cta"].get("label", "Ver Ofertas"),
-                            key=f"chat_button_{time.time()}",
-                            use_container_width=True
-                        ):
-                            st.session_state.current_page = resposta["cta"].get("target", "offers")
-                            save_persistent_data()
-                            st.rerun()
-    
-            # Salva a resposta (seja Pix ou Api)
+            # Salva resposta
             st.session_state.messages.append({
                 "role": "assistant",
                 "content": json.dumps(resposta)
@@ -1673,11 +1668,13 @@ class ChatService:
     
             save_persistent_data()
     
+            # Scroll automático para o final
             st.markdown("""
             <script>
                 window.scrollTo(0, document.body.scrollHeight);
             </script>
             """, unsafe_allow_html=True)
+
 
 
 # ======================
