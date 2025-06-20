@@ -1445,8 +1445,7 @@ class ChatService:
     def process_user_input(conn):
         now = datetime.utcnow()
         last_time = st.session_state.get("last_user_msg_time")
-        user_input = st.session_state.user_input.strip()
-        lower_input = user_input.lower()
+        
     
         if last_time:
             if isinstance(last_time, str):
@@ -1548,7 +1547,8 @@ class ChatService:
                 st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
                 return
     
-            
+        user_input = st.session_state.user_input.strip()
+        lower_input = user_input.lower()  
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
 if any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
