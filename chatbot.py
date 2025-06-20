@@ -1445,6 +1445,8 @@ class ChatService:
     def process_user_input(conn):
         now = datetime.utcnow()
         last_time = st.session_state.get("last_user_msg_time")
+        user_input = st.session_state.user_input.strip()
+        lower_input = user_input.lower()
     
         if last_time:
             if isinstance(last_time, str):
