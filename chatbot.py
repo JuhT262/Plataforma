@@ -857,7 +857,7 @@ class UiService:
             if st.button("Galeria", key="shortcut_gallery", use_container_width=True):
                 st.session_state.current_page = "gallery"
                 save_persistent_data()
-                 st.rerun()
+                st.rerun()
         with cols[2]:
              if st.button("Ofertas", key="shortcut_offers", use_container_width=True):
                  st.session_state.current_page = "offers"
