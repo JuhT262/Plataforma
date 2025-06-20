@@ -718,130 +718,130 @@ class UiService:
 
     @staticmethod
     def setup_sidebar():
-    with st.sidebar:
-        st.markdown(f"""
-        <style>
-            [data-testid="stSidebar"] {{
-                background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-                border-right: 1px solid #ff66b3 !important;
-            }}
-            .sidebar-logo-container {{
-                margin: -25px -25px 0px -25px;
-                padding: 0;
-                text-align: left;
-                position: relative;
-                z-index: 1;
-            }}
-            .sidebar-logo {{
-                width: 280px;
-                height: auto;
-                object-fit: contain;
-                margin-left: -15px;
-                margin-top: -15px;
-            }}
-            @media (min-width: 768px) {{
-                .sidebar-logo {{
-                    width: 320px;
+        with st.sidebar:
+            st.markdown(f"""
+            <style>
+                [data-testid="stSidebar"] {{
+                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+                    border-right: 1px solid #ff66b3 !important;
                 }}
-            }}
-            .sidebar-header {{
-                text-align: center; 
-                margin: 20px 0;
-            }}
-            .sidebar-header img {{
-                border-radius: 50%;
-                border: 2px solid #ff66b3;
-                width: 80px;
-                height: 80px;
-                object-fit: cover;
-                margin-bottom: 0.5rem;
-            }}
-            .vip-badge {{
-                background: linear-gradient(45deg, #ff1493, #9400d3);
-                padding: 15px;
-                border-radius: 8px;
-                color: white;
-                text-align: center;
-                margin: 10px 0;
-            }}
-            .menu-item {{
-                transition: all 0.3s;
+                .sidebar-logo-container {{
+                    margin: -25px -25px 0px -25px;
+                    padding: 0;
+                    text-align: left;
+                    position: relative;
+                    z-index: 1;
+                }}
+                .sidebar-logo {{
+                    width: 280px;
+                    height: auto;
+                    object-fit: contain;
+                    margin-left: -15px;
+                    margin-top: -15px;
+                }}
+                @media (min-width: 768px) {{
+                    .sidebar-logo {{
+                        width: 320px;
+                    }}
+                }}
+                .sidebar-header {{
+                    text-align: center; 
+                    margin: 20px 0;
+                }}
+                .sidebar-header img {{
+                    border-radius: 50%;
+                    border: 2px solid #ff66b3;
+                    width: 80px;
+                    height: 80px;
+                    object-fit: cover;
+                    margin-bottom: 0.5rem;
+                }}
+                .vip-badge {{
+                    background: linear-gradient(45deg, #ff1493, #9400d3);
+                    padding: 15px;
+                    border-radius: 8px;
+                    color: white;
+                    text-align: center;
+                    margin: 10px 0;
+                }}
+                .menu-item {{
+                    transition: all 0.3s;
+                    padding: 10px;
+                    border-radius: 5px;
+                }}
+                .menu-item:hover {{
+                    background: rgba(255, 102, 179, 0.2);
+                }}
+                [data-testid="stSidebarNav"] {{
+                    margin-top: -50px;
+                }}
+            </style>
+
+            <div class="sidebar-logo-container">
+                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
+            </div>
+
+            <div class="sidebar-header">
+                <img src="{Config.IMG_PROFILE}" alt="Juh">
+                <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("---")
+            st.markdown("### Menu Exclusivo")
+    
+            menu_options = {
+                "Início": "home",
+                "Galeria Privada": "gallery",
+                "Mensagens": "messages",
+                "Ofertas Especiais": "offers"
+            }
+
+            for option, page in menu_options.items():
+                if st.button(option, use_container_width=True, key=f"menu_{page}"):
+                    if st.session_state.current_page != page:
+                        st.session_state.current_page = page
+                        st.session_state.last_action = f"page_change_to_{page}"
+                        save_persistent_data()
+                        st.rerun()
+
+            st.markdown("---")
+            st.markdown("### Sua Conta")
+
+            st.markdown("""
+            <div style="
+                background: rgba(255, 20, 147, 0.1);
                 padding: 10px;
-                border-radius: 5px;
-            }}
-            .menu-item:hover {{
-                background: rgba(255, 102, 179, 0.2);
-            }}
-            [data-testid="stSidebarNav"] {{
-                margin-top: -50px;
-            }}
-        </style>
+                border-radius: 8px;
+                text-align: center;
+            ">
+                <p style="margin:0;">Acesse conteúdo exclusivo</p>
+            </div>
+            """, unsafe_allow_html=True)
 
-        <div class="sidebar-logo-container">
-            <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
-        </div>
+            st.markdown("---")
+            st.markdown("### Upgrade VIP 💎")
 
-        <div class="sidebar-header">
-            <img src="{Config.IMG_PROFILE}" alt="Juh">
-            <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>
-        </div>
-        """, unsafe_allow_html=True)
+            st.markdown("""
+            <div class="vip-badge">
+                <p style="margin: 0 0 10px; font-weight: bold;">Acesso ao Promo por apenas</p>
+                <p style="margin: 0; font-size: 1.5em; font-weight: bold;">R$ 12,50/mês</p>
+                <p style="margin: 10px 0 0; font-size: 0.8em;">Cancele quando quiser</p>
+            </div>
+            """, unsafe_allow_html=True)
 
-        st.markdown("---")
-        st.markdown("### Menu Exclusivo")
+            if st.button("Tornar-se VIP 💎", use_container_width=True, type="primary"):
+                st.session_state.current_page = "offers"
+                save_persistent_data()
+                st.rerun()
 
-        menu_options = {
-            "Início": "home",
-            "Galeria Privada": "gallery",
-            "Mensagens": "messages",
-            "Ofertas Especiais": "offers"
-        }
-
-        for option, page in menu_options.items():
-            if st.button(option, use_container_width=True, key=f"menu_{page}"):
-                if st.session_state.current_page != page:
-                    st.session_state.current_page = page
-                    st.session_state.last_action = f"page_change_to_{page}"
-                    save_persistent_data()
-                    st.rerun()
-
-        st.markdown("---")
-        st.markdown("### Sua Conta")
-
-        st.markdown("""
-        <div style="
-            background: rgba(255, 20, 147, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-        ">
-            <p style="margin:0;">Acesse conteúdo exclusivo</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        st.markdown("---")
-        st.markdown("### Upgrade VIP 💎")
-
-        st.markdown("""
-        <div class="vip-badge">
-            <p style="margin: 0 0 10px; font-weight: bold;">Acesso ao Promo por apenas</p>
-            <p style="margin: 0; font-size: 1.5em; font-weight: bold;">R$ 12,50/mês</p>
-            <p style="margin: 10px 0 0; font-size: 0.8em;">Cancele quando quiser</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-        if st.button("Tornar-se VIP 💎", use_container_width=True, type="primary"):
-            st.session_state.current_page = "offers"
-            save_persistent_data()
-            st.rerun()
-
-        st.markdown("---")
-        st.markdown("""
-        <div style="text-align: center; font-size: 0.7em; color: #888;">
-            <p>© 2024 Juh Premium</p>
-            <p>Conteúdo para maiores de 18 anos</p>
-        </div>
-        """, unsafe_allow_html=True)
+            st.markdown("---")
+            st.markdown("""
+            <div style="text-align: center; font-size: 0.7em; color: #888;">
+                <p>© 2024 Juh Premium</p>
+                <p>Conteúdo para maiores de 18 anos</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 
     @staticmethod
