@@ -844,7 +844,7 @@ class UiService:
                 <p>Conteúdo para maiores de 18 anos</p>
             </div>
             """, unsafe_allow_html=True)
-
+            @staticmethod
             def chat_shortcuts():
                 cols = st.columns(4)
                 with cols[0]:
