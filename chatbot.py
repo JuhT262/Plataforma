@@ -942,10 +942,6 @@ class UiService:
         </div>
         """, unsafe_allow_html=True)
 
-# ======================
-# PÁGINAS
-# ======================
-
     @staticmethod
     def show_gallery_page(conn):
         st.markdown("<h2 style='text-align:center;'>🌟 Galeria VIP 🌟</h2>", unsafe_allow_html=True)
