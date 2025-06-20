@@ -734,7 +734,7 @@ class UiService:
                 .sidebar-logo {{
                     border-radius: 0 !important;
                     border: none !important;
-                    width: 400px;
+                    width: 800px;
                     height: auto;
                     object-fit: contain;
                     margin-left: -15px;
