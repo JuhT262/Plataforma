@@ -76,51 +76,58 @@ hide_streamlit_style = """
         background: linear-gradient(180deg, #1e0033, #3c0066) !important;
         color: #fff !important;
     }
-    .stButton>button {
-        font-size: 1rem !important;
-        padding: 14px 20px !important;
-    }
+
+.stButton>button {
+    font-size: 1rem !important;
+    padding: 14px 20px !important;
+    background-color: #ff1493 !important;
+    color: white !important;
+    border-radius: 8px !important;
+    border: none !important;
+}
+
+    
+
     .chat-header h2, .stTextInput>div>input {
         font-size: 1.2rem !important;
     }
+
     .block-container {
         padding: 0.5rem 1rem !important;
     }
+
     img {
         max-width: 100% !important;
         height: auto !important;
         border-radius: 12px !important;
-        background-color: transparent !important;  /* LINHA NOVA */
+        background-color: transparent !important;
     }
+
     .stImage img, .stMarkdown img {
-        background: linear-gradient(180deg, #1e0033, #3c0066) !important;  /* LINHA NOVA */
-        padding: 5px !important;  /* LINHA NOVA */
+        background: linear-gradient(180deg, #1e0033, #3c0066) !important;
+        padding: 5px !important;
     }
-    /* ========== MOBILE ========== */
-@media (max-width: 768px) {
-    /* Empilha os pacotes verticalmente */
-    .package-container {
-        flex-direction: column !important;
+
+    /* ✅ BLOCO ADICIONADO: MOBILE FIRST */
+    @media (max-width: 768px) {
+        .package-container {
+            flex-direction: column !important;
+        }
+        .package-box {
+            width: 100% !important;
+            margin-bottom: 20px !important;
+        }
+        [data-testid="stHorizontalBlock"] {
+            flex-direction: column !important;
+        }
+        [data-testid="stHorizontalBlock"] > div {
+            width: 100% !important;
+        }
+        .stButton > button {
+            font-size: 0.9rem !important;
+            padding: 10px 15px !important;
+        }
     }
-    /* Ajusta largura dos cards */
-    .package-box {
-        width: 100% !important;
-        margin-bottom: 20px !important;
-    }
-    /* Corrige layout das colunas */
-    [data-testid="stHorizontalBlock"] {
-        flex-direction: column !important;
-    }
-    [data-testid="stHorizontalBlock"] > div {
-        width: 100% !important;
-    }
-    /* Botões menores */
-    .stButton > button {
-        font-size: 0.9rem !important;
-        padding: 10px 15px !important;
-    }
-}
-</style>
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
@@ -336,7 +343,8 @@ class CTAEngine:
         pix_terms = ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]
         if any(term in user_input for term in pix_terms):
             return {
-                "text": "💸 Olha, eu não uso PIX, amor... Mas tenho um mundinho todo especial pra você! 😈\n\nAqui você pode ver:\n- Minhas fotos mais ousadas 🔥\n- Vídeos exclusivos me masturbando 💦\n- E muito mais...\n\nVem descobrir tudo que eu preparei!",
+                "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
+
                 "cta": {
                     "show": True,
                     "label": "👉 Ver Planos VIP",
@@ -357,6 +365,18 @@ class CTAEngine:
                     "target": "offers"
                 }
             }
+
+            
+        elif any(p in user_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
+            return {
+                "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
+                "cta": {
+                    "show": True,
+                    "label": "💎 Quero Ver Tudo",
+                    "target": "offers"
+                }
+            }
+
 
         elif any(v in user_input for v in ["video", "transar", "masturbar"]):
             return {
