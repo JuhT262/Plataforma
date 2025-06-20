@@ -1620,6 +1620,10 @@ class ChatService:
     
             # Define a resposta
             if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
+                placeholder = st.empty()
+                placeholder.markdown("💬 Digitando...")
+                time.sleep(3)
+                placeholder.empty()
                 resposta = {
                     "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
                     "cta": {
