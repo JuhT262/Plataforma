@@ -1696,4 +1696,4 @@ class ChatService:
             save_persistent_data()
 
 if __name__ == "__main__":
-    main()
+ main()
