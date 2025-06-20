@@ -82,62 +82,63 @@ hide_streamlit_style = """
 
     .stButton>button {
         font-size: 1rem !important;
-         padding: 14px 20px !important;
-         background-color: #ff1493 !important;
-         color: white !important;
-         border-radius: 8px !important;
+        padding: 14px 20px !important;
+        background-color: #ff1493 !important;
+        color: white !important;
+        border-radius: 8px !important;
         border: none !important;
-     }
+    }
 
     .block-container {
         padding-top: 0.5rem !important;
-         padding-left: 1rem !important;
-         padding-right: 1rem !important;
-      }
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
 
     div[data-testid="stToolbar"],
     div[data-testid="stDecoration"],
-     div[data-testid="stStatusWidget"],
-     #MainMenu, header, footer,
-     .stDeployButton {
-          display: none !important;
+    div[data-testid="stStatusWidget"],
+    #MainMenu, header, footer,
+    .stDeployButton {
+        display: none !important;
     }
 
-     img, .stImage img {
-           max-width: 100% !important;
-           height: auto !important;
-           border-radius: 12px !important;
-           padding: 5px !important;
-     }
+    img, .stImage img {
+        max-width: 100% !important;
+        height: auto !important;
+        border-radius: 12px !important;
+        padding: 5px !important;
+    }
 
-     .sidebar-header img {
-         border-radius: 50% !important;
-         border: 2px solid #ff66b3;
-         width: 80px;
-         height: 80px;
-         object-fit: cover;
-     }
+    .sidebar-header img {
+        border-radius: 50% !important;
+        border: 2px solid #ff66b3;
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+    }
 
-     @media (max-width: 768px) {
-         .package-container,
-         [data-testid="stHorizontalBlock"] {
-               flex-direction: column !important;
-         }
+    @media (max-width: 768px) {
+        .package-container,
+        [data-testid="stHorizontalBlock"] {
+            flex-direction: column !important;
+        }
 
         .package-box,
         [data-testid="stHorizontalBlock"] > div {
-             width: 100% !important;
-             margin-bottom: 20px !important;
-         }
+            width: 100% !important;
+            margin-bottom: 20px !important;
+        }
 
         .stButton > button {
-             font-size: 0.9rem !important;
-             padding: 10px 15px !important;
+            font-size: 0.9rem !important;
+            padding: 10px 15px !important;
         }
     }
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 
 # ======================
