@@ -734,7 +734,7 @@ class UiService:
                 img.sidebar-logo {{
                 display: block;
                 width: 100% !important;
-                max-width: 600px !important;  /* Aqui você controla o tamanho real */
+                max-width: 1200px !important;  /* Aqui você controla o tamanho real */
                 height: auto !important;
                 object-fit: contain !important;
                 margin: 0 auto !important;
