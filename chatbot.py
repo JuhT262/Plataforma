@@ -71,10 +71,6 @@ hide_streamlit_style = """
         padding: 0 !important;
     }
 
-<style>
-
-hide_streamlit_style = """
-<style>
     html, body, .stApp {
         background: linear-gradient(180deg, #1e0033, #3c0066) !important;
         color: #fff !important;
