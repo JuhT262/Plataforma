@@ -726,9 +726,9 @@ class UiService:
                     border-right: 1px solid #ff66b3 !important;
                 }}
                 .sidebar-logo-container {{
-                    margin: -25px -25px 0px -25px;
+                    margin:  0px;
                     padding: 0;
-                    text-align: left;
+                    text-align: center;
                     
                 }}
                 img.sidebar-logo {{
