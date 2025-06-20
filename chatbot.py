@@ -1550,9 +1550,14 @@ class ChatService:
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
 if any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-    placeholder = st.empty()
-    placeholder.markdown("💬 Digitando...")
-    time.sleep(3)
+  placeholder = st.empty()  # cria placeholder vazio
+  placeholder.markdown("💬 Digitando...")  # mensagem temporária
+  time.sleep(3)  # espera 3 segundos
+  placeholder.empty()  # limpa o placeholder
+
+
+
+
     resposta = {
         "text": random.choice([
             "tô com fotos da minha buceta bem aberta, quer ver?",
