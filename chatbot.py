@@ -8,6 +8,7 @@
 import streamlit as st
 import requests
 import json
+import datatime
 import time
 import random
 import sqlite3
@@ -1505,6 +1506,41 @@ class ChatService:
 
     @staticmethod
     def process_user_input(conn):
+        now = datetime.datetime.utcnow()
+        last_time = st.session_state.get("last_user_msg_time")
+    
+        if last_time:
+            if isinstance(last_time, str):
+                last_time = datetime.datetime.fromisoformat(last_time)
+            elapsed = now - last_time
+    
+            if elapsed.total_seconds() > 86400:
+                # Apaga mensagens, mas mantém o lead reconhecido
+                st.session_state.messages = []
+                st.session_state.request_count = 0
+                st.session_state.audio_sent = False
+    
+                # Mensagem de boas-vindas após 24h
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": "Eba! Que bom que você voltou 😍 Tava com saudade..."
+                })
+                DatabaseService.save_message(
+                    conn,
+                    get_user_id(),
+                    st.session_state.session_id,
+                    "assistant",
+                    "Eba! Que bom que você voltou 😍 Tava com saudade..."
+                )
+    
+                st.session_state.last_user_msg_time = now.isoformat()
+                save_persistent_data()
+                
+                st.rerun()
+        else:
+            # Primeira vez que está registrando
+            st.session_state.last_user_msg_time = now.isoformat()
+
         ChatService.display_chat_history()
 
         if not st.session_state.get("audio_sent") and st.session_state.chat_started:
@@ -1570,6 +1606,7 @@ class ChatService:
                     "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
                 )
                 save_persistent_data()
+                st.session_state.last_user_msg_time = datetime.datetime.utcnow().isoformat()
                 return
     
             # Define a resposta
