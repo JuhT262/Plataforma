@@ -1445,7 +1445,6 @@ class ChatService:
     def process_user_input(conn):
         now = datetime.utcnow()
         last_time = st.session_state.get("last_user_msg_time")
-        
     
         if last_time:
             if isinstance(last_time, str):
@@ -1546,16 +1545,30 @@ class ChatService:
                 save_persistent_data()
                 st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
                 return
-     
+    
+            # Define a resposta
+            if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
+                placeholder = st.empty()
+                placeholder.markdown("💬 Digitando...")
+                time.sleep(3)
+                placeholder.empty()
+                resposta = {
+                    "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
+                    "cta": {
+                        "show": True,
+                        "label": "👉 Ver Planos VIP",        
+                        "target": "offers"
+                    }
+                }
+    
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
-if any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-  placeholder = st.empty()  # cria placeholder vazio
-  placeholder.markdown("💬 Digitando...")  # mensagem temporária
-  time.sleep(3)  # espera 3 segundos
-  placeholder.empty()  # limpa o placeholder
-  resposta = {
-  "text": random.choice([
+elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+    placeholder = st.empty()
+    placeholder.markdown("💬 Digitando...")
+    time.sleep(3)
+    resposta = {
+        "text": random.choice([
             "tô com fotos da minha buceta bem aberta, quer ver?",
             "minha buceta tá chamando você nas fotos...",
             "fiz um ensaio novo mostrando tudinho 🔥"
@@ -1665,7 +1678,7 @@ st.markdown("""
 </script>
 """, unsafe_allow_html=True)
 
-       
+
 
 
 
