@@ -1546,21 +1546,7 @@ class ChatService:
                 st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
                 return
     
-            # Define a resposta
-            if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(3)
-                placeholder.empty()
-                resposta = {
-                    "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos 😈\n\nVem ver tudo que preparei pra te deixar louco 🔥",
-                    "cta": {
-                        "show": True,
-                        "label": "👉 Ver Planos VIP",        
-                        "target": "offers"
-                    }
-                }
-    
+            
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
 elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
