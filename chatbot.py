@@ -745,13 +745,13 @@ class UiService:
                     border: none !important;
                     border-radius: 0 !important;
                     padding: 10px 0 !important;
-                }}
+                
 
                 }}
                 @media (min-width: 768px) {{
                     img.sidebar-logo {{
                         max-width: 1000px !important;
-                    }}
+                   
                 }}
                 .sidebar-header {{
                     text-align: center; 
@@ -1690,7 +1690,6 @@ class NewPages:
             
                 save_persistent_data()
             
-            
-            if __name__ == "__main__":
-                main()
+if __name__ == "__main__":
+    main()
 
