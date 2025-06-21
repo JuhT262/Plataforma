@@ -1828,36 +1828,72 @@ def main():
 if __name__ == "__main__":
     main()
 
-# ✅ CSS de responsividade colocado corretamente dentro do Streamlit
+# CSS + botão menu acessível no mobile
 st.markdown("""
 <style>
+/* Estilo para o botão flutuante no mobile */
+.menu-toggle {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: linear-gradient(45deg, #ff1493, #9400d3);
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    font-size: 16px;
+    border-radius: 50px;
+    z-index: 9999;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    display: none;
+}
+
 @media only screen and (max-width: 768px) {
     section[data-testid="stSidebar"] {
-        min-width: 100vw !important;
-        max-width: 100vw !important;
-        position: relative !important;
+        transform: translateX(0%) !important;
+        visibility: visible !important;
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100vw !important;
+        height: auto !important;
+        z-index: 1000;
+        background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+        border-bottom: 2px solid #ff66b3;
     }
 
-    .sidebar-logo-container {
-        padding: 10px 0 0 0 !important;
+    .chat-container {
+        margin-top: 240px !important;  /* move o chat abaixo do menu fixo */
     }
 
-    .sidebar-header {
-        margin: 0 auto !important;
+    .menu-toggle {
+        display: block;
     }
 
     .sidebar-header img {
-        width: 70px !important;
-        height: 70px !important;
+        width: 60px !important;
+        height: 60px !important;
     }
 
-    [data-testid="stVerticalBlock"] {
-        padding: 0 10px !important;
-    }
-
-    .chat-bubble, .stMarkdown {
-        font-size: 16px !important;
+    .sidebar-logo-container {
+        padding: 5px 0 !important;
     }
 }
 </style>
+
+<script>
+    const menuToggle = document.createElement("button");
+    menuToggle.innerText = "Abrir Menu";
+    menuToggle.className = "menu-toggle";
+    document.body.appendChild(menuToggle);
+
+    menuToggle.onclick = function() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar.style.display === "none") {
+            sidebar.style.display = "block";
+        } else {
+            sidebar.style.display = "none";
+        }
+    };
+</script>
 """, unsafe_allow_html=True)
+
