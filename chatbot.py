@@ -844,7 +844,7 @@ class UiService:
                  st.rerun()
         with cols[3]:
             if st.button("VIP 💎", key="shortcut_vip", use_container_width=True):
-                st.session_state.current_page = "vip"
+                st.session_state.current_page = "offers"
                 save_persistent_data()
                 st.rerun()
 
@@ -1811,15 +1811,11 @@ def main():
     elif st.session_state.current_page == "offers":
         NewPages.show_offers_page()
     elif st.session_state.current_page == "vip":
-        st.session_state.show_vip_offer = True
+        # Redireciona diretamente para a página de ofertas
+        st.session_state.current_page = "offers"
         save_persistent_data()
         st.rerun()
-    elif st.session_state.get("show_vip_offer", False):
-        st.warning("Página VIP em desenvolvimento")
-        if st.button("Voltar ao chat"):
-            st.session_state.show_vip_offer = False
-            save_persistent_data()
-            st.rerun()
+
     else:
         UiService.enhanced_chat_ui(conn)
     
