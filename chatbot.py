@@ -659,135 +659,101 @@ class UiService:
         with st.sidebar:
             st.markdown(f"""
             <style>
-            [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-        border-right: 1px solid #ff66b3 !important;
-        overflow: auto !important;
-        z-index: 2 !important;
-    {
-                background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-                border-right: 1px solid #ff66b3 !important;
-                min-width: 380px !important;
-                max-width: 480px !important;
-                width: 100% !important;
-            }}
-    
-            .sidebar-logo-container {{
-                margin: 0px;
-                padding: 0;
-                text-align: center;
-                position: relative;
-                z-index: 1;
-            }}
-    
-            .sidebar-logo {
-        border: none !important;
-        box-shadow: none !important;
-        width: 100% !important;
-        max-width: 400px !important;
-        height: auto !important;
-        object-fit: contain;
-        margin: 0 auto;
-        display: block;
-    {
-                display: block;
-                width: 100% !important;
-                height: auto !important;
-                object-fit: contain !important;
-                margin: 0 auto !important;
-                border: none !important;
-                border-radius: 0 !important;
-                padding: 10px 0 !important;
-            }}
-    
-            .sidebar-header {{
-                text-align: center; 
-                margin: 20px 0;
-            }}
-    
-            .sidebar-header img {{
-                border-radius: 50% !important;
-                border: 2px solid #ff66b3;
-                width: 80px;
-                height: 80px;
-                object-fit: cover;
-                margin-bottom: 0.5rem;
-            }}
-    
-            .vip-badge {{
-                background: linear-gradient(45deg, #ff1493, #9400d3);
-                padding: 15px;
-                border-radius: 8px;
-                color: white;
-                text-align: center;
-                margin: 10px 0;
-            }}
-    
-            .menu-item {{
-                transition: all 0.3s;
-                padding: 10px;
-                border-radius: 5px;
-            }}
-    
-            .menu-item:hover {{
-                background: rgba(255, 102, 179, 0.2);
-            }}
-    
-            [data-testid="stSidebarNav"] {{
-                margin-top: -50px;
-            }}
-    
-            /* ========== MOBILE RESPONSIVO ========== */
-            @media (max-width: 767px) {{
-                [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-        border-right: 1px solid #ff66b3 !important;
-        overflow: auto !important;
-        z-index: 2 !important;
-    {
-                    min-width: 100% !important;
-                    max-width: 100% !important;
-                    padding: 0 !important;
-                    border-right: none !important;
+                section[data-testid="stSidebar"] {{
+                    min-width: 320px !important;
+                    max-width: 400px !important;
+                    width: 100% !important;
+                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+                    border-right: 1px solid #ff66b3 !important;
                 }}
     
-                .sidebar-logo {
-        border: none !important;
-        box-shadow: none !important;
-        width: 100% !important;
-        max-width: 400px !important;
-        height: auto !important;
-        object-fit: contain;
-        margin: 0 auto;
-        display: block;
-    {
-                    max-width: 300px !important;
+                .sidebar-logo-container {{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 20px 0 0 0;
+                    margin: 0 auto;
+                    text-align: center;
+                }}
+    
+                .sidebar-logo {{
+                    width: 100% !important;
+                    max-width: 400px !important;
+                    height: auto !important;
+                    object-fit: contain;
+                    margin: 0 auto;
+                    display: block;
+                    border: none !important;
+                    box-shadow: none !important;
+                    border-radius: 0 !important;
+                }}
+    
+                .sidebar-header {{
+                    text-align: center; 
+                    margin: -10px auto 10px auto;
                 }}
     
                 .sidebar-header img {{
-                    width: 60px !important;
-                    height: 60px !important;
+                    border-radius: 50% !important;
+                    border: 2px solid #ff66b3;
+                    width: 80px;
+                    height: 80px;
+                    object-fit: cover;
+                    margin-bottom: 0.5rem;
                 }}
     
-                .sidebar-header h3 {{
-                    font-size: 1rem !important;
-                    margin-top: 5px !important;
+                .vip-badge {{
+                    background: linear-gradient(45deg, #ff1493, #9400d3);
+                    padding: 15px;
+                    border-radius: 8px;
+                    color: white;
+                    text-align: center;
+                    margin: 10px 0;
                 }}
     
-                .chat-header {{
-                    font-size: 1.2rem !important;
-                    padding: 10px !important;
+                .menu-item {{
+                    transition: all 0.3s;
+                    padding: 10px;
+                    border-radius: 5px;
                 }}
     
-                .stButton > button {{
-                    font-size: 0.9rem !important;
-                    padding: 8px 14px !important;
+                .menu-item:hover {{
+                    background: rgba(255, 102, 179, 0.2);
                 }}
     
-                .element-container:has(.stChatMessage) {{
-                    padding: 0px 10px !important;
+                [data-testid="stSidebarNav"] {{
+                    margin-top: -50px;
                 }}
-            }}
+    
+                /* MOBILE RESPONSIVO */
+                @media only screen and (max-width: 768px) {{
+                    section[data-testid="stSidebar"] {{
+                        min-width: 100vw !important;
+                        max-width: 100vw !important;
+                        position: relative !important;
+                    }}
+    
+                    .sidebar-logo-container {{
+                        padding: 10px 0 0 0 !important;
+                    }}
+    
+                    .sidebar-header {{
+                        margin: 0 auto !important;
+                    }}
+    
+                    .sidebar-header img {{
+                        width: 70px !important;
+                        height: 70px !important;
+                    }}
+    
+                    [data-testid="stVerticalBlock"] {{
+                        padding: 0 10px !important;
+                    }}
+    
+                    .chat-bubble, .stMarkdown {{
+                        font-size: 16px !important;
+                    }}
+                }}
             </style>
     
             <div class="sidebar-logo-container">
@@ -796,9 +762,10 @@ class UiService:
     
             <div class="sidebar-header">
                 <img src="{Config.IMG_PROFILE}" alt="Juh">
-                <h3 style="color: #ff66b3; margin-top: 5px;">Juh Premium 💎</h3>
+                <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>
             </div>
             """, unsafe_allow_html=True)
+
 
     
             st.markdown("---")
@@ -1753,6 +1720,7 @@ class ChatService:
 # APLICAÇÃO PRINCIPAL
 # ======================
 def main():
+
     st.markdown("""
     <style>
         [data-testid="stSidebar"] {
@@ -1804,8 +1772,9 @@ def main():
     
     if not st.session_state.age_verified:
         UiService.age_verification()
+        st.markdown("<p style='text-align: center; font-size: 18px; color: #ff66b3;'>📞 Ligando para Juh...</p>", unsafe_allow_html=True)
         st.stop()
-    
+        
     UiService.setup_sidebar()
     
     if not st.session_state.connection_complete:
