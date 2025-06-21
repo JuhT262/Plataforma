@@ -1825,10 +1825,11 @@ def main():
     
     save_persistent_data()
 
-
 if __name__ == "__main__":
     main()
 
+# ✅ CSS de responsividade colocado corretamente dentro do Streamlit
+st.markdown("""
 <style>
 @media only screen and (max-width: 768px) {
     section[data-testid="stSidebar"] {
@@ -1859,3 +1860,4 @@ if __name__ == "__main__":
     }
 }
 </style>
+""", unsafe_allow_html=True)
