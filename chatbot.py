@@ -659,6 +659,34 @@ class UiService:
         with st.sidebar:
             st.markdown(f"""
             <style>
+                @media (max-width: 767px) {
+    .sidebar-logo {
+        width: 85% !important;
+        max-width: 250px !important;
+        margin-top: 0 !important;
+    }
+
+    .sidebar-logo-container {
+        padding: 10px 0 0 0 !important;
+        margin-bottom: -10px !important;
+    }
+
+    .sidebar-header img {
+        width: 60px !important;
+        height: 60px !important;
+    }
+
+    .sidebar-header h3 {
+        font-size: 1.1rem !important;
+    }
+
+    section[data-testid="stSidebar"] {
+        max-width: 100vw !important;
+        min-width: auto !important;
+        padding: 0 !important;
+    }
+}
+
                 section[data-testid="stSidebar"] {{
                     min-width: 320px !important;
                     max-width: 400px !important;
