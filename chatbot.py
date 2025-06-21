@@ -1246,7 +1246,7 @@ class NewPages:
                 "name": "PROMO",
                 "price": "R$ 12,50",
                 "original": "R$ 17,90",
-                "benefits": ["Acesso total", "Conteúdo único", "Chat privado"],
+                "benefits": ["3 fotos semi-nuas sensuais", "2 fotos +18 exclusivas só para você"],
                 "tag": "COMUM",
                 "link": Config.CHECKOUT_PROMO + "?plan=Promo"
             },
