@@ -659,94 +659,109 @@ class UiService:
         with st.sidebar:
             st.markdown(f"""
             <style>
-                @media (max-width: 767px) {
-    .sidebar-logo {
-        width: 85% !important;
-        max-width: 250px !important;
-        margin-top: 0 !important;
-    }
-
-    .sidebar-logo-container {
-        padding: 10px 0 0 0 !important;
-        margin-bottom: -10px !important;
-    }
-
-    .sidebar-header img {
-        width: 60px !important;
-        height: 60px !important;
-    }
-
-    .sidebar-header h3 {
-        font-size: 1.1rem !important;
-    }
-
-    section[data-testid="stSidebar"] {
-        max-width: 100vw !important;
-        min-width: auto !important;
-        padding: 0 !important;
-    }
-}
-
-                section[data-testid="stSidebar"] {{
-                    min-width: 320px !important;
-                    max-width: 400px !important;
-                    width: 100% !important;
+            [data-testid="stSidebar"] {{
+                background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+                border-right: 1px solid #ff66b3 !important;
+                min-width: 380px !important;
+                max-width: 480px !important;
+                width: 100% !important;
+            }}
+            
+            .sidebar-logo-container {{
+                margin: 0px;
+                padding: 0;
+                text-align: center;
+                position: relative;
+                z-index: 1;
+            }}
+            
+            .sidebar-logo {{
+                display: block;
+                width: 100% !important;
+                height: auto !important;
+                object-fit: contain !important;
+                margin: 0 auto !important;
+                border: none !important;
+                border-radius: 0 !important;
+                padding: 10px 0 !important;
+            }}
+            
+            .sidebar-header {{
+                text-align: center; 
+                margin: 20px 0;
+            }}
+            
+            .sidebar-header img {{
+                border-radius: 50% !important;
+                border: 2px solid #ff66b3;
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                margin-bottom: 0.5rem;
+            }}
+            
+            .vip-badge {{
+                background: linear-gradient(45deg, #ff1493, #9400d3);
+                padding: 15px;
+                border-radius: 8px;
+                color: white;
+                text-align: center;
+                margin: 10px 0;
+            }}
+            
+            .menu-item {{
+                transition: all 0.3s;
+                padding: 10px;
+                border-radius: 5px;
+            }}
+            
+            .menu-item:hover {{
+                background: rgba(255, 102, 179, 0.2);
+            }}
+            
+            [data-testid="stSidebarNav"] {{
+                margin-top: -50px;
+            }}
+            
+            /* ========== MOBILE RESPONSIVO ========== */
+            @media (max-width: 767px) {{
                 [data-testid="stSidebar"] {{
-                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-                    border-right: 1px solid #ff66b3 !important;
+                    min-width: 100% !important;
+                    max-width: 100% !important;
+                    padding: 0 !important;
+                    border-right: none !important;
                 }}
-                .sidebar-logo-container {{
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 10px 0 0 0;
-                    width: 100%;  /* garantir largura total */
-                    margin-top: -130px;
-                }}
+            
                 .sidebar-logo {{
-                      width: 100% !important;      /* ocupa toda largura do container */
-                      max-width: 100% !important; /* limita a um tamanho grande */
-                      height: auto !important;
-                      object-fit: contain;
-                      margin: 0 auto;
-                      display: block;
-                      border: none !important;
-                      box-shadow: none !important;
-                      border-radius: 0 !important;
-                    
+                    max-width: 300px !important;
                 }}
-                .sidebar-header {{
-                    text-align: center; 
-                    margin: -80px auto 10px auto;
-                }}
+            
                 .sidebar-header img {{
-                    border-radius: 50% !important;
-                    border: 2px solid #ff66b3;
-                    width: 80px;
-                    height: 80px;
-                    object-fit: cover;
-                    margin-bottom: 0.5rem;
+                    width: 60px !important;
+                    height: 60px !important;
                 }}
-                .vip-badge {{
-                    background: linear-gradient(45deg, #ff1493, #9400d3);
-                    padding: 15px;
-                    border-radius: 8px;
-                    color: white;
-                    text-align: center;
-                    margin: 10px 0;
+            
+                .sidebar-header h3 {{
+                    font-size: 1rem !important;
+                    margin-top: 5px !important;
                 }}
-                .menu-item {{
-                    transition: all 0.3s;
-                    padding: 10px;
-                    border-radius: 5px;
+            
+                .chat-header {{
+                    font-size: 1.2rem !important;
+                    padding: 10px !important;
                 }}
-                .menu-item:hover {{
-                    background: rgba(255, 102, 179, 0.2);
+            
+                .stButton > button {{
+                    font-size: 0.9rem !important;
+                    padding: 8px 14px !important;
                 }}
-                [data-testid="stSidebarNav"] {{
-                    margin-top: -50px;
+            
+                .element-container:has(.stChatMessage) {{
+                    padding: 0px 10px !important;
                 }}
+            }}
             </style>
+            """, unsafe_allow_html=True)
     
             <div class="sidebar-logo-container">
                 <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Logo">
