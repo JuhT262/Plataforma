@@ -1828,72 +1828,126 @@ def main():
 if __name__ == "__main__":
     main()
 
-# CSS + botão menu acessível no mobile
+# ======================
+# MENU MOBILE ACESSÍVEL 
+# ======================
 st.markdown("""
 <style>
-/* Estilo para o botão flutuante no mobile */
+/* Botão flutuante moderno */
 .menu-toggle {
     position: fixed;
-    bottom: 20px;
-    left: 20px;
+    bottom: 25px;
+    right: 25px;
     background: linear-gradient(45deg, #ff1493, #9400d3);
-    color: white;
+    color: white !important;
     border: none;
-    padding: 14px 20px;
-    font-size: 16px;
+    padding: 16px 24px;
+    font-size: 18px;
     border-radius: 50px;
     z-index: 9999;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    display: none;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    font-weight: bold;
 }
 
+.menu-toggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 20, 147, 0.6);
+}
+
+.menu-icon {
+    font-size: 24px;
+    transition: transform 0.3s;
+}
+
+/* Sidebar mobile */
 @media only screen and (max-width: 768px) {
     section[data-testid="stSidebar"] {
-        transform: translateX(0%) !important;
-        visibility: visible !important;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
         position: fixed !important;
         top: 0;
         left: 0;
-        width: 100vw !important;
-        height: auto !important;
+        width: 280px !important;
+        height: 100vh !important;
         z-index: 1000;
-        background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-        border-bottom: 2px solid #ff66b3;
     }
 
-    .chat-container {
-        margin-top: 240px !important;  /* move o chat abaixo do menu fixo */
+    section[data-testid="stSidebar"].visible {
+        transform: translateX(0);
     }
 
-    .menu-toggle {
+    /* Overlay quando menu aberto */
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: none;
+    }
+
+    section[data-testid="stSidebar"].visible + .sidebar-overlay {
         display: block;
     }
+}
 
-    .sidebar-header img {
-        width: 60px !important;
-        height: 60px !important;
-    }
-
-    .sidebar-logo-container {
-        padding: 5px 0 !important;
+/* Esconde em desktop */
+@media only screen and (min-width: 769px) {
+    .menu-toggle, .sidebar-overlay {
+        display: none !important;
     }
 }
 </style>
 
 <script>
+// Cria elementos dinâmicos
+function setupMobileMenu() {
+    // Cria botão flutuante
     const menuToggle = document.createElement("button");
-    menuToggle.innerText = "Abrir Menu";
     menuToggle.className = "menu-toggle";
+    menuToggle.innerHTML = `
+        <span class="menu-icon">☰</span>
+        <span>Menu</span>
+    `;
     document.body.appendChild(menuToggle);
 
-    menuToggle.onclick = function() {
+    // Cria overlay
+    const overlay = document.createElement("div");
+    overlay.className = "sidebar-overlay";
+    document.body.appendChild(overlay);
+
+    // Controle do menu
+    menuToggle.onclick = function(e) {
+        e.stopPropagation();
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar.style.display === "none") {
-            sidebar.style.display = "block";
-        } else {
-            sidebar.style.display = "none";
-        }
+        sidebar.classList.toggle('visible');
+        overlay.style.display = sidebar.classList.contains('visible') ? 'block' : 'none';
+        
+        const icon = this.querySelector('.menu-icon');
+        icon.textContent = sidebar.classList.contains('visible') ? '✕' : '☰';
     };
+
+    // Fecha ao clicar fora
+    overlay.onclick = function() {
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        sidebar.classList.remove('visible');
+        overlay.style.display = 'none';
+        menuToggle.querySelector('.menu-icon').textContent = '☰';
+    };
+}
+
+// Espera o Streamlit carregar
+if (window.Streamlit) {
+    setupMobileMenu();
+} else {
+    document.addEventListener("streamlit:render", setupMobileMenu);
+}
 </script>
 """, unsafe_allow_html=True)
 
