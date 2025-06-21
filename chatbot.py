@@ -1553,8 +1553,9 @@ class ChatService:
                 time.sleep(5)
                 placeholder.empty()
                 resposta = {
-                    "text": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos: Promo, Start, Premium e Extreme 😈  
-Vem ver tudo que preparei pra te deixar louco 🔥",
+                    "text":"Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
+                           "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
+                           "Vem ver tudo que preparei pra te deixar louco 🔥"
                     "cta": {
                         "show": True,
                         "label": "👉 Ver Planos VIP",        
