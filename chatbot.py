@@ -1742,7 +1742,8 @@ if resposta.get("cta", {}).get("show"):
             resposta["cta"]["target"] = "offers"
         else:
             resposta["cta"]["show"] = False
-            resposta["text"] += f"
+            resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
+
 
 🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
     else:
