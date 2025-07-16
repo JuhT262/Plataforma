@@ -1743,41 +1743,39 @@ if resposta.get("cta", {}).get("show"):
         else:
             resposta["cta"]["show"] = False
             resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
-
-
-
     else:
         resposta["cta"]["show"] = False
 
-                    resposta["cta"].get("label", "Ver Ofertas"),
-                    key=f"chat_button_{time.time()}",
-                    use_container_width=True
-                ):
-                    st.session_state.current_page = resposta["cta"].get("target", "offers")
-                    save_persistent_data()
-                    st.rerun()
-            
-            # Salva resposta
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": json.dumps(resposta)
-            })
-            DatabaseService.save_message(
-                conn,
-                get_user_id(),
-                st.session_state.session_id,
-                "assistant",
-                json.dumps(resposta)
-            )
-            
-            save_persistent_data()
-            
-            # Scroll automático
-            st.markdown("""
-            <script>
-                window.scrollTo(0, document.body.scrollHeight);
-            </script>
-            """, unsafe_allow_html=True)
+    if st.button(
+        resposta["cta"].get("label", "Ver Ofertas"),
+        key=f"chat_button_{time.time()}",
+        use_container_width=True
+    ):
+        st.session_state.current_page = resposta["cta"].get("target", "offers")
+        save_persistent_data()
+        st.rerun()
+
+# Salva resposta
+st.session_state.messages.append({
+    "role": "assistant",
+    "content": json.dumps(resposta)
+})
+DatabaseService.save_message(
+    conn,
+    get_user_id(),
+    st.session_state.session_id,
+    "assistant",
+    json.dumps(resposta)
+)
+
+save_persistent_data()
+
+# Scroll automático
+st.markdown("""
+<script>
+    window.scrollTo(0, document.body.scrollHeight);
+</script>
+""", unsafe_allow_html=True)
 
 
 
