@@ -449,13 +449,15 @@ class ApiService:
         UiService.show_status_effect(status_container, "typing")
         
         conversation_history = ChatService.format_conversation_history(st.session_state.messages)
-        
+    
         headers = {'Content-Type': 'application/json'}
         data = {
             "contents": [
                 {
                     "role": "user",
-                    "parts": [{"text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
+                    "parts": [{
+                        "text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"
+                    }]
                 }
             ],
             "generationConfig": {
@@ -464,39 +466,44 @@ class ApiService:
                 "topK": 40
             }
         }
-        
+    
         try:
             response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
             response.raise_for_status()
             gemini_response = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-            
+    
             try:
                 if '```json' in gemini_response:
                     resposta = json.loads(gemini_response.split('```json')[1].split('```')[0].strip())
                 else:
                     resposta = json.loads(gemini_response)
-                
-                
-        try:
-            if resposta.get("cta", {}).get("show"):
-                mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
-                if mostrar_cta:
-                    resposta["cta"]["show"] = True
-                    if tipo_link == "br":
-                        resposta["cta"]["label"] = "Ver Planos VIP"
-                        resposta["cta"]["target"] = "offers"
+            except Exception as e:
+                print("Erro ao interpretar JSON da resposta:", e)
+                resposta = {"text": "Erro ao interpretar a resposta da IA.", "cta": {"show": False}}
+    
+            try:
+                if resposta.get("cta", {}).get("show"):
+                    mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
+                    if mostrar_cta:
+                        resposta["cta"]["show"] = True
+                        if tipo_link == "br":
+                            resposta["cta"]["label"] = "Ver Planos VIP"
+                            resposta["cta"]["target"] = "offers"
+                        else:
+                            resposta["cta"]["show"] = False
+                            resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
                     else:
                         resposta["cta"]["show"] = False
-                        resposta["text"] += f"\\n\\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
-                else:
-                    resposta["cta"]["show"] = False
+            except Exception as e:
+                print("Erro ao processar CTA:", e)
+                resposta["cta"] = {"show": False}
+    
         except Exception as e:
-            print("Erro ao processar CTA:", e)
-            resposta["cta"] = {"show": False}
+            print("Erro na chamada da API Gemini:", e)
+            resposta = {"text": "Erro ao se conectar com o sistema.", "cta": {"show": False}}
+    
+        return resposta
 
-    except Exception as e:
-        print("Erro na chamada da API Gemini:", e)
-        resposta = {"text": "Erro ao se conectar com o sistema.", "cta": {"show": False}}
 
 
 # ======================
