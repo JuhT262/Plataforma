@@ -1749,13 +1749,13 @@ if resposta.get("cta", {}).get("show"):
     else:
         resposta["cta"]["show"] = False
 
-                        resposta["cta"].get("label", "Ver Ofertas"),
-                        key=f"chat_button_{time.time()}",
-                        use_container_width=True
-                    ):
-                        st.session_state.current_page = resposta["cta"].get("target", "offers")
-                        save_persistent_data()
-                        st.rerun()
+                    resposta["cta"].get("label", "Ver Ofertas"),
+                    key=f"chat_button_{time.time()}",
+                    use_container_width=True
+                ):
+                    st.session_state.current_page = resposta["cta"].get("target", "offers")
+                    save_persistent_data()
+                    st.rerun()
             
             # Salva resposta
             st.session_state.messages.append({
