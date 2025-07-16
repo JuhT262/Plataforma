@@ -1408,11 +1408,16 @@ class ChatService:
             st.session_state.session_id = str(random.randint(100000, 999999))
         
         if "messages" not in st.session_state:
-            st.session_state.messages = DatabaseService.load_messages(
-                conn,
-                get_user_id(),
-                st.session_state.session_id
-            )
+            try:  # NOVO
+                loaded_messages = DatabaseService.load_messages(  # NOVO: atribui a variável primeiro
+                    conn,
+                    get_user_id(),
+                    st.session_state.session_id
+                )
+                st.session_state.messages = loaded_messages if loaded_messages else []  # NOVO: tratamento para None
+            except Exception as e:  # NOVO
+                print(f"Erro ao carregar mensagens: {e}")  # NOVO
+                st.session_state.messages = []  # NOVO
         
         if "request_count" not in st.session_state:
             st.session_state.request_count = len([
@@ -1534,6 +1539,9 @@ class ChatService:
 
     @staticmethod
     def process_user_input(conn):
+
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
         now = datetime.utcnow()
         last_time = st.session_state.get("last_user_msg_time")
     
@@ -1574,6 +1582,9 @@ class ChatService:
         if not st.session_state.get("audio_sent") and st.session_state.chat_started:
             status_container = st.empty()
             UiService.show_audio_recording_effect(status_container)
+
+            if "messages" not in st.session_state:  # NOVO
+                st.session_state.messages = []
     
             st.session_state.messages.append({
                 "role": "assistant",
@@ -1755,27 +1766,34 @@ class ChatService:
                 save_persistent_data()
                 st.rerun()
 
-# Salva resposta
-st.session_state.messages.append({
-    "role": "assistant",
-    "content": json.dumps(resposta)
-})
-DatabaseService.save_message(
-    conn,
-    get_user_id(),
-    st.session_state.session_id,
-    "assistant",
-    json.dumps(resposta)
-)
-
-save_persistent_data()
-
-# Scroll automático
-st.markdown("""
-<script>
-    window.scrollTo(0, document.body.scrollHeight);
-</script>
-""", unsafe_allow_html=True)
+        if "messages" not in st.session_state:  # NOVO
+            st.session_state.messages = []  # NOVO
+        
+        response_content = json.dumps(resposta) if isinstance(resposta, dict) else str(resposta)  # NOVO: tratamento mais seguro
+        
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": response_content  # NOVO: usando a variável tratada
+        })
+        
+        try:  # NOVO
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "assistant",
+                response_content  # NOVO: usando a variável tratada
+            )
+        except Exception as e:  # NOVO
+            print(f"Erro ao salvar mensagem: {e}")  # NOVO
+        save_persistent_data()
+        
+        # Scroll automático
+        st.markdown("""
+        <script>
+            window.scrollTo(0, document.body.scrollHeight);
+        </script>
+        """, unsafe_allow_html=True)
 
 
 
