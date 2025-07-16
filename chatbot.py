@@ -477,33 +477,23 @@ class ApiService:
                     resposta = json.loads(gemini_response)
                 
                 
-if resposta.get("cta", {}).get("show"):
-    mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
-    if mostrar_cta:
-        resposta["cta"]["show"] = True
-        if tipo_link == "br":
-            resposta["cta"]["label"] = "Ver Planos VIP"
-            resposta["cta"]["target"] = "offers"
+try:
+    if resposta.get("cta", {}).get("show"):
+        mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
+        if mostrar_cta:
+            resposta["cta"]["show"] = True
+            if tipo_link == "br":
+                resposta["cta"]["label"] = "Ver Planos VIP"
+                resposta["cta"]["target"] = "offers"
+            else:
+                resposta["cta"]["show"] = False
+                resposta["text"] += f"\\n\\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
         else:
             resposta["cta"]["show"] = False
-            resposta["text"] += f"
+except Exception as e:
+    print("Erro ao processar CTA:", e)
+    resposta["cta"] = {"show": False}
 
-🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
-    else:
-        resposta["cta"]["show"] = False
-
-                        resposta["cta"]["show"] = False
-                    else:
-                        st.session_state.last_cta_time = time.time()
-                
-                return resposta
-            
-            except json.JSONDecodeError:
-                return {"text": gemini_response, "cta": {"show": False}}
-                
-        except Exception as e:
-            st.error(f"Erro na API: {str(e)}")
-            return {"text": "Vamos continuar isso mais tarde...", "cta": {"show": False}}
 
 # ======================
 # SERVIÇOS DE INTERFACE
