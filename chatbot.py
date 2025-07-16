@@ -1,4 +1,42 @@
 
+# ========== SUPORTE MULTI-IDIOMA E GRINGO ==========
+
+def detectar_idioma(texto):
+    texto = texto.lower()
+    if any(p in texto for p in ["hi", "hello", "fuck", "boobs", "pussy", "horny", "sexy"]):
+        return "en"
+    elif any(p in texto for p in ["hola", "culo", "tetas", "verga", "latina", "follar"]):
+        return "es"
+    return "pt"
+
+def detectar_idioma_historico(conversas):
+    texto = " ".join([m["content"] for m in conversas if m["role"] == "user"]).lower()
+    return detectar_idioma(texto)
+
+class Config:
+    LINK_GRINGO = "https://buy.stripe.com/8wM7sQ9gH2H93iQ8ww"
+
+class Persona:
+    JUH = """[PERFIL JUH] Mulher vulgar e safada que adora provocar..."""
+    JUH_EN = """[JUH PROFILE] Naughty and provocative woman..."""
+    JUH_ES = """[PERFIL DE JUH] Mujer atrevida y provocativa..."""
+
+class CTAEngine:
+    @staticmethod
+    def should_show_cta(conversation_history: list) -> tuple:
+        idioma = detectar_idioma_historico(conversation_history)
+        st.session_state['idioma_cliente'] = idioma
+
+        context = " ".join([m["content"].lower() for m in conversation_history[-5:] if m["role"] == "user"])
+        hot_words = ["buceta", "peito", "fuder", "foto", "video", "pussy", "fuck", "ver", "mostrar", "culo", "tetas", "verga"]
+        hot = sum(p in context for p in hot_words)
+
+        deve_exibir = hot >= 2
+        tipo_link = "br" if idioma == "pt" else "gringo"
+        return deve_exibir, tipo_link
+
+
+
 
 
 # ======================
@@ -438,8 +476,22 @@ class ApiService:
                 else:
                     resposta = json.loads(gemini_response)
                 
-                if resposta.get("cta", {}).get("show"):
-                    if not CTAEngine.should_show_cta(st.session_state.messages):
+                
+if resposta.get("cta", {}).get("show"):
+    mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
+    if mostrar_cta:
+        resposta["cta"]["show"] = True
+        if tipo_link == "br":
+            resposta["cta"]["label"] = "Ver Planos VIP"
+            resposta["cta"]["target"] = "offers"
+        else:
+            resposta["cta"]["show"] = False
+            resposta["text"] += f"
+
+🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
+    else:
+        resposta["cta"]["show"] = False
+
                         resposta["cta"]["show"] = False
                     else:
                         st.session_state.last_cta_time = time.time()
@@ -1679,8 +1731,22 @@ class ChatService:
                 </div>
                 """, unsafe_allow_html=True)
             
-                if resposta.get("cta", {}).get("show"):
-                    if st.button(
+                
+if resposta.get("cta", {}).get("show"):
+    mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
+    if mostrar_cta:
+        resposta["cta"]["show"] = True
+        if tipo_link == "br":
+            resposta["cta"]["label"] = "Ver Planos VIP"
+            resposta["cta"]["target"] = "offers"
+        else:
+            resposta["cta"]["show"] = False
+            resposta["text"] += f"
+
+🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
+    else:
+        resposta["cta"]["show"] = False
+
                         resposta["cta"].get("label", "Ver Ofertas"),
                         key=f"chat_button_{time.time()}",
                         use_container_width=True
