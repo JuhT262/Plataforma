@@ -22,18 +22,18 @@ class Persona:
         JUH_ES = """[PERFIL DE JUH] Mujer atrevida y provocativa..."""
 
 class CTAEngine:
-        @staticmethod
+    @staticmethod
     def should_show_cta(conversation_history: list) -> tuple:
-            idioma = detectar_idioma_historico(conversation_history)
-            st.session_state['idioma_cliente'] = idioma
+        idioma = detectar_idioma_historico(conversation_history)
+        st.session_state['idioma_cliente'] = idioma
 
-            context = " ".join([m["content"].lower() for m in conversation_history[-5:] if m["role"] == "user"])
-            hot_words = ["buceta", "peito", "fuder", "foto", "video", "pussy", "fuck", "ver", "mostrar", "culo", "tetas", "verga"]
-            hot = sum(p in context for p in hot_words)
+        context = " ".join([m["content"].lower() for m in conversation_history[-5:] if m["role"] == "user"])
+        hot_words = ["buceta", "peito", "fuder", "foto", "video", "pussy", "fuck", "ver", "mostrar", "culo", "tetas", "verga"]
+        hot = sum(p in context for p in hot_words)
 
-            deve_exibir = hot >= 2
-            tipo_link = "br" if idioma == "pt" else "gringo"
-            return deve_exibir, tipo_link
+        deve_exibir = hot >= 2
+        tipo_link = "br" if idioma == "pt" else "gringo"
+        return deve_exibir, tipo_link
 
 
 
