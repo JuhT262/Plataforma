@@ -1954,8 +1954,8 @@ def main():
         save_persistent_data()
 
 # ============= MENU MOBILE =============
-    st.markdown("""
-    <style>
+st.markdown("""
+<style>
         /* Botão fixo para mobile */
         .mobile-menu-button {
             position: fixed;
