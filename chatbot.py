@@ -1,7 +1,7 @@
         
         # ========== SUPORTE MULTI-IDIOMA E GRINGO ==========
         
-        def detectar_idioma(texto):
+                def detectar_idioma(texto):
                 texto = texto.lower()
                 if any(p in texto for p in ["hi", "hello", "fuck", "boobs", "pussy", "horny", "sexy"]):
                     return "en"
