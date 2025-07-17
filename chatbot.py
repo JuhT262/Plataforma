@@ -1,4 +1,42 @@
 
+# ========== SUPORTE MULTI-IDIOMA E GRINGO ==========
+
+def detectar_idioma(texto):
+    texto = texto.lower()
+    if any(p in texto for p in ["hi", "hello", "fuck", "boobs", "pussy", "horny", "sexy"]):
+        return "en"
+    elif any(p in texto for p in ["hola", "culo", "tetas", "verga", "latina", "follar"]):
+        return "es"
+    return "pt"
+
+def detectar_idioma_historico(conversas):
+    texto = " ".join([m["content"] for m in conversas if m["role"] == "user"]).lower()
+    return detectar_idioma(texto)
+
+class Config:
+    LINK_GRINGO = "https://buy.stripe.com/8wM7sQ9gH2H93iQ8ww"
+
+class Persona:
+    JUH = """[PERFIL JUH] Mulher vulgar e safada que adora provocar..."""
+    JUH_EN = """[JUH PROFILE] Naughty and provocative woman..."""
+    JUH_ES = """[PERFIL DE JUH] Mujer atrevida y provocativa..."""
+
+class CTAEngine:
+    @staticmethod
+    def should_show_cta(conversation_history: list) -> tuple:
+        idioma = detectar_idioma_historico(conversation_history)
+        st.session_state['idioma_cliente'] = idioma
+
+        context = " ".join([m["content"].lower() for m in conversation_history[-5:] if m["role"] == "user"])
+        hot_words = ["buceta", "peito", "fuder", "foto", "video", "pussy", "fuck", "ver", "mostrar", "culo", "tetas", "verga"]
+        hot = sum(p in context for p in hot_words)
+
+        deve_exibir = hot >= 2
+        tipo_link = "br" if idioma == "pt" else "gringo"
+        return deve_exibir, tipo_link
+
+
+
 
 
 # ======================
@@ -398,26 +436,51 @@ class ApiService:
     def ask_gemini(prompt: str, session_id: str, conn) -> dict:
         if any(word in prompt.lower() for word in ["vip", "quanto custa", "comprar", "assinar"]):
             return ApiService._call_gemini_api(prompt, session_id, conn)
-        
         return ApiService._call_gemini_api(prompt, session_id, conn)
 
     @staticmethod
     def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
         delay_time = random.uniform(3, 8)
         time.sleep(delay_time)
-        
+
         status_container = st.empty()
         UiService.show_status_effect(status_container, "viewed")
         UiService.show_status_effect(status_container, "typing")
-        
+
         conversation_history = ChatService.format_conversation_history(st.session_state.messages)
-        
+
+        # ✅ Corrigido: detectar idioma e definir persona antes de montar o JSON
+        idioma = detectar_idioma_historico(st.session_state.messages)
+        if idioma == "pt":
+            persona = Persona.JUH
+        elif idioma == "en":
+            persona = Persona.JUH_EN
+        else:
+            persona = Persona.JUH_ES
+
         headers = {'Content-Type': 'application/json'}
         data = {
             "contents": [
                 {
                     "role": "user",
-                    "parts": [{"text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
+                    "parts": [{
+                        "text": f"""{persona}
+
+Histórico da Conversa:
+{conversation_history}
+
+Última mensagem do cliente: '{prompt}'
+
+Responda em JSON com o formato:
+{{
+  \"text\": \"sua resposta\",
+  \"cta\": {{
+    \"show\": true/false,
+    \"label\": \"texto do botão\",
+    \"target\": \"página\"
+  }}
+}}"""
+                    }]
                 }
             ],
             "generationConfig": {
@@ -426,32 +489,45 @@ class ApiService:
                 "topK": 40
             }
         }
-        
+
         try:
             response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
             response.raise_for_status()
             gemini_response = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-            
+
             try:
                 if '```json' in gemini_response:
                     resposta = json.loads(gemini_response.split('```json')[1].split('```')[0].strip())
                 else:
                     resposta = json.loads(gemini_response)
-                
+            except Exception as e:
+                print("Erro ao interpretar JSON da resposta:", e)
+                resposta = {"text": "Erro ao interpretar a resposta da IA.", "cta": {"show": False}}
+
+            try:
                 if resposta.get("cta", {}).get("show"):
-                    if not CTAEngine.should_show_cta(st.session_state.messages):
-                        resposta["cta"]["show"] = False
+                    mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
+                    if mostrar_cta:
+                        resposta["cta"]["show"] = True
+                        if tipo_link == "br":
+                            resposta["cta"]["label"] = "Ver Planos VIP"
+                            resposta["cta"]["target"] = "offers"
+                        else:
+                            resposta["cta"]["show"] = False
+                            resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
                     else:
-                        st.session_state.last_cta_time = time.time()
-                
-                return resposta
-            
-            except json.JSONDecodeError:
-                return {"text": gemini_response, "cta": {"show": False}}
-                
+                        resposta["cta"]["show"] = False
+            except Exception as e:
+                print("Erro ao processar CTA:", e)
+                resposta["cta"] = {"show": False}
+
         except Exception as e:
-            st.error(f"Erro na API: {str(e)}")
-            return {"text": "Vamos continuar isso mais tarde...", "cta": {"show": False}}
+            print("Erro na chamada da API Gemini:", e)
+            resposta = {"text": "Erro ao se conectar com o sistema.", "cta": {"show": False}}
+
+        return resposta
+
+
 
 # ======================
 # SERVIÇOS DE INTERFACE
@@ -1355,11 +1431,16 @@ class ChatService:
             st.session_state.session_id = str(random.randint(100000, 999999))
         
         if "messages" not in st.session_state:
-            st.session_state.messages = DatabaseService.load_messages(
-                conn,
-                get_user_id(),
-                st.session_state.session_id
-            )
+            try:  # NOVO
+                loaded_messages = DatabaseService.load_messages(  # NOVO: atribui a variável primeiro
+                    conn,
+                    get_user_id(),
+                    st.session_state.session_id
+                )
+                st.session_state.messages = loaded_messages if loaded_messages else []  # NOVO: tratamento para None
+            except Exception as e:  # NOVO
+                print(f"Erro ao carregar mensagens: {e}")  # NOVO
+                st.session_state.messages = []  # NOVO
         
         if "request_count" not in st.session_state:
             st.session_state.request_count = len([
@@ -1481,6 +1562,9 @@ class ChatService:
 
     @staticmethod
     def process_user_input(conn):
+
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
         now = datetime.utcnow()
         last_time = st.session_state.get("last_user_msg_time")
     
@@ -1521,6 +1605,9 @@ class ChatService:
         if not st.session_state.get("audio_sent") and st.session_state.chat_started:
             status_container = st.empty()
             UiService.show_audio_recording_effect(status_container)
+
+            if "messages" not in st.session_state:  # NOVO
+                st.session_state.messages = []
     
             st.session_state.messages.append({
                 "role": "assistant",
@@ -1539,177 +1626,222 @@ class ChatService:
     
         user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
     
+
         if user_input:
-            cleaned_input = ChatService.validate_input(user_input)
-            lower_input = cleaned_input.lower()
+            # ------ ADICIONE ISSO ------ #
+
+            idioma = detectar_idioma_historico(st.session_state.messages)
+
+frases_pix = {
+    "pt": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos: Promo, Start, Premium e Extreme 😈\nVem ver tudo que preparei pra te deixar louco 🔥",
+    "en": "No direct Pix here, baby... 💸 You enter my world by choosing one of my plans: Promo, Start, Premium or Extreme 😈\nCome see what I’ve got to drive you crazy 🔥",
+    "es": "Nada de pagos directos por Pix, amor... 💸 Entra a mi mundo eligiendo uno de mis planes: Promo, Start, Premium o Extreme 😈\nVen a ver todo lo que preparé para volverte loco 🔥"
+}
+
+frases_fotos = {
+    "pt": [
+        "tô com fotos da minha buceta bem aberta, quer ver?",
+        "minha buceta tá chamando você nas fotos...",
+        "fiz um ensaio novo mostrando tudinho 🔥"
+    ],
+    "en": [
+        "I've got pics of my pussy wide open, wanna see?",
+        "my juicy pics are calling you...",
+        "I did a hot new shoot showing everything 🔥"
+    ],
+    "es": [
+        "tengo fotos de mi conchita bien abierta, ¿quieres ver?",
+        "mis fotos calientes te están llamando...",
+        "hice una sesión nueva mostrando todo 🔥"
+    ]
+}
+
+frases_video = {
+    "pt": [
+        "tenho vídeo me masturbando gostoso, vem ver 😈",
+        "tô me tocando nesse vídeo novo, quer ver?",
+        "gravei um vídeo especial só pra você 🥵"
+    ],
+    "en": [
+        "got a video of me playing with myself, come see 😈",
+        "I'm touching myself in this hot new video, wanna see?",
+        "recorded a special video just for you 🥵"
+    ],
+    "es": [
+        "tengo un video masturbándome rico, ¿quieres ver? 😈",
+        "me estoy tocando en este nuevo video, ¿quieres verlo?",
+        "grabé un video especial solo para ti 🥵"
+    ]
+}
+
+frases_ia = {
+    "pt": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
+    "en": "I'm as real as your desire... 😈 Come find out yourself with my hottest plan 🔥",
+    "es": "Soy tan real como tus ganas... 😈 Ven y descúbrelo tú mismo con mi plan más caliente 🔥"
+}
+
+resposta = {
+    "text": "",
+    "cta": {
+        "show": False,
+        "label": "",
+        "target": ""
+    }
+}
+    
+cleaned_input = ChatService.validate_input(user_input)
+lower_input = cleaned_input.lower()
+    
     
             # Mostra mensagem do usuário imediatamente
-            with st.chat_message("user", avatar="🧑"):
-                st.markdown(f"""
-                <div style="
-                    background: rgba(0, 0, 0, 0.1);
-                    padding: 12px;
-                    border-radius: 18px 18px 0 18px;
-                    margin: 5px 0;
-                ">
-                    {cleaned_input}
-                </div>
-                """, unsafe_allow_html=True)
+with st.chat_message("user", avatar="🧑"):
+    st.markdown(f"""
+    <div style="
+         background: rgba(0, 0, 0, 0.1);
+         padding: 12px;
+         border-radius: 18px 18px 0 18px;
+         margin: 5px 0;
+     ">
+        {cleaned_input}
+    </div>
+    """, unsafe_allow_html=True)
     
-            st.session_state.messages.append({
-                "role": "user",
-                "content": cleaned_input
-            })
-            DatabaseService.save_message(
-                conn,
-                get_user_id(),
-                st.session_state.session_id,
-                "user",
-                cleaned_input
-            )
-            st.session_state.request_count += 1
+st.session_state.messages.append({
+    "role": "user",
+    "content": cleaned_input
+ })
+DatabaseService.save_message(
+      conn,
+     get_user_id(),
+     st.session_state.session_id,
+      "user",
+      cleaned_input
+ )
+st.session_state.request_count += 1
     
             # Verifica limite
-            if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
-                with st.chat_message("assistant", avatar="💋"):
-                    st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
-                DatabaseService.save_message(
-                    conn,
-                    get_user_id(),
-                    st.session_state.session_id,
-                    "assistant",
-                    "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
-                )
-                save_persistent_data()
-                st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
-                return
+if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
+    with st.chat_message("assistant", avatar="💋"):
+        st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
+    DatabaseService.save_message(
+        conn,
+        get_user_id(),
+        st.session_state.session_id,
+        "assistant",
+        "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
+     )
+    save_persistent_data()
+    st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
+    return
     
             # Define a resposta
-            if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(5)
-                placeholder.empty()
-                resposta = {
-                      "text":(
-                      "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
-                      "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
-                      "Vem ver tudo que preparei pra te deixar louco 🔥"
-                    ),
-                    "cta": {
-                        "show": True,
-                        "label": "👉 Ver Planos VIP",        
-                        "target": "offers"
-                    }
-                }
+if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
+     placeholder = st.empty()
+     placeholder.markdown("💬 Digitando...")
+     time.sleep(5)
+     placeholder.empty()
+     resposta = {
+             "text": (
+             "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
+             "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
+             "Vem ver tudo que preparei pra te deixar louco 🔥"
+         ),
+            
+         "cta": {
+             "show": True,
+             "label": "👉 Ver Planos VIP",        
+             "target": "offers"
+         }
+     }
     
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
-            elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(5)
-                resposta = {
-                    "text": random.choice([
-                        "tô com fotos da minha buceta bem aberta, quer ver?",
-                        "minha buceta tá chamando você nas fotos...",
-                        "fiz um ensaio novo mostrando tudinho 🔥"
-                    ]),
-                    "cta": {
-                        "show": True,
-                        "label": "Ver Fotos Quentes",
-                        "target": "offers"
-                    }
-                }
+elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+ placeholder = st.empty()
+ placeholder.markdown("💬 Digitando...")
+ time.sleep(5)
+ resposta = {
+     "text": frases_fotos.get(idioma, frases_fotos["pt"]),
+     "cta": {
+         "show": True,
+         "label": "Ver Vídeos Exclusivos",
+         "target": "offers"
+      }
+  }
             
-            # Palavras-chave: VOCÊ É REAL / IA
-            elif any(p in lower_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(5)
-                resposta = {
-                    "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
-                    "cta": {
-                        "show": True,
-                        "label": "💎 Quero Ver Tudo",
-                        "target": "offers"
-                    }
-                }
+else:
+   resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
             
-            # Palavras-chave: VÍDEO / MASTURBAR / TRANSAR
-            elif any(v in lower_input for v in ["video", "transar", "masturbar"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(5)
-                resposta = {
-                    "text": random.choice([
-                        "tenho vídeo me masturbando gostoso, vem ver 😈",
-                        "tô me tocando nesse vídeo novo, quer ver?",
-                        "gravei um vídeo especial só pra você 🥵"
-                    ]),
-                    "cta": {
-                        "show": True,
-                        "label": "Ver Vídeos Exclusivos",
-                        "target": "offers"
-                    }
-                }
-            
-            
-            
-            # Mensagem padrão — IA responde (sem delay)
-            else:
-                resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
-            
-                if isinstance(resposta, str):
-                    resposta = {"text": resposta, "cta": {"show": False}}
-                elif "text" not in resposta:
-                    resposta = {"text": str(resposta), "cta": {"show": False}}
+   if isinstance(resposta, str):
+       resposta = {"text": resposta, "cta": {"show": False}}
+   elif "text" not in resposta:
+       resposta = {"text": str(resposta), "cta": {"show": False}}
             
             # Exibe resposta da IA ou resposta fixa
-            with st.chat_message("assistant", avatar="💋"):
-                st.markdown(f"""
-                <div style="
-                    background: linear-gradient(45deg, #ff66b3, #ff1493);
-                    color: white;
-                    padding: 12px;
-                    border-radius: 18px 18px 18px 0;
-                    margin: 5px 0;
-                ">
-                    {resposta["text"]}
-                </div>
-                """, unsafe_allow_html=True)
+   with st.chat_message("assistant", avatar="💋"):
+       st.markdown(f"""
+       <div style="
+           background: linear-gradient(45deg, #ff66b3, #ff1493);
+           color: white;
+           padding: 12px;
+           border-radius: 18px 18px 18px 0;
+           margin: 5px 0;
+        ">
+           {resposta["text"]}
+       </div>
+       """, unsafe_allow_html=True)
             
-                if resposta.get("cta", {}).get("show"):
-                    if st.button(
-                        resposta["cta"].get("label", "Ver Ofertas"),
-                        key=f"chat_button_{time.time()}",
-                        use_container_width=True
-                    ):
-                        st.session_state.current_page = resposta["cta"].get("target", "offers")
-                        save_persistent_data()
-                        st.rerun()
-            
-            # Salva resposta
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": json.dumps(resposta)
-            })
-            DatabaseService.save_message(
-                conn,
-                get_user_id(),
-                st.session_state.session_id,
-                "assistant",
-                json.dumps(resposta)
-            )
-            
-            save_persistent_data()
-            
-            # Scroll automático
-            st.markdown("""
-            <script>
-                window.scrollTo(0, document.body.scrollHeight);
-            </script>
-            """, unsafe_allow_html=True)
+                
+   if resposta.get("cta", {}).get("show"):
+       mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
+       if mostrar_cta:
+           resposta["cta"]["show"] = True
+           if tipo_link == "br":
+               resposta["cta"]["label"] = "Ver Planos VIP"
+               resposta["cta"]["target"] = "offers"
+           else:
+               resposta["cta"]["show"] = False
+               resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
+       else:
+           resposta["cta"]["show"] = False
+        
+       if st.button(
+           resposta["cta"].get("label", "Ver Ofertas"),
+           key=f"chat_button_{time.time()}",
+           use_container_width=True
+       ):
+           st.session_state.current_page = resposta["cta"].get("target", "offers")
+           save_persistent_data()
+           st.rerun()
+
+   if "messages" not in st.session_state:  # NOVO
+       st.session_state.messages = []  # NOVO
+        
+   response_content = json.dumps(resposta) if isinstance(resposta, dict) else str(resposta)  # NOVO: tratamento mais seguro
+        
+   st.session_state.messages.append({
+       "role": "assistant",
+       "content": response_content  # NOVO: usando a variável tratada
+   })
+        
+   try:  # NOVO
+       DatabaseService.save_message(
+           conn,
+           get_user_id(),
+           st.session_state.session_id,
+           "assistant",
+           response_content  # NOVO: usando a variável tratada
+       )
+   except Exception as e:  # NOVO
+       print(f"Erro ao salvar mensagem: {e}")  # NOVO
+   save_persistent_data()
+        
+    # Scroll automático
+   st.markdown("""
+   <script>
+       window.scrollTo(0, document.body.scrollHeight);
+   </script>
+   """, unsafe_allow_html=True)
 
 
 
@@ -1894,7 +2026,7 @@ menuBtn.onclick = function() {
     sidebar.classList.toggle("mobile-open");
     document.querySelector(".sidebar-overlay").style.display = 
         sidebar.classList.contains("mobile-open") ? "block" : "none";
-    this.innerHTML = sidebar.classList.contains("mobile-open") ? "✕" : "☰";
+    
 };
 
 // Fecha ao clicar no overlay
@@ -1909,4 +2041,7 @@ document.querySelector(".sidebar-overlay").onclick = function() {
 
 if __name__ == "__main__":
     main()
-
+            
+            
+            
+            
