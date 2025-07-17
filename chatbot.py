@@ -1821,10 +1821,10 @@ class ChatService:
                 
         response_content = json.dumps(resposta) if isinstance(resposta, dict) else str(resposta)  # NOVO: tratamento mais seguro
                 
-               st.session_state.messages.append({
-                   "role": "assistant",
-                   "content": response_content  # NOVO: usando a variável tratada
-               })
+                    st.session_state.messages.append({
+                       "role": "assistant",
+                       "content": response_content  # NOVO: usando a variável tratada
+                   })
                 
                try:  # NOVO
                    DatabaseService.save_message(
