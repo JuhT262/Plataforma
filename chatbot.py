@@ -1819,7 +1819,7 @@ class ChatService:
         if "messages" not in st.session_state:  # NOVO
                 st.session_state.messages = []  # NOVO
                 
-               response_content = json.dumps(resposta) if isinstance(resposta, dict) else str(resposta)  # NOVO: tratamento mais seguro
+        response_content = json.dumps(resposta) if isinstance(resposta, dict) else str(resposta)  # NOVO: tratamento mais seguro
                 
                st.session_state.messages.append({
                    "role": "assistant",
