@@ -1804,7 +1804,7 @@ class ChatService:
         else:
                            resposta["cta"]["show"] = False
                            resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
-  else:
+ else:
                        resposta["cta"]["show"] = False
                 
         if st.button(
