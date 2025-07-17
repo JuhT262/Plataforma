@@ -340,7 +340,7 @@ class Persona:
         """
 
 class CTAEngine:
-        @staticmethod
+    @staticmethod
     def should_show_cta(conversation_history: list) -> bool:
             if len(conversation_history) < 2:
                 return False
