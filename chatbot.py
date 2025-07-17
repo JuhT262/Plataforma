@@ -319,7 +319,7 @@ class Persona:
     ```
     """
     
-```python
+
 class Persona:
     JUH_PT = "[PERFIL JUH] Mulher vulgar e safada que adora provocar..."
     JUH_EN = "[JUH PROFILE] Naughty and provocative woman who loves teasing..."
