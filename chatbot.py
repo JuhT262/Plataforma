@@ -1794,7 +1794,7 @@ with st.chat_message("assistant", avatar="💋"):
          """, unsafe_allow_html=True)
             
                 
-       if resposta.get("cta", {}).get("show"):
+if resposta.get("cta", {}).get("show"):
            mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
        if mostrar_cta:
                resposta["cta"]["show"] = True
