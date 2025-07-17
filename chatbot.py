@@ -1834,7 +1834,7 @@ class ChatService:
                        "assistant",
                        response_content  # NOVO: usando a variável tratada
                    )
-               except Exception as e:  # NOVO
+        except Exception as e:  # NOVO
                    print(f"Erro ao salvar mensagem: {e}")  # NOVO
                save_persistent_data()
                 
