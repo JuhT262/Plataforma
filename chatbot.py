@@ -1826,7 +1826,7 @@ class ChatService:
                 "content": response_content  # NOVO: usando a variável tratada
                 })
                 
-               try:  # NOVO
+        try:  # NOVO
                    DatabaseService.save_message(
                        conn,
                        get_user_id(),
