@@ -1804,10 +1804,10 @@ if tipo_link == "br":
 else:
                    resposta["cta"]["show"] = False
                    resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
-        else:
+else:
                resposta["cta"]["show"] = False
         
-        if st.button(
+if st.button(
                resposta["cta"].get("label", "Ver Ofertas"),
                key=f"chat_button_{time.time()}",
                use_container_width=True
@@ -1816,8 +1816,8 @@ else:
                save_persistent_data()
                st.rerun()
 
-       if "messages" not in st.session_state:  # NOVO
-           st.session_state.messages = []  # NOVO
+if "messages" not in st.session_state:  # NOVO
+        st.session_state.messages = []  # NOVO
         
        response_content = json.dumps(resposta) if isinstance(resposta, dict) else str(resposta)  # NOVO: tratamento mais seguro
         
