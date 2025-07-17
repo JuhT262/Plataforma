@@ -14,6 +14,9 @@ class Persona:
     JUH_PT = "[PERFIL JUH] Mulher vulgar e safada que adora provocar..."
     JUH_EN = "[JUH PROFILE] Naughty and provocative woman who loves teasing..."
     JUH_ES = "[PERFIL DE JUH] Mujer atrevida y provocativa que le encanta provocar..."
+    JUH_PT = "persona em português"
+    JUH_EN = "persona em inglês"
+    JUH_ES = "persona em espanhol"
 
 
 
@@ -438,6 +441,7 @@ class ApiService:
         
         idioma = detectar_idioma_historico(messages)
         persona = Persona.JUH_PT if idioma == "pt" else Persona.JUH_EN if idioma == "en" else Persona.JUH_ES
+        
     
         conteudo_prompt = {
             "role": "user",
