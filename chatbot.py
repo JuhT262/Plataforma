@@ -469,7 +469,7 @@ class ApiService:
             except json.JSONDecodeError:
                 return {"text": gemini_response, "cta": {"show": False}}
                 
-        except Exception as e:
+    except Exception as e:
             st.error(f"Erro na API: {str(e)}")
             return {"text": "Vamos continuar isso mais tarde...", "cta": {"show": False}}
 
