@@ -1717,42 +1717,42 @@ DatabaseService.save_message(
       "user",
       cleaned_input
  )
-            st.session_state.request_count += 1
+ st.session_state.request_count += 1
     
             # Verifica limite
-            if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
-                with st.chat_message("assistant", avatar="💋"):
-                    st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
-                DatabaseService.save_message(
-                    conn,
-                    get_user_id(),
-                    st.session_state.session_id,
-                    "assistant",
-                    "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
-                )
-                save_persistent_data()
-                st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
-                return
+ if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
+     with st.chat_message("assistant", avatar="💋"):
+         st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
+     DatabaseService.save_message(
+         conn,
+         get_user_id(),
+         st.session_state.session_id,
+         "assistant",
+         "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
+     )
+     save_persistent_data()
+     st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
+     return
     
             # Define a resposta
-            if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(5)
-                placeholder.empty()
-                resposta = {
-                      "text": (
-                      "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
-                      "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
-                      "Vem ver tudo que preparei pra te deixar louco 🔥"
-                    ),
+ if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
+     placeholder = st.empty()
+     placeholder.markdown("💬 Digitando...")
+     time.sleep(5)
+     placeholder.empty()
+     resposta = {
+             "text": (
+             "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
+             "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
+             "Vem ver tudo que preparei pra te deixar louco 🔥"
+         ),
             
-                    "cta": {
-                        "show": True,
-                        "label": "👉 Ver Planos VIP",        
-                        "target": "offers"
-                    }
-                }
+         "cta": {
+             "show": True,
+             "label": "👉 Ver Planos VIP",        
+             "target": "offers"
+         }
+     }
     
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
