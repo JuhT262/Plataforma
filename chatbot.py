@@ -1761,7 +1761,7 @@ elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]
  placeholder.markdown("💬 Digitando...")
  time.sleep(5)
  resposta = {
-     "text": frases_fotos.get(idioma, frases_fotos["pt"])
+     "text": frases_fotos.get(idioma, frases_fotos["pt"]),
      "cta": {
          "show": True,
          "label": "Ver Vídeos Exclusivos",
