@@ -1603,7 +1603,21 @@ class ChatService:
     
         user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
     
+
         if user_input:
+            # ------ ADICIONE ISSO ------ #
+            resposta = {  # Estrutura padrão garantida
+                "text": "",  # Texto vazio por padrão
+                "cta": {     # CTA desativado por padrão
+                    "show": False,
+                    "label": "",
+                    "target": ""
+                }
+            }
+            # -------------------------- #
+    
+    cleaned_input = ChatService.validate_input(user_input)
+    lower_input = cleaned_input.lower()
             cleaned_input = ChatService.validate_input(user_input)
             lower_input = cleaned_input.lower()
     
