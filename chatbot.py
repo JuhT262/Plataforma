@@ -1710,7 +1710,7 @@ st.session_state.messages.append({
     "role": "user",
     "content": cleaned_input
  })
- DatabaseService.save_message(
+DatabaseService.save_message(
       conn,
      get_user_id(),
      st.session_state.session_id,
