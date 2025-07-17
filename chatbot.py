@@ -1720,6 +1720,8 @@ DatabaseService.save_message(
 st.session_state.request_count += 1
     
             # Verifica limite
+def verificar_limite_request():
+            
 if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
     with st.chat_message("assistant", avatar="💋"):
         st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
