@@ -391,7 +391,7 @@ class CTAEngine:
 # SERVIÇOS DE BANCO DE DADOS
 # ======================
 class DatabaseService:
-        @staticmethod
+    @staticmethod
     def init_db():
             conn = sqlite3.connect('chat_history.db', check_same_thread=False)
             c = conn.cursor()
@@ -417,7 +417,7 @@ class DatabaseService:
             except sqlite3.Error as e:
                 st.error(f"Erro ao salvar mensagem: {e}")
 
-        @staticmethod
+    @staticmethod
     def load_messages(conn, user_id, session_id):
             c = conn.cursor()
             c.execute("""
@@ -431,14 +431,14 @@ class DatabaseService:
 # SERVIÇOS DE API
 # ======================
 class ApiService:
-        @staticmethod
-        @lru_cache(maxsize=100)
+    @staticmethod
+    @lru_cache(maxsize=100)
     def ask_gemini(prompt: str, session_id: str, conn) -> dict:
             if any(word in prompt.lower() for word in ["vip", "quanto custa", "comprar", "assinar"]):
                 return ApiService._call_gemini_api(prompt, session_id, conn)
             return ApiService._call_gemini_api(prompt, session_id, conn)
 
-        @staticmethod
+    @staticmethod
     def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
             delay_time = random.uniform(3, 8)
             time.sleep(delay_time)
@@ -533,7 +533,7 @@ class ApiService:
 # SERVIÇOS DE INTERFACE
 # ======================
 class UiService:
-        @staticmethod
+    @staticmethod
     def get_chat_audio_player():
             return f"""
             <div style="
@@ -548,7 +548,7 @@ class UiService:
             </div>
             """
 
-        @staticmethod
+    @staticmethod
     def show_call_effect():
             LIGANDO_DELAY = 5
             ATENDIDA_DELAY = 3
@@ -605,7 +605,7 @@ class UiService:
             time.sleep(ATENDIDA_DELAY)
             call_container.empty()
 
-        @staticmethod
+    @staticmethod
     def show_status_effect(container, status_type):
             status_messages = {
                 "viewed": "Visualizado",
@@ -643,7 +643,7 @@ class UiService:
         
             container.empty()
 
-        @staticmethod
+    @staticmethod
     def show_audio_recording_effect(container):
             message = "Gravando um áudio"
             dots = ""
@@ -673,7 +673,7 @@ class UiService:
         
             container.empty()
 
-        @staticmethod
+    @staticmethod
     def age_verification():
             st.markdown("""
             <style>
@@ -730,7 +730,7 @@ class UiService:
                     save_persistent_data()
                     st.rerun()
 
-        @staticmethod
+    @staticmethod
     def setup_sidebar():
             with st.sidebar:
                 st.markdown(f"""
@@ -900,7 +900,7 @@ class UiService:
                 """, unsafe_allow_html=True)
 
             
-        @staticmethod
+    @staticmethod
     def chat_shortcuts():
             cols = st.columns(4)
             with cols[0]:
@@ -925,7 +925,7 @@ class UiService:
                     st.rerun()
 
 
-        @staticmethod
+    @staticmethod
     def enhanced_chat_ui(conn):
             st.markdown("""
             <style>
@@ -990,7 +990,7 @@ class UiService:
             </div>
             """, unsafe_allow_html=True)
 
-        @staticmethod
+    @staticmethod
     def show_gallery_page(conn):
             st.markdown("""
             <div style="
@@ -1044,7 +1044,7 @@ class UiService:
                 st.rerun()
 
 class NewPages:
-        @staticmethod
+    @staticmethod
     def show_home_page():
             st.markdown("""
             <style>
@@ -1107,7 +1107,7 @@ class NewPages:
                 save_persistent_data()
                 st.rerun()
 
-        @staticmethod
+    @staticmethod
     def show_offers_page():
             st.markdown("""
             <style>
@@ -1423,7 +1423,7 @@ class NewPages:
 # SERVIÇOS DE CHAT
 # ======================
 class ChatService:
-        @staticmethod
+    @staticmethod
     def initialize_session(conn):
             load_persistent_data()
         
@@ -1462,7 +1462,7 @@ class ChatService:
                 if key not in st.session_state:
                     st.session_state[key] = default
 
-        @staticmethod
+    @staticmethod
     def format_conversation_history(messages, max_messages=10):
             formatted = []
         
@@ -1481,7 +1481,7 @@ class ChatService:
         
             return "\n".join(formatted)
 
-        @staticmethod
+    @staticmethod
     def display_chat_history():
             chat_container = st.container()
             with chat_container:
@@ -1555,12 +1555,12 @@ class ChatService:
                                 </div>
                                 """, unsafe_allow_html=True)
 
-        @staticmethod
+    @staticmethod
     def validate_input(user_input):
             cleaned_input = re.sub(r'<[^>]*>', '', user_input)
             return cleaned_input[:500]
 
-        @staticmethod
+    @staticmethod
     def process_user_input(conn):
 
         if "messages" not in st.session_state:
