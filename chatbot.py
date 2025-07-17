@@ -1,20 +1,3 @@
-def detectar_idioma(texto):
-    texto = texto.lower()
-    if any(p in texto for p in ["hi", "hello", "fuck", "boobs", "pussy", "horny", "sexy"]):
-        return "en"
-    elif any(p in texto for p in ["hola", "culo", "tetas", "verga", "latina", "follar"]):
-        return "es"
-    return "pt"
-
-def detectar_idioma_historico(conversas):
-    texto = " ".join([m["content"] for m in conversas if m["role"] == "user"]).lower()
-    return detectar_idioma(texto)
-
-class Persona:
-    JUH_PT = "[PERFIL JUH] Mulher vulgar e safada que adora provocar..."
-    JUH_EN = "[JUH PROFILE] Naughty and provocative woman who loves teasing..."
-    JUH_ES = "[PERFIL DE JUH] Mujer atrevida y provocativa que le encanta provocar..."
-    
 
 
 
@@ -262,7 +245,6 @@ def save_persistent_data():
 # ======================
 class Persona:
     JUH = """  # Alterado de JUH para JUH
-
     [PERFIL JUH]
     - Mulher vulgar e safada que adora provocar
     - Linguagem direta e cheia de malícia
@@ -318,12 +300,6 @@ class Persona:
     }
     ```
     """
-    
-
-class Persona:
-    JUH_PT = "[PERFIL JUH] Mulher vulgar e safada que adora provocar..."
-    JUH_EN = "[JUH PROFILE] Naughty and provocative woman who loves teasing..."
-    JUH_ES = "[PERFIL DE JUH] Mujer atrevida y provocativa que le encanta provocar..."
 
 class CTAEngine:
     @staticmethod
@@ -427,8 +403,6 @@ class ApiService:
 
     @staticmethod
     def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
-        import random, time, json, requests, streamlit as st
-
         delay_time = random.uniform(3, 8)
         time.sleep(delay_time)
         
@@ -436,35 +410,23 @@ class ApiService:
         UiService.show_status_effect(status_container, "viewed")
         UiService.show_status_effect(status_container, "typing")
         
-        # Aqui você precisa definir ou passar a variável 'messages' e 'headers'
-        # Supondo que 'messages' e 'headers' sejam argumentos ou estejam disponíveis
-        # Se não, você deve passar para o método ou buscar dentro do contexto
+        conversation_history = ChatService.format_conversation_history(st.session_state.messages)
         
-        # Exemplo: supondo que 'messages' seja recuperado da sessão ou argumento
-        messages = st.session_state.get("messages", [])
-        headers = {"Authorization": f"Bearer {Config.API_KEY}"}  # ou como estiver configurado
-        
-        idioma = detectar_idioma_historico(messages)
-        persona = Persona.JUH_PT if idioma == "pt" else Persona.JUH_EN if idioma == "en" else Persona.JUH_ES
-        
-    
-        conteudo_prompt = {
-            "role": "user",
-            "parts": [
-                {
-                    "text": f"""{persona}\n\nHistórico:\n{ChatService.format_conversation_history(messages)}\n\nÚltima mensagem: '{prompt}'\n\nResponda em JSON:\n{{"text": "...", "cta": {{"show": true/false, "label": "...", "target": "..."}}}}"""
-                }
-            ]
-        }
+        headers = {'Content-Type': 'application/json'}
         data = {
-            "contents": [conteudo_prompt],
+            "contents": [
+                {
+                    "role": "user",
+                    "parts": [{"text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
+                }
+            ],
             "generationConfig": {
                 "temperature": 0.9,
                 "topP": 0.8,
                 "topK": 40
             }
         }
-    
+        
         try:
             response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
             response.raise_for_status()
@@ -477,7 +439,7 @@ class ApiService:
                     resposta = json.loads(gemini_response)
                 
                 if resposta.get("cta", {}).get("show"):
-                    if not CTAEngine.should_show_cta(messages):
+                    if not CTAEngine.should_show_cta(st.session_state.messages):
                         resposta["cta"]["show"] = False
                     else:
                         st.session_state.last_cta_time = time.time()
@@ -486,11 +448,10 @@ class ApiService:
             
             except json.JSONDecodeError:
                 return {"text": gemini_response, "cta": {"show": False}}
-    
+                
         except Exception as e:
             st.error(f"Erro na API: {str(e)}")
             return {"text": "Vamos continuar isso mais tarde...", "cta": {"show": False}}
-
 
 # ======================
 # SERVIÇOS DE INTERFACE
