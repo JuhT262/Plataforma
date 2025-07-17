@@ -214,11 +214,11 @@ def __new__(cls):
                 cls._instance.init_db()
             return cls._instance
     
-    def init_db(self):
+def init_db(self):
             self.conn = sqlite3.connect('persistent_state.db', check_same_thread=False)
             self.create_tables()
     
-    def create_tables(self):
+def create_tables(self):
             cursor = self.conn.cursor()
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS global_state (
@@ -229,7 +229,7 @@ def __new__(cls):
             ''')
             self.conn.commit()
 
-    def save_state(self, user_id, data):
+def save_state(self, user_id, data):
             cursor = self.conn.cursor()
             cursor.execute('''
                 INSERT OR REPLACE INTO global_state (user_id, session_data)
@@ -237,7 +237,7 @@ def __new__(cls):
             ''', (user_id, json.dumps(data)))
             self.conn.commit()
     
-    def load_state(self, user_id):
+def load_state(self, user_id):
             cursor = self.conn.cursor()
             cursor.execute('SELECT session_data FROM global_state WHERE user_id = ?', (user_id,))
             result = cursor.fetchone()
