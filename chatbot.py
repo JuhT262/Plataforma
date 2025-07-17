@@ -52,10 +52,10 @@ import sqlite3
 import re
 import os
 import uuid
-    from datetime import datetime
-    from pathlib import Path
-    from functools import lru_cache
-    from datetime import datetime
+from datetime import datetime
+from pathlib import Path
+from functools import lru_cache
+from datetime import datetime
 
 
 
@@ -63,7 +63,7 @@ import uuid
 # ======================
 # CONFIGURAÇÃO INICIAL DO STREAMLIT
 # ======================
-    st.set_page_config(
+        st.set_page_config(
         page_title="Juh Premium",
         page_icon="😍",  # Emoji de diamante adicionado
         layout="wide",
