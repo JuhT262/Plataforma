@@ -1691,33 +1691,32 @@ resposta = {
     
 cleaned_input = ChatService.validate_input(user_input)
 lower_input = cleaned_input.lower()
-    cleaned_input = ChatService.validate_input(user_input)
-    lower_input = cleaned_input.lower()
+    
     
             # Mostra mensagem do usuário imediatamente
-            with st.chat_message("user", avatar="🧑"):
-                st.markdown(f"""
-                <div style="
-                    background: rgba(0, 0, 0, 0.1);
-                    padding: 12px;
-                    border-radius: 18px 18px 0 18px;
-                    margin: 5px 0;
-                ">
-                    {cleaned_input}
-                </div>
-                """, unsafe_allow_html=True)
+with st.chat_message("user", avatar="🧑"):
+    st.markdown(f"""
+    <div style="
+         background: rgba(0, 0, 0, 0.1);
+         padding: 12px;
+         border-radius: 18px 18px 0 18px;
+         margin: 5px 0;
+     ">
+        {cleaned_input}
+    </div>
+    """, unsafe_allow_html=True)
     
-            st.session_state.messages.append({
-                "role": "user",
-                "content": cleaned_input
-            })
-            DatabaseService.save_message(
-                conn,
-                get_user_id(),
-                st.session_state.session_id,
-                "user",
-                cleaned_input
-            )
+st.session_state.messages.append({
+    "role": "user",
+    "content": cleaned_input
+ })
+ DatabaseService.save_message(
+      conn,
+     get_user_id(),
+     st.session_state.session_id,
+      "user",
+      cleaned_input
+ )
             st.session_state.request_count += 1
     
             # Verifica limite
