@@ -1747,6 +1747,8 @@ resposta = {
                       "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
                       "Vem ver tudo que preparei pra te deixar louco 🔥"
                     ),
+                resposta = {
+                    "text": frases_pix.get(idioma, frases_pix["pt"]),
                     "cta": {
                         "show": True,
                         "label": "👉 Ver Planos VIP",        
