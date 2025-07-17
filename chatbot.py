@@ -1691,8 +1691,8 @@ resposta = {
     
 cleaned_input = ChatService.validate_input(user_input)
 lower_input = cleaned_input.lower()
-            cleaned_input = ChatService.validate_input(user_input)
-            lower_input = cleaned_input.lower()
+        cleaned_input = ChatService.validate_input(user_input)
+        lower_input = cleaned_input.lower()
     
             # Mostra mensagem do usuário imediatamente
             with st.chat_message("user", avatar="🧑"):
