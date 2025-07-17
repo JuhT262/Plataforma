@@ -1836,7 +1836,7 @@ class ChatService:
                    )
         except Exception as e:  # NOVO
                    print(f"Erro ao salvar mensagem: {e}")  # NOVO
-               save_persistent_data()
+                   save_persistent_data()
                 
                 # Scroll automático
                st.markdown("""
