@@ -1780,7 +1780,7 @@ def verificar_limite_request():
                resposta = {"text": str(resposta), "cta": {"show": False}}
             
             # Exibe resposta da IA ou resposta fixa
-           with st.chat_message("assistant", avatar="💋"):
+        with st.chat_message("assistant", avatar="💋"):
                st.markdown(f"""
                <div style="
                    background: linear-gradient(45deg, #ff66b3, #ff1493);
