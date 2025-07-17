@@ -1796,9 +1796,9 @@ with st.chat_message("assistant", avatar="💋"):
                 
 if resposta.get("cta", {}).get("show"):
            mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
-       if mostrar_cta:
+if mostrar_cta:
                resposta["cta"]["show"] = True
-       if tipo_link == "br":
+if tipo_link == "br":
                    resposta["cta"]["label"] = "Ver Planos VIP"
                    resposta["cta"]["target"] = "offers"
         else:
