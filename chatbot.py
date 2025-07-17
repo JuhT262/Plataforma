@@ -1780,18 +1780,18 @@ def verificar_limite_request():
                resposta = {"text": str(resposta), "cta": {"show": False}}
             
             # Exibe resposta da IA ou resposta fixa
-        with st.chat_message("assistant", avatar="💋"):
-               st.markdown(f"""
-               <div style="
-                   background: linear-gradient(45deg, #ff66b3, #ff1493);
-                   color: white;
-                   padding: 12px;
-                   border-radius: 18px 18px 18px 0;
-                   margin: 5px 0;
-                ">
-                   {resposta["text"]}
-               </div>
-               """, unsafe_allow_html=True)
+with st.chat_message("assistant", avatar="💋"):
+        st.markdown(f"""
+        <div style="
+                background: linear-gradient(45deg, #ff66b3, #ff1493);
+                color: white;
+                 padding: 12px;
+                border-radius: 18px 18px 18px 0;
+                  margin: 5px 0;
+         ">
+                {resposta["text"]}
+         </div>
+         """, unsafe_allow_html=True)
             
                 
        if resposta.get("cta", {}).get("show"):
