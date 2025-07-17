@@ -436,37 +436,50 @@ class ApiService:
     def ask_gemini(prompt: str, session_id: str, conn) -> dict:
         if any(word in prompt.lower() for word in ["vip", "quanto custa", "comprar", "assinar"]):
             return ApiService._call_gemini_api(prompt, session_id, conn)
-        
         return ApiService._call_gemini_api(prompt, session_id, conn)
 
     @staticmethod
     def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
         delay_time = random.uniform(3, 8)
         time.sleep(delay_time)
-        
+
         status_container = st.empty()
         UiService.show_status_effect(status_container, "viewed")
         UiService.show_status_effect(status_container, "typing")
-        
+
         conversation_history = ChatService.format_conversation_history(st.session_state.messages)
-    
+
+        # ✅ Corrigido: detectar idioma e definir persona antes de montar o JSON
+        idioma = detectar_idioma_historico(st.session_state.messages)
+        if idioma == "pt":
+            persona = Persona.JUH
+        elif idioma == "en":
+            persona = Persona.JUH_EN
+        else:
+            persona = Persona.JUH_ES
+
         headers = {'Content-Type': 'application/json'}
         data = {
             "contents": [
                 {
                     "role": "user",
                     "parts": [{
-    idioma = detectar_idioma_historico(st.session_state.messages)
-    if idioma == "pt":
-        persona = Persona.JUH
-    elif idioma == "en":
-        persona = Persona.JUH_EN
-    else:
-        persona = Persona.JUH_ES
+                        "text": f"""{persona}
 
-    "text": f"{persona}
+Histórico da Conversa:
+{conversation_history}
 
-Histórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"
+Última mensagem do cliente: '{prompt}'
+
+Responda em JSON com o formato:
+{{
+  \"text\": \"sua resposta\",
+  \"cta\": {{
+    \"show\": true/false,
+    \"label\": \"texto do botão\",
+    \"target\": \"página\"
+  }}
+}}"""
                     }]
                 }
             ],
@@ -476,12 +489,12 @@ Histórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: 
                 "topK": 40
             }
         }
-    
+
         try:
             response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
             response.raise_for_status()
             gemini_response = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-    
+
             try:
                 if '```json' in gemini_response:
                     resposta = json.loads(gemini_response.split('```json')[1].split('```')[0].strip())
@@ -490,7 +503,7 @@ Histórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: 
             except Exception as e:
                 print("Erro ao interpretar JSON da resposta:", e)
                 resposta = {"text": "Erro ao interpretar a resposta da IA.", "cta": {"show": False}}
-    
+
             try:
                 if resposta.get("cta", {}).get("show"):
                     mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
@@ -507,11 +520,11 @@ Histórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: 
             except Exception as e:
                 print("Erro ao processar CTA:", e)
                 resposta["cta"] = {"show": False}
-    
+
         except Exception as e:
             print("Erro na chamada da API Gemini:", e)
             resposta = {"text": "Erro ao se conectar com o sistema.", "cta": {"show": False}}
-    
+
         return resposta
 
 
