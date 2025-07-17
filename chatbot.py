@@ -1667,15 +1667,14 @@ frases_ia = {
     "es": "Soy tan real como tus ganas... 😈 Ven y descúbrelo tú mismo con mi plan más caliente 🔥"
 }
 
-            resposta = {  # Estrutura padrão garantida
-                "text": "",  # Texto vazio por padrão
-                "cta": {     # CTA desativado por padrão
-                    "show": False,
-                    "label": "",
-                    "target": ""
-                }
-            }
-            # -------------------------- #
+resposta = {
+    "text": "",
+    "cta": {
+        "show": False,
+        "label": "",
+        "target": ""
+    }
+}
     
     cleaned_input = ChatService.validate_input(user_input)
     lower_input = cleaned_input.lower()
@@ -1730,7 +1729,7 @@ frases_ia = {
                 time.sleep(5)
                 placeholder.empty()
                 resposta = {
-                      "text":(
+                      "text": frases_pix.get(idioma, frases_pix["pt"]),
                       "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
                       "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
                       "Vem ver tudo que preparei pra te deixar louco 🔥"
@@ -1749,7 +1748,7 @@ frases_ia = {
                 placeholder.markdown("💬 Digitando...")
                 time.sleep(5)
                 resposta = {
-                    "text": random.choice(frases_video.get(idioma, frases_video["pt"])),
+                    "text": frases_fotos.get(idioma, frases_fotos["pt"])
                     "cta": {
                         "show": True,
                         "label": "Ver Vídeos Exclusivos",
