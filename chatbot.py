@@ -1,3 +1,19 @@
+def detectar_idioma(texto):
+    texto = texto.lower()
+    if any(p in texto for p in ["hi", "hello", "fuck", "boobs", "pussy", "horny", "sexy"]):
+        return "en"
+    elif any(p in texto for p in ["hola", "culo", "tetas", "verga", "latina", "follar"]):
+        return "es"
+    return "pt"
+
+def detectar_idioma_historico(conversas):
+    texto = " ".join([m["content"] for m in conversas if m["role"] == "user"]).lower()
+    return detectar_idioma(texto)
+
+class Persona:
+    JUH_PT = "[PERFIL JUH] Mulher vulgar e safada que adora provocar..."
+    JUH_EN = "[JUH PROFILE] Naughty and provocative woman who loves teasing..."
+    JUH_ES = "[PERFIL DE JUH] Mujer atrevida y provocativa que le encanta provocar..."
 
 
 
@@ -417,9 +433,19 @@ class ApiService:
             "contents": [
                 {
                     "role": "user",
-                    "parts": [{"text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
-                }
-            ],
+    idioma = detectar_idioma_historico(messages)
+    persona = Persona.JUH_PT if idioma == "pt" else Persona.JUH_EN if idioma == "en" else Persona.JUH_ES
+
+    conteudo_prompt = {
+        "role": "user",
+        "parts": [
+            {
+                "text": f"""{persona}\n\nHistórico:\n{ChatService.format_conversation_history(messages)}\n\nÚltima mensagem: '{prompt}'\n\nResponda em JSON:\n{{"text": "...", "cta": {{"show": true/false, "label": "...", "target": "..."}}}}"""
+            }
+        ]
+    }
+       data = {
+            "contents": [conteudo_prompt],
             "generationConfig": {
                 "temperature": 0.9,
                 "topP": 0.8,
