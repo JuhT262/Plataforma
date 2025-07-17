@@ -405,7 +405,7 @@ class DatabaseService:
             conn.commit()
             return conn
 
-        @staticmethod
+    @staticmethod
     def save_message(conn, user_id, session_id, role, content):
             try:
                 c = conn.cursor()
