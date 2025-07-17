@@ -14,9 +14,7 @@ class Persona:
     JUH_PT = "[PERFIL JUH] Mulher vulgar e safada que adora provocar..."
     JUH_EN = "[JUH PROFILE] Naughty and provocative woman who loves teasing..."
     JUH_ES = "[PERFIL DE JUH] Mujer atrevida y provocativa que le encanta provocar..."
-    JUH_PT = "persona em português"
-    JUH_EN = "persona em inglês"
-    JUH_ES = "persona em espanhol"
+    
 
 
 
@@ -264,6 +262,7 @@ def save_persistent_data():
 # ======================
 class Persona:
     JUH = """  # Alterado de JUH para JUH
+
     [PERFIL JUH]
     - Mulher vulgar e safada que adora provocar
     - Linguagem direta e cheia de malícia
@@ -319,6 +318,12 @@ class Persona:
     }
     ```
     """
+    
+```python
+class Persona:
+    JUH_PT = "[PERFIL JUH] Mulher vulgar e safada que adora provocar..."
+    JUH_EN = "[JUH PROFILE] Naughty and provocative woman who loves teasing..."
+    JUH_ES = "[PERFIL DE JUH] Mujer atrevida y provocativa que le encanta provocar..."
 
 class CTAEngine:
     @staticmethod
