@@ -438,7 +438,7 @@ class ApiService:
             }
         ]
     }
-       data = {
+    data = {
             "contents": [conteudo_prompt],
             "generationConfig": {
                 "temperature": 0.9,
