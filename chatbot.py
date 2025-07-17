@@ -426,13 +426,7 @@ class ApiService:
         UiService.show_status_effect(status_container, "viewed")
         UiService.show_status_effect(status_container, "typing")
         
-        conversation_history = ChatService.format_conversation_history(st.session_state.messages)
         
-        headers = {'Content-Type': 'application/json'}
-        data = {
-            "contents": [
-                {
-                    "role": "user",
     idioma = detectar_idioma_historico(messages)
     persona = Persona.JUH_PT if idioma == "pt" else Persona.JUH_EN if idioma == "en" else Persona.JUH_ES
 
