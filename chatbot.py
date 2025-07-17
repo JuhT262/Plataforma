@@ -1772,7 +1772,7 @@ elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]
 else:
    resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
             
-                if isinstance(resposta, str):
+       if isinstance(resposta, str):
                     resposta = {"text": resposta, "cta": {"show": False}}
                 elif "text" not in resposta:
                     resposta = {"text": str(resposta), "cta": {"show": False}}
