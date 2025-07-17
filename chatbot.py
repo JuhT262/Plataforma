@@ -1839,7 +1839,7 @@ class ChatService:
                    save_persistent_data()
                 
                 # Scroll automático
-               st.markdown("""
+        st.markdown("""
                <script>
                    window.scrollTo(0, document.body.scrollHeight);
                </script>
