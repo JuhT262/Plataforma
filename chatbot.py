@@ -1720,15 +1720,15 @@ DatabaseService.save_message(
 st.session_state.request_count += 1
     
             # Verifica limite
- if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
-     with st.chat_message("assistant", avatar="💋"):
-         st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
-     DatabaseService.save_message(
-         conn,
-         get_user_id(),
-         st.session_state.session_id,
-         "assistant",
-         "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
+if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
+    with st.chat_message("assistant", avatar="💋"):
+        st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
+    DatabaseService.save_message(
+        conn,
+        get_user_id(),
+        st.session_state.session_id,
+        "assistant",
+        "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
      )
      save_persistent_data()
      st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
