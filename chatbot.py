@@ -1630,7 +1630,7 @@ class ChatService:
         if user_input:
             # ------ ADICIONE ISSO ------ #
 
-idioma = detectar_idioma_historico(st.session_state.messages)
+            idioma = detectar_idioma_historico(st.session_state.messages)
 
 frases_pix = {
     "pt": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos: Promo, Start, Premium e Extreme 😈\nVem ver tudo que preparei pra te deixar louco 🔥",
