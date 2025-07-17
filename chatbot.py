@@ -1,4 +1,4 @@
-
+# --- INÍCIO DO CÓDIGO FUNDIDO ---
 # ========== SUPORTE MULTI-IDIOMA E GRINGO ==========
 
 def detectar_idioma(texto):
@@ -2043,7 +2043,26 @@ class ChatService:
         
         if __name__ == "__main__":
             main()
-                    
-                    
-            
-            
+
+# --- DETECÇÃO DE IDIOMA E PERSONALIDADE ---
+
+def detectar_idioma(texto):
+    texto = texto.lower()
+    if any(p in texto for p in ["hi", "hello", "fuck", "boobs", "pussy", "horny", "sexy"]):
+        return "en"
+    elif any(p in texto for p in ["hola", "culo", "tetas", "verga", "latina", "follar"]):
+        return "es"
+    return "pt"
+
+def detectar_idioma_historico(conversas):
+    texto = " ".join([m["content"] for m in conversas if m["role"] == "user"]).lower()
+    return detectar_idioma(texto)
+
+class Persona:
+    JUH = "[PERFIL JUH] Mulher vulgar e safada que adora provocar..."
+    JUH_EN = "[JUH PROFILE] Naughty and provocative woman who loves teasing..."
+    JUH_ES = "[PERFIL DE JUH] Mujer atrevida y provocativa que le encanta provocar..."
+
+# Exemplo de aplicação dentro do envio de prompt para API (você pode adaptar conforme sua estrutura):
+idioma = detectar_idioma_historico(st.session_state.get("messages", []))
+persona = Persona.JUH if idioma == "pt" else Persona.JUH_EN if idioma == "en" else Persona.JUH_ES
