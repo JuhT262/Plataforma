@@ -1717,7 +1717,7 @@ DatabaseService.save_message(
       "user",
       cleaned_input
  )
- st.session_state.request_count += 1
+st.session_state.request_count += 1
     
             # Verifica limite
  if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
