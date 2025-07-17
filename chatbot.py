@@ -1795,17 +1795,17 @@ class ChatService:
                     
                         
         if resposta.get("cta", {}).get("show"):
-                   mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
-        if mostrar_cta:
-                       resposta["cta"]["show"] = True
-        if tipo_link == "br":
-                           resposta["cta"]["label"] = "Ver Planos VIP"
-                           resposta["cta"]["target"] = "offers"
-        else:
-                           resposta["cta"]["show"] = False
-                           resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
-        else:
-                       resposta["cta"]["show"] = False
+            mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
+            if mostrar_cta:
+                resposta["cta"]["show"] = True
+                if tipo_link == "br":
+                    resposta["cta"]["label"] = "Ver Planos VIP"
+                    resposta["cta"]["target"] = "offers"
+                else:
+                    resposta["cta"]["show"] = False
+                    resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
+           else:
+                resposta["cta"]["show"] = False
                 
         if st.button(
                        resposta["cta"].get("label", "Ver Ofertas"),
