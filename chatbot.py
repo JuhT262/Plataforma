@@ -464,7 +464,7 @@ class ApiService:
                     else:
                         st.session_state.last_cta_time = time.time()
                 
-        return resposta
+    return resposta
             
             except json.JSONDecodeError:
                 return {"text": gemini_response, "cta": {"show": False}}
