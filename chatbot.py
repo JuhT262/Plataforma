@@ -1776,7 +1776,7 @@ def verificar_limite_request():
             
        if isinstance(resposta, str):
            resposta = {"text": resposta, "cta": {"show": False}}
-           elif "text" not in resposta:
+       elif "text" not in resposta:
                resposta = {"text": str(resposta), "cta": {"show": False}}
             
             # Exibe resposta da IA ou resposta fixa
@@ -1796,12 +1796,12 @@ def verificar_limite_request():
                 
        if resposta.get("cta", {}).get("show"):
            mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
-           if mostrar_cta:
+       if mostrar_cta:
                resposta["cta"]["show"] = True
-               if tipo_link == "br":
+       if tipo_link == "br":
                    resposta["cta"]["label"] = "Ver Planos VIP"
                    resposta["cta"]["target"] = "offers"
-               else:
+        else:
                    resposta["cta"]["show"] = False
                    resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
            else:
