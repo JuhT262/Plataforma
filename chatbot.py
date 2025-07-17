@@ -417,9 +417,9 @@ class ApiService:
         
         return ApiService._call_gemini_api(prompt, session_id, conn)
 
-   @staticmethod
-   def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
-       import random, time, json, requests, streamlit as st
+    @staticmethod
+    def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
+        import random, time, json, requests, streamlit as st
 
         delay_time = random.uniform(3, 8)
         time.sleep(delay_time)
