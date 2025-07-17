@@ -417,8 +417,10 @@ class ApiService:
         
         return ApiService._call_gemini_api(prompt, session_id, conn)
 
-    @staticmethod
-    def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
+   @staticmethod
+   def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
+       import random, time, json, requests, streamlit as st
+
         delay_time = random.uniform(3, 8)
         time.sleep(delay_time)
         
@@ -426,19 +428,26 @@ class ApiService:
         UiService.show_status_effect(status_container, "viewed")
         UiService.show_status_effect(status_container, "typing")
         
+        # Aqui você precisa definir ou passar a variável 'messages' e 'headers'
+        # Supondo que 'messages' e 'headers' sejam argumentos ou estejam disponíveis
+        # Se não, você deve passar para o método ou buscar dentro do contexto
         
-    idioma = detectar_idioma_historico(messages)
-    persona = Persona.JUH_PT if idioma == "pt" else Persona.JUH_EN if idioma == "en" else Persona.JUH_ES
-
-    conteudo_prompt = {
-        "role": "user",
-        "parts": [
-            {
-                "text": f"""{persona}\n\nHistórico:\n{ChatService.format_conversation_history(messages)}\n\nÚltima mensagem: '{prompt}'\n\nResponda em JSON:\n{{"text": "...", "cta": {{"show": true/false, "label": "...", "target": "..."}}}}"""
-            }
-        ]
-    }
-    data = {
+        # Exemplo: supondo que 'messages' seja recuperado da sessão ou argumento
+        messages = st.session_state.get("messages", [])
+        headers = {"Authorization": f"Bearer {Config.API_KEY}"}  # ou como estiver configurado
+        
+        idioma = detectar_idioma_historico(messages)
+        persona = Persona.JUH_PT if idioma == "pt" else Persona.JUH_EN if idioma == "en" else Persona.JUH_ES
+    
+        conteudo_prompt = {
+            "role": "user",
+            "parts": [
+                {
+                    "text": f"""{persona}\n\nHistórico:\n{ChatService.format_conversation_history(messages)}\n\nÚltima mensagem: '{prompt}'\n\nResponda em JSON:\n{{"text": "...", "cta": {{"show": true/false, "label": "...", "target": "..."}}}}"""
+                }
+            ]
+        }
+        data = {
             "contents": [conteudo_prompt],
             "generationConfig": {
                 "temperature": 0.9,
@@ -446,8 +455,8 @@ class ApiService:
                 "topK": 40
             }
         }
-        
-    try:
+    
+        try:
             response = requests.post(Config.API_URL, headers=headers, json=data, timeout=Config.REQUEST_TIMEOUT)
             response.raise_for_status()
             gemini_response = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
@@ -459,7 +468,7 @@ class ApiService:
                     resposta = json.loads(gemini_response)
                 
                 if resposta.get("cta", {}).get("show"):
-                    if not CTAEngine.should_show_cta(st.session_state.messages):
+                    if not CTAEngine.should_show_cta(messages):
                         resposta["cta"]["show"] = False
                     else:
                         st.session_state.last_cta_time = time.time()
@@ -468,10 +477,11 @@ class ApiService:
             
             except json.JSONDecodeError:
                 return {"text": gemini_response, "cta": {"show": False}}
-                
-    except Exception as e:
+    
+        except Exception as e:
             st.error(f"Erro na API: {str(e)}")
             return {"text": "Vamos continuar isso mais tarde...", "cta": {"show": False}}
+
 
 # ======================
 # SERVIÇOS DE INTERFACE
