@@ -1722,128 +1722,128 @@ st.session_state.request_count += 1
             # Verifica limite
 def verificar_limite_request():
             
-if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
-    with st.chat_message("assistant", avatar="💋"):
-        st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
-    DatabaseService.save_message(
-        conn,
-        get_user_id(),
-        st.session_state.session_id,
-        "assistant",
-        "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
-     )
-    save_persistent_data()
-    st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
-    return
+    if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
+        with st.chat_message("assistant", avatar="💋"):
+            st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
+        DatabaseService.save_message(
+            conn,
+            get_user_id(),
+            st.session_state.session_id,
+            "assistant",
+            "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
+         )
+        save_persistent_data()
+        st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
+        return
     
             # Define a resposta
-if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
-     placeholder = st.empty()
-     placeholder.markdown("💬 Digitando...")
-     time.sleep(5)
-     placeholder.empty()
-     resposta = {
-             "text": (
-             "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
-             "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
-             "Vem ver tudo que preparei pra te deixar louco 🔥"
-         ),
+    if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
+         placeholder = st.empty()
+         placeholder.markdown("💬 Digitando...")
+         time.sleep(5)
+         placeholder.empty()
+         resposta = {
+                 "text": (
+                 "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
+                 "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
+                 "Vem ver tudo que preparei pra te deixar louco 🔥"
+             ),
             
-         "cta": {
-             "show": True,
-             "label": "👉 Ver Planos VIP",        
-             "target": "offers"
+             "cta": {
+                 "show": True,
+                 "label": "👉 Ver Planos VIP",        
+                 "target": "offers"
+             }
          }
-     }
     
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
-elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
- placeholder = st.empty()
- placeholder.markdown("💬 Digitando...")
- time.sleep(5)
- resposta = {
-     "text": frases_fotos.get(idioma, frases_fotos["pt"]),
-     "cta": {
-         "show": True,
-         "label": "Ver Vídeos Exclusivos",
-         "target": "offers"
+    elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+     placeholder = st.empty()
+     placeholder.markdown("💬 Digitando...")
+     time.sleep(5)
+     resposta = {
+         "text": frases_fotos.get(idioma, frases_fotos["pt"]),
+         "cta": {
+             "show": True,
+             "label": "Ver Vídeos Exclusivos",
+             "target": "offers"
+          }
       }
-  }
             
-else:
-   resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
+    else:
+       resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
             
-   if isinstance(resposta, str):
+       if isinstance(resposta, str):
        resposta = {"text": resposta, "cta": {"show": False}}
-   elif "text" not in resposta:
-       resposta = {"text": str(resposta), "cta": {"show": False}}
+       elif "text" not in resposta:
+           resposta = {"text": str(resposta), "cta": {"show": False}}
             
             # Exibe resposta da IA ou resposta fixa
-   with st.chat_message("assistant", avatar="💋"):
-       st.markdown(f"""
-       <div style="
-           background: linear-gradient(45deg, #ff66b3, #ff1493);
-           color: white;
-           padding: 12px;
-           border-radius: 18px 18px 18px 0;
-           margin: 5px 0;
-        ">
-           {resposta["text"]}
-       </div>
-       """, unsafe_allow_html=True)
+       with st.chat_message("assistant", avatar="💋"):
+           st.markdown(f"""
+           <div style="
+               background: linear-gradient(45deg, #ff66b3, #ff1493);
+               color: white;
+               padding: 12px;
+               border-radius: 18px 18px 18px 0;
+               margin: 5px 0;
+            ">
+               {resposta["text"]}
+           </div>
+           """, unsafe_allow_html=True)
             
                 
-   if resposta.get("cta", {}).get("show"):
-       mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
-       if mostrar_cta:
-           resposta["cta"]["show"] = True
-           if tipo_link == "br":
-               resposta["cta"]["label"] = "Ver Planos VIP"
-               resposta["cta"]["target"] = "offers"
+       if resposta.get("cta", {}).get("show"):
+           mostrar_cta, tipo_link = CTAEngine.should_show_cta(st.session_state.messages)
+           if mostrar_cta:
+               resposta["cta"]["show"] = True
+               if tipo_link == "br":
+                   resposta["cta"]["label"] = "Ver Planos VIP"
+                   resposta["cta"]["target"] = "offers"
+               else:
+                   resposta["cta"]["show"] = False
+                   resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
            else:
                resposta["cta"]["show"] = False
-               resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
-       else:
-           resposta["cta"]["show"] = False
         
-       if st.button(
-           resposta["cta"].get("label", "Ver Ofertas"),
-           key=f"chat_button_{time.time()}",
-           use_container_width=True
-       ):
-           st.session_state.current_page = resposta["cta"].get("target", "offers")
-           save_persistent_data()
-           st.rerun()
+           if st.button(
+               resposta["cta"].get("label", "Ver Ofertas"),
+               key=f"chat_button_{time.time()}",
+               use_container_width=True
+           ):
+               st.session_state.current_page = resposta["cta"].get("target", "offers")
+               save_persistent_data()
+               st.rerun()
 
-   if "messages" not in st.session_state:  # NOVO
-       st.session_state.messages = []  # NOVO
+       if "messages" not in st.session_state:  # NOVO
+           st.session_state.messages = []  # NOVO
         
-   response_content = json.dumps(resposta) if isinstance(resposta, dict) else str(resposta)  # NOVO: tratamento mais seguro
+       response_content = json.dumps(resposta) if isinstance(resposta, dict) else str(resposta)  # NOVO: tratamento mais seguro
         
-   st.session_state.messages.append({
-       "role": "assistant",
-       "content": response_content  # NOVO: usando a variável tratada
-   })
+       st.session_state.messages.append({
+           "role": "assistant",
+           "content": response_content  # NOVO: usando a variável tratada
+       })
         
-   try:  # NOVO
-       DatabaseService.save_message(
-           conn,
-           get_user_id(),
-           st.session_state.session_id,
-           "assistant",
-           response_content  # NOVO: usando a variável tratada
-       )
-   except Exception as e:  # NOVO
-       print(f"Erro ao salvar mensagem: {e}")  # NOVO
-   save_persistent_data()
+       try:  # NOVO
+           DatabaseService.save_message(
+               conn,
+               get_user_id(),
+               st.session_state.session_id,
+               "assistant",
+               response_content  # NOVO: usando a variável tratada
+           )
+       except Exception as e:  # NOVO
+           print(f"Erro ao salvar mensagem: {e}")  # NOVO
+       save_persistent_data()
         
-    # Scroll automático
-   st.markdown("""
-   <script>
-       window.scrollTo(0, document.body.scrollHeight);
-   </script>
-   """, unsafe_allow_html=True)
+        # Scroll automático
+       st.markdown("""
+       <script>
+           window.scrollTo(0, document.body.scrollHeight);
+       </script>
+       """, unsafe_allow_html=True)
 
 
 
