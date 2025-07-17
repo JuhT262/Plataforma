@@ -1769,11 +1769,8 @@ elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]
       }
   }
             
-            
-            
-            # Mensagem padrão — IA responde (sem delay)
-            else:
-                resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
+else:
+   resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
             
                 if isinstance(resposta, str):
                     resposta = {"text": resposta, "cta": {"show": False}}
@@ -2044,3 +2041,7 @@ document.querySelector(".sidebar-overlay").onclick = function() {
 
 if __name__ == "__main__":
     main()
+            
+            
+            
+            
