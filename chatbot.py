@@ -456,7 +456,17 @@ class ApiService:
                 {
                     "role": "user",
                     "parts": [{
-                        "text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"
+                        idioma = detectar_idioma_historico(st.session_state.messages)
+    if idioma == "pt":
+        persona = Persona.JUH
+    elif idioma == "en":
+        persona = Persona.JUH_EN
+    else:
+        persona = Persona.JUH_ES
+
+    "text": f"{persona}
+
+Histórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"
                     }]
                 }
             ],
@@ -1606,6 +1616,57 @@ class ChatService:
 
         if user_input:
             # ------ ADICIONE ISSO ------ #
+
+idioma = detectar_idioma_historico(st.session_state.messages)
+
+frases_pix = {
+    "pt": "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo um dos meus planos: Promo, Start, Premium e Extreme 😈\nVem ver tudo que preparei pra te deixar louco 🔥",
+    "en": "No direct Pix here, baby... 💸 You enter my world by choosing one of my plans: Promo, Start, Premium or Extreme 😈\nCome see what I’ve got to drive you crazy 🔥",
+    "es": "Nada de pagos directos por Pix, amor... 💸 Entra a mi mundo eligiendo uno de mis planes: Promo, Start, Premium o Extreme 😈\nVen a ver todo lo que preparé para volverte loco 🔥"
+}
+
+frases_fotos = {
+    "pt": [
+        "tô com fotos da minha buceta bem aberta, quer ver?",
+        "minha buceta tá chamando você nas fotos...",
+        "fiz um ensaio novo mostrando tudinho 🔥"
+    ],
+    "en": [
+        "I've got pics of my pussy wide open, wanna see?",
+        "my juicy pics are calling you...",
+        "I did a hot new shoot showing everything 🔥"
+    ],
+    "es": [
+        "tengo fotos de mi conchita bien abierta, ¿quieres ver?",
+        "mis fotos calientes te están llamando...",
+        "hice una sesión nueva mostrando todo 🔥"
+    ]
+}
+
+frases_video = {
+    "pt": [
+        "tenho vídeo me masturbando gostoso, vem ver 😈",
+        "tô me tocando nesse vídeo novo, quer ver?",
+        "gravei um vídeo especial só pra você 🥵"
+    ],
+    "en": [
+        "got a video of me playing with myself, come see 😈",
+        "I'm touching myself in this hot new video, wanna see?",
+        "recorded a special video just for you 🥵"
+    ],
+    "es": [
+        "tengo un video masturbándome rico, ¿quieres ver? 😈",
+        "me estoy tocando en este nuevo video, ¿quieres verlo?",
+        "grabé un video especial solo para ti 🥵"
+    ]
+}
+
+frases_ia = {
+    "pt": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
+    "en": "I'm as real as your desire... 😈 Come find out yourself with my hottest plan 🔥",
+    "es": "Soy tan real como tus ganas... 😈 Ven y descúbrelo tú mismo con mi plan más caliente 🔥"
+}
+
             resposta = {  # Estrutura padrão garantida
                 "text": "",  # Texto vazio por padrão
                 "cta": {     # CTA desativado por padrão
@@ -1688,43 +1749,7 @@ class ChatService:
                 placeholder.markdown("💬 Digitando...")
                 time.sleep(5)
                 resposta = {
-                    "text": random.choice([
-                        "tô com fotos da minha buceta bem aberta, quer ver?",
-                        "minha buceta tá chamando você nas fotos...",
-                        "fiz um ensaio novo mostrando tudinho 🔥"
-                    ]),
-                    "cta": {
-                        "show": True,
-                        "label": "Ver Fotos Quentes",
-                        "target": "offers"
-                    }
-                }
-            
-            # Palavras-chave: VOCÊ É REAL / IA
-            elif any(p in lower_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(5)
-                resposta = {
-                    "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
-                    "cta": {
-                        "show": True,
-                        "label": "💎 Quero Ver Tudo",
-                        "target": "offers"
-                    }
-                }
-            
-            # Palavras-chave: VÍDEO / MASTURBAR / TRANSAR
-            elif any(v in lower_input for v in ["video", "transar", "masturbar"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(5)
-                resposta = {
-                    "text": random.choice([
-                        "tenho vídeo me masturbando gostoso, vem ver 😈",
-                        "tô me tocando nesse vídeo novo, quer ver?",
-                        "gravei um vídeo especial só pra você 🥵"
-                    ]),
+                    "text": random.choice(frases_video.get(idioma, frases_video["pt"])),
                     "cta": {
                         "show": True,
                         "label": "Ver Vídeos Exclusivos",
@@ -1992,7 +2017,7 @@ menuBtn.onclick = function() {
     sidebar.classList.toggle("mobile-open");
     document.querySelector(".sidebar-overlay").style.display = 
         sidebar.classList.contains("mobile-open") ? "block" : "none";
-    this.innerHTML = sidebar.classList.contains("mobile-open") ? "✕" : "☰";
+    
 };
 
 // Fecha ao clicar no overlay
@@ -2007,4 +2032,3 @@ document.querySelector(".sidebar-overlay").onclick = function() {
 
 if __name__ == "__main__":
     main()
-
