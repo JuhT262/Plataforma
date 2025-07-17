@@ -456,7 +456,7 @@ class ApiService:
                 {
                     "role": "user",
                     "parts": [{
-                        idioma = detectar_idioma_historico(st.session_state.messages)
+    idioma = detectar_idioma_historico(st.session_state.messages)
     if idioma == "pt":
         persona = Persona.JUH
     elif idioma == "en":
