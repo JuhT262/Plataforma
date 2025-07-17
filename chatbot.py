@@ -1801,7 +1801,7 @@ if mostrar_cta:
 if tipo_link == "br":
                    resposta["cta"]["label"] = "Ver Planos VIP"
                    resposta["cta"]["target"] = "offers"
-    else:
+else:
                    resposta["cta"]["show"] = False
                    resposta["text"] += f"\n\n🔗 [Click here to unlock my content]({Config.LINK_GRINGO})"
     else:
