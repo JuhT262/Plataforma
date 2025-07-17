@@ -1690,7 +1690,7 @@ resposta = {
 }
     
 cleaned_input = ChatService.validate_input(user_input)
-    lower_input = cleaned_input.lower()
+lower_input = cleaned_input.lower()
             cleaned_input = ChatService.validate_input(user_input)
             lower_input = cleaned_input.lower()
     
