@@ -1822,26 +1822,26 @@ else:
    st.session_state.messages.append({
        "role": "assistant",
        "content": response_content  # NOVO: usando a variável tratada
-    })
+   })
         
-    try:  # NOVO
-        DatabaseService.save_message(
-            conn,
-            get_user_id(),
-            st.session_state.session_id,
-            "assistant",
-            response_content  # NOVO: usando a variável tratada
-        )
-    except Exception as e:  # NOVO
-        print(f"Erro ao salvar mensagem: {e}")  # NOVO
-    save_persistent_data()
+   try:  # NOVO
+       DatabaseService.save_message(
+           conn,
+           get_user_id(),
+           st.session_state.session_id,
+           "assistant",
+           response_content  # NOVO: usando a variável tratada
+       )
+   except Exception as e:  # NOVO
+       print(f"Erro ao salvar mensagem: {e}")  # NOVO
+   save_persistent_data()
         
     # Scroll automático
-    st.markdown("""
-    <script>
-        window.scrollTo(0, document.body.scrollHeight);
-    </script>
-    """, unsafe_allow_html=True)
+   st.markdown("""
+   <script>
+       window.scrollTo(0, document.body.scrollHeight);
+   </script>
+   """, unsafe_allow_html=True)
 
 
 
