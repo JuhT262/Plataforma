@@ -1756,18 +1756,18 @@ if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "m
     
                      
         # Palavras-chave: FOTOS / BUCETA / PEITO / BUNDA
-            elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-                placeholder = st.empty()
-                placeholder.markdown("💬 Digitando...")
-                time.sleep(5)
-                resposta = {
-                    "text": frases_fotos.get(idioma, frases_fotos["pt"])
-                    "cta": {
-                        "show": True,
-                        "label": "Ver Vídeos Exclusivos",
-                        "target": "offers"
-                    }
-                }
+elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+ placeholder = st.empty()
+ placeholder.markdown("💬 Digitando...")
+ time.sleep(5)
+ resposta = {
+     "text": frases_fotos.get(idioma, frases_fotos["pt"])
+     "cta": {
+         "show": True,
+         "label": "Ver Vídeos Exclusivos",
+         "target": "offers"
+      }
+  }
             
             
             
