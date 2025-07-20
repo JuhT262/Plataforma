@@ -761,7 +761,7 @@ class UiService:
                 menuBtn.addEventListener('click', function() {
                     tooltip.style.display = tooltip.style.display === 'none' ? 'flex' : 'none';
                     menuBtn.innerHTML = menuBtn.innerHTML === '☰' ? '✕' : '☰';
-                });
+                
             }
         });
         </script>
