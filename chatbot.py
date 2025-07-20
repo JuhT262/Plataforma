@@ -2930,7 +2930,7 @@ st.markdown("""
     }
 </style>
 
-<div class="chat-menu-tooltip">Abrir Menu</div>
+<div class="chat-menu-tooltip">Abrir Chat</div>
 <div class="mobile-chat-menu">☰</div>
 
 <script>
@@ -2944,9 +2944,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         overlay.style.cssText = `
             position: fixed;
-            top: 0;
+            top: 20;
             left: 0;
-            right: 0;
+            right: 20;
             bottom: 0;
             background: rgba(0,0,0,0.5);
             z-index: 999;
