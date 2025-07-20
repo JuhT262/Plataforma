@@ -2871,54 +2871,46 @@ st.markdown("""
 <script>
 st.markdown("""
 <style>
-    /* Botão redesenhado para maior visibilidade */
-    .mobile-menu-button {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
-        color: white !important;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 28px;
-        z-index: 1000;
-        box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6) !important;
-        border: 2px solid white !important;
-        animation: pulse 2s infinite;
-    }
-
-    /* Balão de texto */
-    .menu-tooltip {
-        position: fixed;
-        bottom: 25px;
-        right: 90px;
-        background: white;
-        color: #ff1493;
-        padding: 8px 12px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: bold;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        z-index: 1001;
-        white-space: nowrap;
-    }
-
-    /* Animação de pulsar */
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
-
-    @media (min-width: 769px) {
-        .mobile-menu-button, .menu-tooltip {
-            display: none !important;
-        }
-    }
+.mobile-menu-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
+    color: white !important;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6) !important;
+    border: 2px solid white !important;
+    animation: pulse 2s infinite;
+}
+.menu-tooltip {
+    position: fixed;
+    bottom: 25px;
+    right: 90px;
+    background: white;
+    color: #ff1493;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1001;
+    white-space: nowrap;
+}
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+@media (min-width: 769px) {
+    .mobile-menu-button, .menu-tooltip { display: none !important; }
+}
 </style>
 
 <div class="menu-tooltip">Clique para ver o menu</div>
@@ -2933,19 +2925,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         const overlay = document.createElement("div");
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            display: none;
-        `;
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none;';
         document.body.appendChild(overlay);
         
-        // Fechar ao clicar fora
         overlay.addEventListener('click', function() {
             sidebar.style.transform = 'translateX(-100%)';
             overlay.style.display = 'none';
@@ -2953,7 +2935,6 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.menu-tooltip').style.display = 'block';
         });
 
-        // Abrir/fechar menu
         menuBtn.addEventListener('click', function() {
             const isOpen = sidebar.style.transform === 'translateX(0px)';
             sidebar.style.transform = isOpen ? 'translateX(-100%)' : 'translateX(0px)';
