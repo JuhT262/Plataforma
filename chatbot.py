@@ -633,122 +633,53 @@ class UiService:
 
     @staticmethod
     def age_verification():
-        st.markdown("""
-        <style>
-            .age-verification {
-                max-width: 600px;
-                margin: 2rem auto;
-                padding: 2rem;
-                background: linear-gradient(145deg, #1e0033, #3c0066);
-                border-radius: 15px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                border: 1px solid rgba(255, 102, 179, 0.2);
-                color: white;
-            }
-            .age-header {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                margin-bottom: 1.5rem;
-            }
-            .age-icon {
-                font-size: 2.5rem;
-                color: #ff66b3;
-            }
-            .age-title {
-                font-size: 1.8rem;
-                font-weight: 700;
-                margin: 0;
-                color: #ff66b3;
-            }
-            @media (max-width: 768px) {
+        # Container que pode ser limpo após verificação
+        verification_container = st.empty()
+        
+        with verification_container.container():
+            # CSS da verificação
+            st.markdown("""
+            <style>
                 .age-verification {
-                    padding: 1rem;
-                    margin: 1rem;
+                    max-width: 600px;
+                    margin: 2rem auto;
+                    padding: 2rem;
+                    background: linear-gradient(145deg, #1e0033, #3c0066);
+                    border-radius: 15px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                    border: 1px solid rgba(255, 102, 179, 0.2);
+                    color: white;
+                }
+                .age-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    margin-bottom: 1.5rem;
+                }
+                .age-icon {
+                    font-size: 2.5rem;
+                    color: #ff66b3;
                 }
                 .age-title {
-                    font-size: 1.4rem;
+                    font-size: 1.8rem;
+                    font-weight: 700;
+                    margin: 0;
+                    color: #ff66b3;
                 }
-            }
-        </style>
-        """, unsafe_allow_html=True)
-
-    st.markdown("""
-<style>
-    /* Botão do menu mobile - VISÍVEL ANTES DO CHAT */
-    .mobile-prechat-menu {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
-        color: white !important;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: none;  /* Inicialmente escondido */
-        justify-content: center;
-        align-items: center;
-        font-size: 24px;
-        z-index: 1000;
-        box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6);
-        border: 2px solid white;
-        animation: pulse 2s infinite;
-    }
+                @media (max-width: 768px) {
+                    .age-verification {
+                        padding: 1rem;
+                        margin: 1rem;
+                    }
+                    .age-title {
+                        font-size: 1.4rem;
+                    }
+                }
+            </style>
+            """, unsafe_allow_html=True)
     
-    /* Balão de texto */
-    .menu-tooltip {
-        position: fixed;
-        top: 30px;
-        right: 80px;
-        background: white;
-        color: #ff1493;
-        padding: 8px 12px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: bold;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        z-index: 1001;
-        display: none; /* Inicialmente escondido */
-    }
-    
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-    }
-    
-    /* Mostrar apenas em mobile */
-    @media (max-width: 768px) {
-        .mobile-prechat-menu, .menu-tooltip {
-            display: flex !important;
-        }
-    }
-</style>
-
-<div class="menu-tooltip">Menu Principal</div>
-<div class="mobile-prechat-menu">☰</div>
-
-<script>
-// Controle do menu pré-chat
-document.addEventListener('DOMContentLoaded', function() {
-    const menuBtn = document.querySelector('.mobile-prechat-menu');
-    const tooltip = document.querySelector('.menu-tooltip');
-    
-    if (window.innerWidth <= 768) {
-        menuBtn.addEventListener('click', function() {
-            // Alternar visibilidade do tooltip
-            tooltip.style.display = tooltip.style.display === 'none' ? 'flex' : 'none';
-            
-            // Alternar ícone (opcional)
-            menuBtn.innerHTML = menuBtn.innerHTML === '☰' ? '✕' : '☰';
-        });
-    }
-});
-</script>
-""", unsafe_allow_html=True)
-
-    with st.container():
-        st.markdown("""
+            # HTML da verificação
+            st.markdown("""
             <div class="age-verification">
                 <div class="age-header">
                     <div class="age-icon">🔞</div>
@@ -760,16 +691,81 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
             """, unsafe_allow_html=True)
-
-        col1, col2, col3 = st.columns([1,2,1])
-        with col2:
-            if st.button("Confirmo que sou maior de 18 anos", 
-                        key="age_checkbox",
-                        use_container_width=True,
-                        type="primary"):
-                st.session_state.age_verified = True
-                save_persistent_data()
-                st.rerun()
+    
+            # Botão de confirmação
+            col1, col2, col3 = st.columns([1,2,1])
+            with col2:
+                if st.button("Confirmo que sou maior de 18 anos", 
+                            key="age_checkbox",
+                            use_container_width=True,
+                            type="primary"):
+                    st.session_state.age_verified = True
+                    save_persistent_data()
+                    verification_container.empty()  # Remove a verificação
+                    st.rerun()  # Recarrega a aplicação
+    
+        # Menu mobile (separado da verificação)
+        st.markdown("""
+        <style>
+            .mobile-prechat-menu {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
+                color: white !important;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                display: none;
+                justify-content: center;
+                align-items: center;
+                font-size: 24px;
+                z-index: 1000;
+                box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6);
+                border: 2px solid white;
+                animation: pulse 2s infinite;
+            }
+            .menu-tooltip {
+                position: fixed;
+                top: 30px;
+                right: 80px;
+                background: white;
+                color: #ff1493;
+                padding: 8px 12px;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: bold;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                z-index: 1001;
+                display: none;
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+            @media (max-width: 768px) {
+                .mobile-prechat-menu, .menu-tooltip {
+                    display: flex !important;
+                }
+            }
+        </style>
+        <div class="menu-tooltip">Menu Principal</div>
+        <div class="mobile-prechat-menu">☰</div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuBtn = document.querySelector('.mobile-prechat-menu');
+            const tooltip = document.querySelector('.menu-tooltip');
+            
+            if (window.innerWidth <= 768) {
+                menuBtn.addEventListener('click', function() {
+                    tooltip.style.display = tooltip.style.display === 'none' ? 'flex' : 'none';
+                    menuBtn.innerHTML = menuBtn.innerHTML === '☰' ? '✕' : '☰';
+                });
+            }
+        });
+        </script>
+        """, unsafe_allow_html=True)
 
     @staticmethod
     def setup_sidebar():
