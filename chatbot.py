@@ -2910,8 +2910,8 @@ st.markdown("""
     
     .chat-menu-tooltip {
         position: fixed;
-        bottom: 25px;
-        right: 90px;
+        top: 20px;
+        right: 00px;
         background: white;
         color: #ff1493;
         padding: 8px 12px;
