@@ -1877,15 +1877,14 @@ def main():
             """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
             
             if st.button("Iniciar Conversa", type="primary", use_container_width=True):
-                            <p style="margin:0; font-size:0.9em;">
-                Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
-            </p>
-            <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        ChatService.process_user_input(conn)
-        save_persistent_data()
+                st.session_state.update({
+                    'chat_started': True,
+                    'current_page': 'chat',
+                    'audio_sent': False
+                })
+                save_persistent_data()
+                st.rerun()
+        st.stop()
         
         st.markdown("""
         <div style="
