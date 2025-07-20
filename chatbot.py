@@ -2841,39 +2841,10 @@ def main():
     save_persistent_data()
 
 # ============= MENU MOBILE OTIMIZADO =============
-st.markdown("""
-<style>
-    /* Botão fixo para mobile otimizado */
-    .mobile-menu-button {
-        position: fixed;
-        bottom: 15px;
-        right: 15px;
-        background: #ff1493;
-        color: white;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 24px;
-        z-index: 1000;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    @media (min-width: 769px) {
-        .mobile-menu-button {
-            display: none !important;
-        }
-    }
-</style>
-
-<script>
-# ============= MENU MOBILE OTIMIZADO =============
 st.markdown("""<style>
 .mobile-menu-button {
     position: fixed;
-    bottom: 22px;
+    bottom: 20px;
     right: 20px;
     background: linear-gradient(45deg, #ff1493, #ff66b3);
     color: white;
