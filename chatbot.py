@@ -747,8 +747,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 """, unsafe_allow_html=True)
 
-        with st.container():
-            st.markdown("""
+    with st.container():
+        st.markdown("""
             <div class="age-verification">
                 <div class="age-header">
                     <div class="age-icon">🔞</div>
