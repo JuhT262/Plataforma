@@ -2892,7 +2892,7 @@ st.markdown("""
     /* Botão do menu DURANTE o chat */
     .mobile-chat-menu {
         position: fixed;
-        bottom: 20px;
+        top: 20px;
         right: 20px;
         background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
         color: white !important;
