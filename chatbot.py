@@ -8,11 +8,45 @@ import sqlite3
 import re
 import os
 import uuid
+import urllib.parse
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
 from datetime import datetime
-from googletrans import Translator
+
+# ======================
+# SERVIÇO DE TRADUÇÃO ALTERNATIVO
+# ======================
+class TranslationService:
+    @staticmethod
+    def translate_text(text, target_lang='pt'):
+        """Traduz texto usando a API do Google Tradutor"""
+        if target_lang == 'pt' or not text:
+            return text
+            
+        try:
+            url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={target_lang}&dt=t&q={urllib.parse.quote(text)}"
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                translated_text = response.json()[0][0][0]
+                return translated_text
+            return text
+        except Exception as e:
+            print(f"Erro na tradução: {str(e)}")
+            return text
+    
+    @staticmethod
+    def get_translated_content(key, lang='pt'):
+        """Retorna conteúdo pré-traduzido (para melhor performance)"""
+        translations = {
+            'age_verification_title': {
+                'pt': 'Verificação de Idade',
+                'en': 'Age Verification',
+                'es': 'Verificación de Edad'
+            },
+            # ... (mantenha o resto das traduções como estava)
+        }
+        return translations.get(key, {}).get(lang, key)
 
 # ======================
 # CONFIGURAÇÃO INICIAL DO STREAMLIT
