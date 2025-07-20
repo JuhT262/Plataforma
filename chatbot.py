@@ -763,7 +763,7 @@ class UiService:
                     menuBtn.innerHTML = menuBtn.innerHTML === '☰' ? '✕' : '☰';
                 
             }
-        });
+       
         </script>
         """, unsafe_allow_html=True)
 
