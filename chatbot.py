@@ -2873,7 +2873,7 @@ st.markdown("""
 st.markdown("""<style>
 .mobile-menu-button {
     position: fixed;
-    bottom: 20px;
+    bottom: 22px;
     right: 20px;
     background: linear-gradient(45deg, #ff1493, #ff66b3);
     color: white;
