@@ -713,13 +713,13 @@ class UiService:
                 right: 20px;
                 background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
                 color: white !important;
-                width: 50px;
-                height: 50px;
+                width: 60px;
+                height: 60px;
                 border-radius: 50%;
-                display: none;
+                display: flex;
                 justify-content: center;
                 align-items: center;
-                font-size: 24px;
+                font-size: 28px;
                 z-index: 1000;
                 box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6);
                 border: 2px solid white;
@@ -728,7 +728,7 @@ class UiService:
             .menu-tooltip {
                 position: fixed;
                 top: 30px;
-                right: 80px;
+                right: 90px;
                 background: white;
                 color: #ff1493;
                 padding: 8px 12px;
@@ -737,7 +737,7 @@ class UiService:
                 font-weight: bold;
                 box-shadow: 0 2px 10px rgba(0,0,0,0.2);
                 z-index: 1001;
-                display: none;
+                
             }
             @keyframes pulse {
                 0% { transform: scale(1); }
@@ -746,7 +746,7 @@ class UiService:
             }
             @media (max-width: 768px) {
                 .mobile-prechat-menu, .menu-tooltip {
-                    display: flex !important;
+                    display: none !important;
                 }
             }
         </style>
