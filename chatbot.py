@@ -673,6 +673,29 @@ class UiService:
         </style>
         """, unsafe_allow_html=True)
 
+    if 'first_visit' not in st.session_state:
+        st.session_state.first_visit = True
+        st.markdown("""
+        <div style="
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            text-align: center;
+            max-width: 80%;
+        ">
+            <h3>👋 Bem-vindo ao Juh Premium!</h3>
+            <p>Toque no botão <span style="color:#ff66b3">☰</span> no canto inferior direito para começar</p>
+            <div style="font-size:40px; margin:15px 0;">⬇️</div>
+            <p>Depois toque em "Iniciar Conversa"</p>
+        </div>
+        """, unsafe_allow_html=True)
+
         with st.container():
             st.markdown("""
             <div class="age-verification">
@@ -2846,27 +2869,66 @@ st.markdown("""
 </style>
 
 <script>
-// Menu mobile otimizado
+st.markdown("""
+<style>
+    /* Botão redesenhado para maior visibilidade */
+    .mobile-menu-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
+        color: white !important;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        z-index: 1000;
+        box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6) !important;
+        border: 2px solid white !important;
+        animation: pulse 2s infinite;
+    }
+
+    /* Balão de texto */
+    .menu-tooltip {
+        position: fixed;
+        bottom: 25px;
+        right: 90px;
+        background: white;
+        color: #ff1493;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 1001;
+        white-space: nowrap;
+    }
+
+    /* Animação de pulsar */
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    @media (min-width: 769px) {
+        .mobile-menu-button, .menu-tooltip {
+            display: none !important;
+        }
+    }
+</style>
+
+<div class="menu-tooltip">Clique para ver o menu</div>
+
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth <= 768) {
         const menuBtn = document.createElement("div");
         menuBtn.innerHTML = '☰';
-        menuBtn.style.cssText = `
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            background: #ff1493;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        `;
+        menuBtn.className = "mobile-menu-button";
         document.body.appendChild(menuBtn);
         
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
@@ -2883,17 +2945,21 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         document.body.appendChild(overlay);
         
-        menuBtn.addEventListener('click', function() {
-            sidebar.style.transform = sidebar.style.transform === 'translateX(0px)' ? 
-                'translateX(-100%)' : 'translateX(0px)';
-            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
-            menuBtn.innerHTML = sidebar.style.transform === 'translateX(0px)' ? '✕' : '☰';
-        });
-        
+        // Fechar ao clicar fora
         overlay.addEventListener('click', function() {
             sidebar.style.transform = 'translateX(-100%)';
             overlay.style.display = 'none';
             menuBtn.innerHTML = '☰';
+            document.querySelector('.menu-tooltip').style.display = 'block';
+        });
+
+        // Abrir/fechar menu
+        menuBtn.addEventListener('click', function() {
+            const isOpen = sidebar.style.transform === 'translateX(0px)';
+            sidebar.style.transform = isOpen ? 'translateX(-100%)' : 'translateX(0px)';
+            overlay.style.display = isOpen ? 'none' : 'block';
+            menuBtn.innerHTML = isOpen ? '☰' : '✕';
+            document.querySelector('.menu-tooltip').style.display = isOpen ? 'block' : 'none';
         });
     }
 });
