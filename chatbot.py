@@ -2869,14 +2869,14 @@ st.markdown("""
 </style>
 
 <script>
-st.markdown("""
-<style>
+# ============= MENU MOBILE OTIMIZADO =============
+st.markdown("""<style>
 .mobile-menu-button {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
-    color: white !important;
+    background: linear-gradient(45deg, #ff1493, #ff66b3);
+    color: white;
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -2885,8 +2885,8 @@ st.markdown("""
     align-items: center;
     font-size: 28px;
     z-index: 1000;
-    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6) !important;
-    border: 2px solid white !important;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6);
+    border: 2px solid white;
     animation: pulse 2s infinite;
 }
 .menu-tooltip {
@@ -2925,7 +2925,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         const overlay = document.createElement("div");
-        overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; display: none;';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999;display:none;';
         document.body.appendChild(overlay);
         
         overlay.addEventListener('click', function() {
@@ -2944,8 +2944,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-</script>
-""", unsafe_allow_html=True)
+</script>""", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
