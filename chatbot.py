@@ -673,28 +673,79 @@ class UiService:
         </style>
         """, unsafe_allow_html=True)
 
-    if 'first_visit' not in st.session_state:
-        st.session_state.first_visit = True
-        st.markdown("""
-        <div style="
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 1000;
-            text-align: center;
-            max-width: 80%;
-        ">
-            <h3>👋 Bem-vindo ao Juh Premium!</h3>
-            <p>Toque no botão <span style="color:#ff66b3">☰</span> no canto inferior direito para começar</p>
-            <div style="font-size:40px; margin:15px 0;">⬇️</div>
-            <p>Depois toque em "Iniciar Conversa"</p>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown("""
+<style>
+    /* Botão do menu mobile - VISÍVEL ANTES DO CHAT */
+    .mobile-prechat-menu {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
+        color: white !important;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: none;  /* Inicialmente escondido */
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        z-index: 1000;
+        box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6);
+        border: 2px solid white;
+        animation: pulse 2s infinite;
+    }
+    
+    /* Balão de texto */
+    .menu-tooltip {
+        position: fixed;
+        top: 30px;
+        right: 80px;
+        background: white;
+        color: #ff1493;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 1001;
+        display: none; /* Inicialmente escondido */
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Mostrar apenas em mobile */
+    @media (max-width: 768px) {
+        .mobile-prechat-menu, .menu-tooltip {
+            display: flex !important;
+        }
+    }
+</style>
+
+<div class="menu-tooltip">Menu Principal</div>
+<div class="mobile-prechat-menu">☰</div>
+
+<script>
+// Controle do menu pré-chat
+document.addEventListener('DOMContentLoaded', function() {
+    const menuBtn = document.querySelector('.mobile-prechat-menu');
+    const tooltip = document.querySelector('.menu-tooltip');
+    
+    if (window.innerWidth <= 768) {
+        menuBtn.addEventListener('click', function() {
+            // Alternar visibilidade do tooltip
+            tooltip.style.display = tooltip.style.display === 'none' ? 'flex' : 'none';
+            
+            // Alternar ícone (opcional)
+            menuBtn.innerHTML = menuBtn.innerHTML === '☰' ? '✕' : '☰';
+        });
+    }
+});
+</script>
+""", unsafe_allow_html=True)
 
         with st.container():
             st.markdown("""
@@ -2840,82 +2891,91 @@ def main():
     
     save_persistent_data()
 
-# ============= MENU MOBILE OTIMIZADO =============
-st.markdown("""<style>
-.mobile-menu-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: linear-gradient(45deg, #ff1493, #ff66b3);
-    color: white;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 28px;
-    z-index: 1000;
-    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6);
-    border: 2px solid white;
-    animation: pulse 2s infinite;
-}
-.menu-tooltip {
-    position: fixed;
-    bottom: 25px;
-    right: 90px;
-    background: white;
-    color: #ff1493;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: bold;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    z-index: 1001;
-    white-space: nowrap;
-}
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-@media (min-width: 769px) {
-    .mobile-menu-button, .menu-tooltip { display: none !important; }
-}
+st.markdown("""
+<style>
+    /* Botão do menu DURANTE o chat */
+    .mobile-chat-menu {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(45deg, #ff1493, #ff66b3) !important;
+        color: white !important;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        z-index: 1000;
+        box-shadow: 0 4px 15px rgba(255, 20, 147, 0.6);
+        border: 2px solid white;
+    }
+    
+    .chat-menu-tooltip {
+        position: fixed;
+        bottom: 25px;
+        right: 90px;
+        background: white;
+        color: #ff1493;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 1001;
+        display: none;
+    }
+    
+    @media (max-width: 768px) {
+        .mobile-chat-menu, .chat-menu-tooltip {
+            display: flex !important;
+        }
+    }
 </style>
 
-<div class="menu-tooltip">Clique para ver o menu</div>
+<div class="chat-menu-tooltip">Abrir Menu</div>
+<div class="mobile-chat-menu">☰</div>
 
 <script>
+// Controle do menu durante o chat
 document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth <= 768) {
-        const menuBtn = document.createElement("div");
-        menuBtn.innerHTML = '☰';
-        menuBtn.className = "mobile-menu-button";
-        document.body.appendChild(menuBtn);
-        
+        const menuBtn = document.querySelector('.mobile-chat-menu');
+        const tooltip = document.querySelector('.chat-menu-tooltip');
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         const overlay = document.createElement("div");
-        overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999;display:none;';
+        
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        `;
         document.body.appendChild(overlay);
+        
+        menuBtn.addEventListener('click', function() {
+            const isOpen = sidebar.style.transform !== 'translateX(-100%)';
+            sidebar.style.transform = isOpen ? 'translateX(-100%)' : 'translateX(0px)';
+            overlay.style.display = isOpen ? 'none' : 'block';
+            menuBtn.innerHTML = isOpen ? '☰' : '✕';
+            tooltip.style.display = isOpen ? 'flex' : 'none';
+        });
         
         overlay.addEventListener('click', function() {
             sidebar.style.transform = 'translateX(-100%)';
             overlay.style.display = 'none';
             menuBtn.innerHTML = '☰';
-            document.querySelector('.menu-tooltip').style.display = 'block';
-        });
-
-        menuBtn.addEventListener('click', function() {
-            const isOpen = sidebar.style.transform === 'translateX(0px)';
-            sidebar.style.transform = isOpen ? 'translateX(-100%)' : 'translateX(0px)';
-            overlay.style.display = isOpen ? 'none' : 'block';
-            menuBtn.innerHTML = isOpen ? '☰' : '✕';
-            document.querySelector('.menu-tooltip').style.display = isOpen ? 'block' : 'none';
+            tooltip.style.display = 'flex';
         });
     }
 });
-</script>""", unsafe_allow_html=True)
+</script>
+""", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
