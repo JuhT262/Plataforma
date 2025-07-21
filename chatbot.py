@@ -165,15 +165,23 @@ def get_responsive_styles(device_info):
             border-radius: 18px 18px 0 18px !important;
         }}
         
-        .stChatMessage[data-testid="assistant"] > div {{
-            background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
-            color: white !important;
-            border-radius: 18px 18px 18px 0 !important;
-        }}
-        
-        #root > div:nth-child(1) > div > div > div > div > section > div {{
-            padding-top: 0rem;
-        }}
+        .stChatMessage[data-testid="user"] > div {
+                background: rgba(255, 255, 255, 0.1) !important;
+                color: white !important;
+                border-radius: 18px 18px 0 18px !important;
+            }
+            
+            .stChatMessage[data-testid="assistant"] > div {
+                background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
+                color: white !important;
+                border-radius: 18px 18px 18px 0 !important;
+                border: none !important;  # Adicione esta linha
+                box-shadow: 0 2px 8px rgba(255, 20, 147, 0.3) !important;  # Adicione esta linha
+            }
+            
+            #root > div:nth-child(1) > div > div > div > div > section > div {
+                padding-top: 0rem;
+            }
         
         div[data-testid="stToolbar"],
         div[data-testid="stDecoration"],
@@ -965,11 +973,19 @@ class ApiService:
                 else:
                     resposta = json.loads(gemini_response)
                 
-                if resposta.get("cta", {}).get("show"):
-                    if not CTAEngine.should_show_cta(st.session_state.messages):
-                        resposta["cta"]["show"] = False
-                    else:
-                        st.session_state.last_cta_time = time.time()
+               if resposta.get("cta", {}).get("show"):
+                   target = resposta["cta"].get("target", "")
+               if target == "offers":
+                    resposta["cta"]["target"] = Config.CHECKOUT_PREMIUM
+                elif target == "gallery":
+                    resposta["cta"]["target"] = Config.CHECKOUT_START
+                elif target == "vip":
+                    resposta["cta"]["target"] = Config.VIP_LINK
+                
+                if not CTAEngine.should_show_cta(st.session_state.messages):
+                    resposta["cta"]["show"] = False
+                else:
+                    st.session_state.last_cta_time = time.time()
                 
                 return resposta
             
@@ -2435,22 +2451,32 @@ class ChatService:
                 elif "text" not in resposta:
                     resposta = {"text": str(resposta), "cta": {"show": False}}
             
-            with st.chat_message("assistant", avatar="💋"):
-                st.markdown(resposta["text"])
+                with st.chat_message("assistant", avatar="💋"):
+                    st.markdown(resposta["text"])
             
-                if resposta.get("cta", {}).get("show"):
-                    if st.button(
-                        resposta["cta"].get("label", "Ver Ofertas"),
-                        key=f"chat_button_{time.time()}",
-                        use_container_width=True
-                    ):
-                        st.session_state.current_page = resposta["cta"].get("target", "offers")
-                        save_persistent_data()
-                        st.rerun()
-            
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": json.dumps(resposta)
+                    if resposta.get("cta", {}).get("show"):
+                        cta_label = resposta["cta"].get("label", "Ver Ofertas")
+                        cta_target = resposta["cta"].get("target", "offers")
+                        
+                        # Substitua o st.button por este markdown com link
+                        st.markdown(
+                            f'<a href="{cta_target}" style="'
+                            'display: inline-block;'
+                            'background: linear-gradient(45deg, #ff1493, #9400d3);'
+                            'color: white !important;'
+                            'padding: 0.5em 1em;'
+                            'border-radius: 8px;'
+                            'text-decoration: none;'
+                            'margin-top: 10px;'
+                            '">'
+                            f'{cta_label}'
+                            '</a>',
+                            unsafe_allow_html=True
+                        )
+                
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": json.dumps(resposta)
             })
             DatabaseService.save_message(
                 conn,
