@@ -2511,65 +2511,102 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
-    if 'db_conn' not in st.session_state:
-        st.session_state.db_conn = DatabaseService.init_db()
-    
-    conn = st.session_state.db_conn
-    
-    ChatService.initialize_session(conn)
-    
-    if not st.session_state.age_verified:
-        UiService.age_verification()
-        calling_text = TranslationService.translate_text("📞 Ligando para Juh...", st.session_state.get('language', 'pt'))
-        st.markdown(f"<p style='text-align: center; font-size: 18px; color: #ff66b3;'>{calling_text}</p>", unsafe_allow_html=True)
-        st.stop()
+    def main():
+    # Inicialização do banco de dados
+        if 'db_conn' not in st.session_state:
+            st.session_state.db_conn = DatabaseService.init_db()
         
-    UiService.setup_sidebar()
-    
-    if not st.session_state.connection_complete:
-        UiService.show_call_effect()
-        st.session_state.connection_complete = True
-        save_persistent_data()
-        st.rerun()
-    
-    if not st.session_state.chat_started:
-        col1, col2, col3 = st.columns([1,3,1])
-        with col2:
-            ready_text = TranslationService.translate_text("Estou pronta para você, amor...", st.session_state.get('language', 'pt'))
-            start_chat_text = TranslationService.translate_text("Iniciar Conversa", st.session_state.get('language', 'pt'))
+        conn = st.session_state.db_conn
+        
+        # Inicialização da sessão (carrega dados persistentes)
+        ChatService.initialize_session(conn)
+        
+        # Verificação de idade (gatekeeper)
+        if not st.session_state.get('age_verified', False):
+            UiService.age_verification()
             
+            # Exibe mensagem de carregamento
+            calling_text = TranslationService.translate_text("📞 Ligando para Juh...", 
+                          st.session_state.get('language', 'pt'))
             st.markdown(f"""
-            <div style="text-align: center; margin: 50px 0;">
-                <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
-                <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
-                <p style="font-size: 1.1em;">{ready_text}</p>
-            </div>
+            <p style='
+                text-align: center; 
+                font-size: 18px; 
+                color: #ff66b3;
+                margin-top: 2rem;
+            '>{calling_text}</p>
             """, unsafe_allow_html=True)
             
-            if st.button(start_chat_text, type="primary", use_container_width=True):
-                st.session_state.update({
-                    'chat_started': True,
-                    'current_page': 'chat',
-                    'audio_sent': False
-                })
-                save_persistent_data()
-                st.rerun()
-        st.stop()
-    
-    if st.session_state.current_page == "home":
-        NewPages.show_home_page()
-    elif st.session_state.current_page == "gallery":
-        UiService.show_gallery_page(conn)
-    elif st.session_state.current_page == "offers":
-        NewPages.show_offers_page()
-    elif st.session_state.current_page == "vip":
-        st.session_state.current_page = "offers"
+            st.stop()  # Bloqueia completamente até verificação
+        
+        # Configuração da sidebar (após verificação)
+        UiService.setup_sidebar()
+        
+        # Efeito de chamada (apenas na primeira vez)
+        if not st.session_state.get('connection_complete', False):
+            UiService.show_call_effect()
+            st.session_state.connection_complete = True
+            save_persistent_data()
+            st.rerun()  # Recarrega para aplicar todos os estados
+        
+        # Tela inicial antes do chat
+        if not st.session_state.get('chat_started', False):
+            col1, col2, col3 = st.columns([1,3,1])
+            with col2:
+                # Componente de boas-vindas
+                ready_text = TranslationService.translate_text(
+                    "Estou pronta para você, amor...", 
+                    st.session_state.get('language', 'pt'))
+                
+                start_chat_text = TranslationService.translate_text(
+                    "Iniciar Conversa", 
+                    st.session_state.get('language', 'pt'))
+                
+                st.markdown(f"""
+                <div style="text-align: center; margin: 50px 0;">
+                    <img src="{Config.IMG_PROFILE}" 
+                         width="120" 
+                         style="border-radius: 50%; border: 3px solid #ff66b3;">
+                    <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
+                    <p style="font-size: 1.1em;">{ready_text}</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Botão para iniciar o chat
+                if st.button(start_chat_text, 
+                            type="primary", 
+                            use_container_width=True,
+                            key="start_chat_btn"):
+                    
+                    # Atualiza todos os estados necessários
+                    st.session_state.update({
+                        'chat_started': True,
+                        'current_page': 'chat',
+                        'audio_sent': False,
+                        'last_cta_time': time.time()
+                    })
+                    
+                    save_persistent_data()
+                    st.rerun()
+            
+            st.stop()  # Impede continuar sem iniciar o chat
+        
+        # Roteamento das páginas principais
+        if st.session_state.current_page == "home":
+            NewPages.show_home_page()
+        elif st.session_state.current_page == "gallery":
+            UiService.show_gallery_page(conn)
+        elif st.session_state.current_page == "offers":
+            NewPages.show_offers_page()
+        elif st.session_state.current_page == "vip":
+            st.session_state.current_page = "offers"
+            save_persistent_data()
+            st.rerun()
+        else:  # Página padrão (chat)
+            UiService.enhanced_chat_ui(conn)
+        
+        # Persistência final do estado
         save_persistent_data()
-        st.rerun()
-    else:
-        UiService.enhanced_chat_ui(conn)
     
-    save_persistent_data()
-
-if __name__ == "__main__":
-    main()
+    if __name__ == "__main__":
+        main()
