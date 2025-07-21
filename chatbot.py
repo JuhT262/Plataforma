@@ -974,18 +974,18 @@ class ApiService:
                     resposta = json.loads(gemini_response)
                 
                 if resposta.get("cta", {}).get("show"):
-            target = resposta["cta"].get("target", "")
-            if target == "offers":
-                resposta["cta"]["target"] = Config.CHECKOUT_PREMIUM
-            elif target == "gallery":
-                resposta["cta"]["target"] = Config.CHECKOUT_START
-            elif target == "vip":
-                resposta["cta"]["target"] = Config.VIP_LINK
+                    target = resposta["cta"].get("target", "")
+                    if target == "offers":
+                        resposta["cta"]["target"] = Config.CHECKOUT_PREMIUM
+                    elif target == "gallery":
+                        resposta["cta"]["target"] = Config.CHECKOUT_START
+                    elif target == "vip":
+                        resposta["cta"]["target"] = Config.VIP_LINK
                 
-            if not CTAEngine.should_show_cta(st.session_state.messages):
-                resposta["cta"]["show"] = False
-            else:
-                st.session_state.last_cta_time = time.time()
+                    if not CTAEngine.should_show_cta(st.session_state.messages):
+                        resposta["cta"]["show"] = False
+                    else:
+                        st.session_state.last_cta_time = time.time()
                 
                 return resposta
             
