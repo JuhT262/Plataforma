@@ -165,23 +165,19 @@ def get_responsive_styles(device_info):
             border-radius: 18px 18px 0 18px !important;
         }}
         
-        .stChatMessage[data-testid="user"] > div {
-                background: rgba(255, 255, 255, 0.1) !important;
-                color: white !important;
-                border-radius: 18px 18px 0 18px !important;
-            }
-            
-            .stChatMessage[data-testid="assistant"] > div {
-                background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
-                color: white !important;
-                border-radius: 18px 18px 18px 0 !important;
-                border: none !important;  # Adicione esta linha
-                box-shadow: 0 2px 8px rgba(255, 20, 147, 0.3) !important;  # Adicione esta linha
-            }
-            
-            #root > div:nth-child(1) > div > div > div > div > section > div {
-                padding-top: 0rem;
-            }
+        .stChatMessage[data-testid="assistant"] > div {{
+            background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
+            color: white !important;
+            border-radius: 18px 18px 18px 0 !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(255, 20, 147, 0.3) !important;
+        }}
+        
+        #root > div:nth-child(1) > div > div > div > div > section > div {{
+            padding-top: 0rem;
+        }}
+    </style>
+    """
         
         div[data-testid="stToolbar"],
         div[data-testid="stDecoration"],
