@@ -1189,16 +1189,18 @@ class UiService:
 
     @staticmethod
     def age_verification():
-    # Verifica se já está verificado antes de renderizar
+    # Verificação inicial do estado
         if st.session_state.get('age_verified', False):
             return True
-            
+    
+        # Se não estiver verificado, mostra o formulário
         lang = st.session_state.get('language', 'pt')
         
-        # Container principal para a verificação de idade
+        # Usamos um container vazio para melhor controle
         verification_container = st.empty()
         
         with verification_container.container():
+            # Estilos CSS
             st.markdown("""
             <style>
                 .age-verification {
@@ -1227,18 +1229,10 @@ class UiService:
                     margin: 0;
                     color: #ff66b3;
                 }
-                @media (max-width: 768px) {
-                    .age-verification {
-                        padding: 1rem;
-                        margin: 1rem;
-                    }
-                    .age-title {
-                        font-size: 1.4rem;
-                    }
-                }
             </style>
             """, unsafe_allow_html=True)
     
+            # Conteúdo da verificação
             title = TranslationService.get_translated_content('age_verification_title', lang)
             text = TranslationService.get_translated_content('age_verification_text', lang)
             button_text = TranslationService.get_translated_content('age_verification_button', lang)
@@ -1256,19 +1250,22 @@ class UiService:
             </div>
             """, unsafe_allow_html=True)
     
+            # Botão de confirmação
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 if st.button(button_text, 
                             key="age_verify_btn",
                             use_container_width=True,
                             type="primary"):
+                    # Atualiza o estado e persiste
                     st.session_state.age_verified = True
+                    save_persistent_data()  # Garante a persistência
                     verification_container.empty()
-                    # Força o recarregamento da página
-                    st.rerun()
-        
-        # Impede que o resto do app execute até verificar a idade
-        st.stop()
+                    st.experimental_rerun()
+    
+        # Bloqueia o app se não estiver verificado
+        if not st.session_state.get('age_verified', False):
+            st.stop()
     
     @staticmethod
     def setup_sidebar():
