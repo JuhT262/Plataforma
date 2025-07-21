@@ -1197,7 +1197,7 @@ class UiService:
         lang = st.session_state.get('language', 'pt')
         
         
-            st.markdown("""
+        st.markdown("""
             <style>
                 .age-verification {
                     max-width: 600px;
