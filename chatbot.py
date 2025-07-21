@@ -1189,15 +1189,17 @@ class UiService:
 
     @staticmethod
     def age_verification():
-        # Verifica se já está verificado antes de renderizar
+    # Verifica se já está verificado antes de renderizar
         if st.session_state.get('age_verified', False):
             return True
             
-        
         lang = st.session_state.get('language', 'pt')
         
+        # Container principal para a verificação de idade
+        verification_container = st.empty()
         
-        st.markdown("""
+        with verification_container.container():
+            st.markdown("""
             <style>
                 .age-verification {
                     max-width: 600px;
@@ -1237,11 +1239,10 @@ class UiService:
             </style>
             """, unsafe_allow_html=True)
     
-        title = TranslationService.get_translated_content('age_verification_title', lang)
-        text = TranslationService.get_translated_content('age_verification_text', lang)
-        button_text = TranslationService.get_translated_content('age_verification_button', lang)
-
-        with st.container():
+            title = TranslationService.get_translated_content('age_verification_title', lang)
+            text = TranslationService.get_translated_content('age_verification_text', lang)
+            button_text = TranslationService.get_translated_content('age_verification_button', lang)
+    
             st.markdown(f"""
             <div class="age-verification">
                 <div class="age-header">
@@ -1262,11 +1263,12 @@ class UiService:
                             use_container_width=True,
                             type="primary"):
                     st.session_state.age_verified = True
-                    st.experimental_rerun()  # Força atualização imediata
+                    verification_container.empty()
+                    # Força o recarregamento da página
+                    st.rerun()
         
-        # Bloqueia o resto do app até verificação
-        if not st.session_state.get('age_verified', False):
-            st.stop()
+        # Impede que o resto do app execute até verificar a idade
+        st.stop()
     
     @staticmethod
     def setup_sidebar():
