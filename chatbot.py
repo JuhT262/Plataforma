@@ -2608,5 +2608,5 @@ def main():
         # Persistência final do estado
         save_persistent_data()
     
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
