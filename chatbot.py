@@ -973,7 +973,7 @@ class ApiService:
                 else:
                     resposta = json.loads(gemini_response)
                 
-        if resposta.get("cta", {}).get("show"):
+                if resposta.get("cta", {}).get("show"):
             target = resposta["cta"].get("target", "")
             if target == "offers":
                 resposta["cta"]["target"] = Config.CHECKOUT_PREMIUM
