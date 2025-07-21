@@ -1188,212 +1188,212 @@ class UiService:
         container.empty()
 
     @staticmethod
-def age_verification():
-    # Verifica se já está verificado antes de renderizar
-    if st.session_state.get('age_verified', False):
-        return True
-        
-    verification_container = st.empty()
-    lang = st.session_state.get('language', 'pt')
-    
-    with verification_container.container():
-        st.markdown("""
-        <style>
-            .age-verification {
-                max-width: 600px;
-                margin: 2rem auto;
-                padding: 2rem;
-                background: linear-gradient(145deg, #1e0033, #3c0066);
-                border-radius: 15px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                border: 1px solid rgba(255, 102, 179, 0.2);
-                color: white;
-            }
-            .age-header {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                margin-bottom: 1.5rem;
-            }
-            .age-icon {
-                font-size: 2.5rem;
-                color: #ff66b3;
-            }
-            .age-title {
-                font-size: 1.8rem;
-                font-weight: 700;
-                margin: 0;
-                color: #ff66b3;
-            }
-            @media (max-width: 768px) {
-                .age-verification {
-                    padding: 1rem;
-                    margin: 1rem;
-                }
-                .age-title {
-                    font-size: 1.4rem;
-                }
-            }
-        </style>
-        """, unsafe_allow_html=True)
-
-        title = TranslationService.get_translated_content('age_verification_title', lang)
-        text = TranslationService.get_translated_content('age_verification_text', lang)
-        button_text = TranslationService.get_translated_content('age_verification_button', lang)
-        
-        st.markdown(f"""
-        <div class="age-verification">
-            <div class="age-header">
-                <div class="age-icon">🔞</div>
-                <h1 class="age-title">{title}</h1>
-            </div>
-            <div class="age-content">
-                <p>{text}</p>
-                <p>Ao acessar este conteúdo, você declara estar em conformidade com todas as leis locais aplicáveis.</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        col1, col2, col3 = st.columns([1,2,1])
-        with col2:
-            if st.button(button_text, 
-                        key="age_checkbox",
-                        use_container_width=True,
-                        type="primary"):
-                st.session_state.age_verified = True
-                verification_container.empty()
-                # Não chama save_persistent_data() aqui para evitar recursão
-                st.rerun()
-    
-    # Impede que o resto do app execute até verificar a idade
-    st.stop()
-
-@staticmethod
-def setup_sidebar():
-    # Adiciona verificação para garantir que a idade foi verificada
-    if not st.session_state.get('age_verified', False):
-        return
-        
-    with st.sidebar:
+    def age_verification():
+        # Verifica se já está verificado antes de renderizar
+        if st.session_state.get('age_verified', False):
+            return True
+            
+        verification_container = st.empty()
         lang = st.session_state.get('language', 'pt')
         
-        st.markdown(f"""
-        <style>
-            section[data-testid="stSidebar"] {{
-                min-width: 320px !important;
-                max-width: 400px !important;
-                width: 100% !important;
-                background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
-                border-right: 1px solid #ff66b3 !important;
-            }}
-
-            .sidebar-logo-container {{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 20px 0 0 0;
-                margin: 0 auto;
-                text-align: center;
-            }}
-
-            .sidebar-logo {{
-                width: 100% !important;
-                max-width: 400px !important;
-                height: auto !important;
-                object-fit: contain;
-                margin: 0 auto;
-                display: block;
-                border: none !important;
-                box-shadow: none !important;
-                border-radius: 0 !important;
-            }}
-
-            .sidebar-header {{
-                text-align: center; 
-                margin: -10px auto 10px auto;
-            }}
-
-            .sidebar-header img {{
-                border-radius: 50% !important;
-                border: 2px solid #ff66b3;
-                width: 80px;
-                height: 80px;
-                object-fit: cover;
-                margin-bottom: 0.5rem;
-            }}
-
-            .vip-badge {{
-                background: linear-gradient(45deg, #ff1493, #9400d3);
-                padding: 15px;
-                border-radius: 8px;
-                color: white;
-                text-align: center;
-                margin: 10px 0;
-            }}
-
-            .menu-item {{
-                transition: all 0.3s;
-                padding: 10px;
-                border-radius: 5px;
-            }}
-
-            .menu-item:hover {{
-                background: rgba(255, 102, 179, 0.2);
-            }}
-
-            [data-testid="stSidebarNav"] {{
-                margin-top: -50px;
-            }}
-
-            @media only screen and (max-width: 768px) {{
+        with verification_container.container():
+            st.markdown("""
+            <style>
+                .age-verification {
+                    max-width: 600px;
+                    margin: 2rem auto;
+                    padding: 2rem;
+                    background: linear-gradient(145deg, #1e0033, #3c0066);
+                    border-radius: 15px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                    border: 1px solid rgba(255, 102, 179, 0.2);
+                    color: white;
+                }
+                .age-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    margin-bottom: 1.5rem;
+                }
+                .age-icon {
+                    font-size: 2.5rem;
+                    color: #ff66b3;
+                }
+                .age-title {
+                    font-size: 1.8rem;
+                    font-weight: 700;
+                    margin: 0;
+                    color: #ff66b3;
+                }
+                @media (max-width: 768px) {
+                    .age-verification {
+                        padding: 1rem;
+                        margin: 1rem;
+                    }
+                    .age-title {
+                        font-size: 1.4rem;
+                    }
+                }
+            </style>
+            """, unsafe_allow_html=True)
+    
+            title = TranslationService.get_translated_content('age_verification_title', lang)
+            text = TranslationService.get_translated_content('age_verification_text', lang)
+            button_text = TranslationService.get_translated_content('age_verification_button', lang)
+            
+            st.markdown(f"""
+            <div class="age-verification">
+                <div class="age-header">
+                    <div class="age-icon">🔞</div>
+                    <h1 class="age-title">{title}</h1>
+                </div>
+                <div class="age-content">
+                    <p>{text}</p>
+                    <p>Ao acessar este conteúdo, você declara estar em conformidade com todas as leis locais aplicáveis.</p>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+    
+            col1, col2, col3 = st.columns([1,2,1])
+            with col2:
+                if st.button(button_text, 
+                            key="age_checkbox",
+                            use_container_width=True,
+                            type="primary"):
+                    st.session_state.age_verified = True
+                    verification_container.empty()
+                    # Não chama save_persistent_data() aqui para evitar recursão
+                    st.rerun()
+        
+        # Impede que o resto do app execute até verificar a idade
+        st.stop()
+    
+    @staticmethod
+    def setup_sidebar():
+        # Adiciona verificação para garantir que a idade foi verificada
+        if not st.session_state.get('age_verified', False):
+            return
+            
+        with st.sidebar:
+            lang = st.session_state.get('language', 'pt')
+            
+            st.markdown(f"""
+            <style>
                 section[data-testid="stSidebar"] {{
-                    min-width: 100vw !important;
-                    max-width: 100vw !important;
-                    position: relative !important;
+                    min-width: 320px !important;
+                    max-width: 400px !important;
+                    width: 100% !important;
+                    background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+                    border-right: 1px solid #ff66b3 !important;
                 }}
-
+    
                 .sidebar-logo-container {{
-                    padding: 10px 0 0 0 !important;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 20px 0 0 0;
+                    margin: 0 auto;
+                    text-align: center;
                 }}
-
+    
+                .sidebar-logo {{
+                    width: 100% !important;
+                    max-width: 400px !important;
+                    height: auto !important;
+                    object-fit: contain;
+                    margin: 0 auto;
+                    display: block;
+                    border: none !important;
+                    box-shadow: none !important;
+                    border-radius: 0 !important;
+                }}
+    
                 .sidebar-header {{
-                    margin: 0 auto !important;
+                    text-align: center; 
+                    margin: -10px auto 10px auto;
                 }}
-
+    
                 .sidebar-header img {{
-                    width: 70px !important;
-                    height: 70px !important;
+                    border-radius: 50% !important;
+                    border: 2px solid #ff66b3;
+                    width: 80px;
+                    height: 80px;
+                    object-fit: cover;
+                    margin-bottom: 0.5rem;
                 }}
-
-                [data-testid="stVerticalBlock"] {{
-                    padding: 0 10px !important;
-                }}
-
-                .chat-bubble, .stMarkdown {{
-                    font-size: 16px !important;
-                }}
-                
+    
                 .vip-badge {{
-                    padding: 10px !important;
-                    font-size: 14px !important;
+                    background: linear-gradient(45deg, #ff1493, #9400d3);
+                    padding: 15px;
+                    border-radius: 8px;
+                    color: white;
+                    text-align: center;
+                    margin: 10px 0;
                 }}
-                
+    
                 .menu-item {{
-                    padding: 8px !important;
-                    font-size: 14px !important;
+                    transition: all 0.3s;
+                    padding: 10px;
+                    border-radius: 5px;
                 }}
-            }}
-        </style>
-
-        <div class="sidebar-logo-container">
-            <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Logo">
-        </div>
-
-        <div class="sidebar-header">
-            <img src="{Config.IMG_PROFILE}" alt="Juh">
-            <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>
-        </div>
-        """, unsafe_allow_html=True)
+    
+                .menu-item:hover {{
+                    background: rgba(255, 102, 179, 0.2);
+                }}
+    
+                [data-testid="stSidebarNav"] {{
+                    margin-top: -50px;
+                }}
+    
+                @media only screen and (max-width: 768px) {{
+                    section[data-testid="stSidebar"] {{
+                        min-width: 100vw !important;
+                        max-width: 100vw !important;
+                        position: relative !important;
+                    }}
+    
+                    .sidebar-logo-container {{
+                        padding: 10px 0 0 0 !important;
+                    }}
+    
+                    .sidebar-header {{
+                        margin: 0 auto !important;
+                    }}
+    
+                    .sidebar-header img {{
+                        width: 70px !important;
+                        height: 70px !important;
+                    }}
+    
+                    [data-testid="stVerticalBlock"] {{
+                        padding: 0 10px !important;
+                    }}
+    
+                    .chat-bubble, .stMarkdown {{
+                        font-size: 16px !important;
+                    }}
+                    
+                    .vip-badge {{
+                        padding: 10px !important;
+                        font-size: 14px !important;
+                    }}
+                    
+                    .menu-item {{
+                        padding: 8px !important;
+                        font-size: 14px !important;
+                    }}
+                }}
+            </style>
+    
+            <div class="sidebar-logo-container">
+                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Logo">
+            </div>
+    
+            <div class="sidebar-header">
+                <img src="{Config.IMG_PROFILE}" alt="Juh">
+                <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>
+            </div>
+            """, unsafe_allow_html=True)
     
             st.markdown("---")
             
