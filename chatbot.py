@@ -590,6 +590,9 @@ class Config:
 # ======================
 # PERSISTÊNCIA DE ESTADO
 # ======================
+# ======================
+# PERSISTÊNCIA DE ESTADO (VERSÃO CORRIGIDA)
+# ======================
 class PersistentState:
     _instance = None
     
@@ -600,81 +603,161 @@ class PersistentState:
         return cls._instance
     
     def init_db(self):
-        self.conn = sqlite3.connect('persistent_state.db', check_same_thread=False)
-        self.create_tables()
+        try:
+            # Garante que o diretório existe
+            os.makedirs('data', exist_ok=True)
+            self.conn = sqlite3.connect('data/persistent_state.db', check_same_thread=False)
+            self.conn.execute("PRAGMA journal_mode=WAL")  # Melhor desempenho para concorrência
+            self.create_tables()
+        except Exception as e:
+            st.error(f"Erro ao inicializar banco de dados: {str(e)}")
+            # Fallback para conexão em memória se falhar
+            self.conn = sqlite3.connect(':memory:', check_same_thread=False)
+            self.create_tables()
     
     def create_tables(self):
-        cursor = self.conn.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS global_state (
-                user_id TEXT PRIMARY KEY,
-                session_data TEXT NOT NULL,
-                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                language TEXT DEFAULT 'pt'
-            )
-        ''')
-        self.conn.commit()
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS global_state (
+                    user_id TEXT PRIMARY KEY,
+                    session_data TEXT NOT NULL,
+                    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    language TEXT DEFAULT 'pt'
+                )
+            ''')
+            self.conn.commit()
+        except sqlite3.Error as e:
+            st.error(f"Erro ao criar tabelas: {str(e)}")
+            # Tenta novamente com esquema simplificado
+            try:
+                cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS global_state (
+                        user_id TEXT,
+                        session_data TEXT,
+                        language TEXT
+                    )
+                ''')
+                self.conn.commit()
+            except:
+                pass
 
     def save_state(self, user_id, data, language='pt'):
-        cursor = self.conn.cursor()
-        cursor.execute('''
-            INSERT OR REPLACE INTO global_state (user_id, session_data, language)
-            VALUES (?, ?, ?)
-        ''', (user_id, json.dumps(data), language))
-        self.conn.commit()
+        if not user_id:
+            return False
+            
+        try:
+            if not self.conn:
+                self.init_db()  # Reconecta se necessário
+                
+            cursor = self.conn.cursor()
+            cursor.execute('''
+                INSERT OR REPLACE INTO global_state (user_id, session_data, language)
+                VALUES (?, ?, ?)
+            ''', (str(user_id), json.dumps(data), language))
+            self.conn.commit()
+            return True
+        except Exception as e:
+            print(f"Erro ao salvar estado: {str(e)}")
+            return False
     
     def load_state(self, user_id):
-        cursor = self.conn.cursor()
-        cursor.execute('SELECT session_data, language FROM global_state WHERE user_id = ?', (user_id,))
-        result = cursor.fetchone()
-        if result:
-            return json.loads(result[0]), result[1]
-        return None, 'pt'
-
-def get_user_id():
-    if 'user_id' not in st.session_state:
-        user_id = st.query_params.get('uid', [None])[0]
         if not user_id:
-            user_id = str(uuid.uuid4())
-            st.query_params['uid'] = user_id
-        st.session_state.user_id = user_id
-    return st.session_state.user_id
+            return None, 'pt'
+            
+        try:
+            if not self.conn:
+                self.init_db()  # Reconecta se necessário
+                
+            cursor = self.conn.cursor()
+            cursor.execute('''
+                SELECT session_data, language FROM global_state 
+                WHERE user_id = ?
+            ''', (str(user_id),))
+            
+            result = cursor.fetchone()
+            if result:
+                try:
+                    return json.loads(result[0]), result[1]
+                except json.JSONDecodeError:
+                    return None, result[1] if result[1] else 'pt'
+            return None, 'pt'
+        except sqlite3.Error as e:
+            print(f"Erro ao carregar estado: {str(e)}")
+            return None, 'pt'
+        except Exception as e:
+            print(f"Erro inesperado: {str(e)}")
+            return None, 'pt'
 
 def load_persistent_data():
-    user_id = get_user_id()
-    db = PersistentState()
-    saved_data, saved_lang = db.load_state(user_id)
-    
-    # Atualiza o idioma com base na URL ou no banco de dados
-    url_lang = st.query_params.get('lang', [None])[0]
-    if url_lang and url_lang in ['pt', 'en', 'es']:
-        st.session_state.language = url_lang
-    elif saved_lang:
-        st.session_state.language = saved_lang
-    else:
-        st.session_state.language = 'pt'
-    
-    if saved_data:
-        for key, value in saved_data.items():
+    try:
+        user_id = get_user_id()
+        if not user_id:
+            user_id = str(uuid.uuid4())
+            st.session_state.user_id = user_id
+            
+        db = PersistentState()
+        
+        # Verificação extra de conexão
+        if not db.conn:
+            db.init_db()
+            
+        saved_data, saved_lang = db.load_state(user_id)
+        
+        # Fallback para idioma padrão se não houver dados
+        if saved_lang not in ['pt', 'en', 'es']:
+            saved_lang = 'pt'
+            
+        # Atualiza o idioma com prioridade para parâmetro de URL
+        url_lang = st.query_params.get('lang', [None])[0]
+        if url_lang and url_lang in ['pt', 'en', 'es']:
+            st.session_state.language = url_lang
+        elif saved_lang:
+            st.session_state.language = saved_lang
+        else:
+            st.session_state.language = 'pt'
+        
+        # Carrega dados salvos com fallback seguro
+        if saved_data:
+            for key, value in saved_data.items():
+                if key not in st.session_state:
+                    st.session_state[key] = value
+                    
+        # Garante que os campos essenciais existam
+        defaults = {
+            'age_verified': False,
+            'messages': [],
+            'request_count': 0,
+            'connection_complete': False,
+            'chat_started': False,
+            'audio_sent': False,
+            'current_page': 'home',
+            'show_vip_offer': False,
+            'session_id': str(uuid.uuid4()),
+            'last_cta_time': 0
+        }
+        
+        for key, default in defaults.items():
             if key not in st.session_state:
-                st.session_state[key] = value
-
-def save_persistent_data():
-    user_id = get_user_id()
-    db = PersistentState()
-    
-    persistent_keys = [
-        'age_verified', 'messages', 'request_count',
-        'connection_complete', 'chat_started', 'audio_sent',
-        'current_page', 'show_vip_offer', 'session_id',
-        'last_cta_time'
-    ]
-    
-    new_data = {key: st.session_state.get(key) for key in persistent_keys if key in st.session_state}
-    saved_data, _ = db.load_state(user_id)
-    
-    if new_data != saved_data:
-        db.save_state(user_id, new_data, st.session_state.get('language', 'pt'))
+                st.session_state[key] = default
+                
+    except Exception as e:
+        print(f"Erro crítico em load_persistent_data: {str(e)}")
+        # Fallback completo se algo der muito errado
+        st.session_state.update({
+            'user_id': str(uuid.uuid4()),
+            'language': device_info.get('language', 'pt'),
+            'age_verified': False,
+            'messages': [],
+            'request_count': 0,
+            'connection_complete': False,
+            'chat_started': False,
+            'audio_sent': False,
+            'current_page': 'home',
+            'show_vip_offer': False,
+            'session_id': str(uuid.uuid4()),
+            'last_cta_time': 0
+        })
 
 # ======================
 # MODELOS DE DADOS
