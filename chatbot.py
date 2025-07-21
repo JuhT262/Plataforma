@@ -2511,49 +2511,48 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
-    def main():
-    # Inicialização do banco de dados
-        if 'db_conn' not in st.session_state:
-            st.session_state.db_conn = DatabaseService.init_db()
+def main():
+    # 1. Inicialização do sistema
+    if 'db_conn' not in st.session_state:
+        st.session_state.db_conn = DatabaseService.init_db()
+    
+    conn = st.session_state.db_conn
+    
+    # 2. Carrega dados persistentes
+    load_persistent_data()  # Adicione esta linha para carregar o estado salvo
+    
+    # 3. Verificação de idade (etapa crítica)
+    if not st.session_state.get('age_verified', False):
+        # Mostra a verificação de idade
+        UiService.age_verification()
         
-        conn = st.session_state.db_conn
+        # Exibe mensagem de carregamento
+        calling_text = TranslationService.translate_text("📞 Ligando para Juh...", 
+                      st.session_state.get('language', 'pt'))
+        st.markdown(f"""
+        <div style="text-align: center; margin-top: 50px;">
+            <p style="font-size: 18px; color: #ff66b3;">{calling_text}</p>
+        </div>
+        """, unsafe_allow_html=True)
         
-        # Inicialização da sessão (carrega dados persistentes)
-        ChatService.initialize_session(conn)
-        
-        # Verificação de idade (gatekeeper)
-        if not st.session_state.get('age_verified', False):
-            UiService.age_verification()
-            
-            # Exibe mensagem de carregamento
-            calling_text = TranslationService.translate_text("📞 Ligando para Juh...", 
-                          st.session_state.get('language', 'pt'))
-            st.markdown(f"""
-            <p style='
-                text-align: center; 
-                font-size: 18px; 
-                color: #ff66b3;
-                margin-top: 2rem;
-            '>{calling_text}</p>
-            """, unsafe_allow_html=True)
-            
-            st.stop()  # Bloqueia completamente até verificação
-        
-        # Configuração da sidebar (após verificação)
-        UiService.setup_sidebar()
-        
-        # Efeito de chamada (apenas na primeira vez)
-        if not st.session_state.get('connection_complete', False):
+        st.stop()  # Impede qualquer execução adicional
+    
+    # 4. Configuração da sidebar
+    UiService.setup_sidebar()
+    
+    # 5. Efeito de chamada (apenas na primeira vez)
+    if not st.session_state.get('connection_complete', False):
+        with st.spinner(''):  # Container vazio para o efeito
             UiService.show_call_effect()
-            st.session_state.connection_complete = True
-            save_persistent_data()
-            st.rerun()  # Recarrega para aplicar todos os estados
-        
-        # Tela inicial antes do chat
-        if not st.session_state.get('chat_started', False):
+        st.session_state.connection_complete = True
+        save_persistent_data()
+        st.rerun()
+    
+    # 6. Tela de boas-vindas antes do chat
+    if not st.session_state.get('chat_started', False):
+        with st.container():
             col1, col2, col3 = st.columns([1,3,1])
             with col2:
-                # Componente de boas-vindas
                 ready_text = TranslationService.translate_text(
                     "Estou pronta para você, amor...", 
                     st.session_state.get('language', 'pt'))
@@ -2572,41 +2571,38 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Botão para iniciar o chat
                 if st.button(start_chat_text, 
                             type="primary", 
                             use_container_width=True,
                             key="start_chat_btn"):
-                    
-                    # Atualiza todos os estados necessários
                     st.session_state.update({
                         'chat_started': True,
                         'current_page': 'chat',
-                        'audio_sent': False,
-                        'last_cta_time': time.time()
+                        'audio_sent': False
                     })
-                    
                     save_persistent_data()
                     st.rerun()
-            
-            st.stop()  # Impede continuar sem iniciar o chat
         
-        # Roteamento das páginas principais
-        if st.session_state.current_page == "home":
-            NewPages.show_home_page()
-        elif st.session_state.current_page == "gallery":
-            UiService.show_gallery_page(conn)
-        elif st.session_state.current_page == "offers":
-            NewPages.show_offers_page()
-        elif st.session_state.current_page == "vip":
-            st.session_state.current_page = "offers"
-            save_persistent_data()
-            st.rerun()
-        else:  # Página padrão (chat)
-            UiService.enhanced_chat_ui(conn)
-        
-        # Persistência final do estado
-        save_persistent_data()
+        st.stop()
     
+    # 7. Roteamento principal
+    if st.session_state.current_page == "home":
+        NewPages.show_home_page()
+    elif st.session_state.current_page == "gallery":
+        UiService.show_gallery_page(conn)
+    elif st.session_state.current_page == "offers":
+        NewPages.show_offers_page()
+    elif st.session_state.current_page == "vip":
+        st.session_state.current_page = "offers"
+        save_persistent_data()
+        st.rerun()
+    else:
+        UiService.enhanced_chat_ui(conn)
+    
+    # 8. Persistência final
+    save_persistent_data()
+
 if __name__ == "__main__":
+    # Reset de desenvolvimento (apenas para debug)
+    # st.session_state.clear()  # Descomente se necessário para testes
     main()
