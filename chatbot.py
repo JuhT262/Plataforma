@@ -1237,9 +1237,9 @@ class UiService:
             </style>
             """, unsafe_allow_html=True)
     
-            title = TranslationService.get_translated_content('age_verification_title', lang)
-            text = TranslationService.get_translated_content('age_verification_text', lang)
-            button_text = TranslationService.get_translated_content('age_verification_button', lang)
+        title = TranslationService.get_translated_content('age_verification_title', lang)
+        text = TranslationService.get_translated_content('age_verification_text', lang)
+        button_text = TranslationService.get_translated_content('age_verification_button', lang)
 
         with st.container():
             st.markdown(f"""
