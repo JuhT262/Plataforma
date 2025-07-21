@@ -1193,10 +1193,10 @@ class UiService:
         if st.session_state.get('age_verified', False):
             return True
             
-        verification_container = st.empty()
+        
         lang = st.session_state.get('language', 'pt')
         
-        with verification_container.container():
+        
             st.markdown("""
             <style>
                 .age-verification {
@@ -1240,7 +1240,8 @@ class UiService:
             title = TranslationService.get_translated_content('age_verification_title', lang)
             text = TranslationService.get_translated_content('age_verification_text', lang)
             button_text = TranslationService.get_translated_content('age_verification_button', lang)
-            
+
+        with st.container():
             st.markdown(f"""
             <div class="age-verification">
                 <div class="age-header">
@@ -1257,16 +1258,15 @@ class UiService:
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 if st.button(button_text, 
-                            key="age_checkbox",
+                            key="age_verify_btn",
                             use_container_width=True,
                             type="primary"):
                     st.session_state.age_verified = True
-                    verification_container.empty()
-                    # Não chama save_persistent_data() aqui para evitar recursão
-                    st.rerun()
+                    st.experimental_rerun()  # Força atualização imediata
         
-        # Impede que o resto do app execute até verificar a idade
-        st.stop()
+        # Bloqueia o resto do app até verificação
+        if not st.session_state.get('age_verified', False):
+            st.stop()
     
     @staticmethod
     def setup_sidebar():
