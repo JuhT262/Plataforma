@@ -12,41 +12,73 @@ import urllib.parse
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
-from datetime import datetime
 
 # ======================
-# SERVIÇO DE TRADUÇÃO ALTERNATIVO
+# SERVIÇO DE TRADUÇÃO COM API DO GOOGLE
+# ======================
+class GoogleTranslator:
+    def __init__(self):
+        self.base_url = "https://translate.googleapis.com/translate_a/single"
+    
+    def translate(self, text, dest='pt', src='auto'):
+        if not text or dest == 'pt':
+            return text
+            
+        try:
+            params = {
+                'client': 'gtx',
+                'sl': src,
+                'tl': dest,
+                'dt': 't',
+                'q': text
+            }
+            response = requests.get(self.base_url, params=params, timeout=5)
+            if response.status_code == 200:
+                return response.json()[0][0][0]
+            return text
+        except Exception as e:
+            print(f"Translation error: {str(e)}")
+            return text
+
+# Crie a instância do tradutor
+translator = GoogleTranslator()
+
+# ======================
+# SISTEMA DE TRADUÇÃO (Interface compatível)
 # ======================
 class TranslationService:
     @staticmethod
     def translate_text(text, target_lang='pt'):
-        """Traduz texto usando a API do Google Tradutor"""
-        if target_lang == 'pt' or not text:
-            return text
-            
-        try:
-            url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={target_lang}&dt=t&q={urllib.parse.quote(text)}"
-            response = requests.get(url, timeout=5)
-            if response.status_code == 200:
-                translated_text = response.json()[0][0][0]
-                return translated_text
-            return text
-        except Exception as e:
-            print(f"Erro na tradução: {str(e)}")
-            return text
+        return translator.translate(text, dest=target_lang)
     
     @staticmethod
     def get_translated_content(key, lang='pt'):
-        """Retorna conteúdo pré-traduzido (para melhor performance)"""
         translations = {
             'age_verification_title': {
                 'pt': 'Verificação de Idade',
                 'en': 'Age Verification',
                 'es': 'Verificación de Edad'
             },
-            # ... (mantenha o resto das traduções como estava)
+            'age_verification_text': {
+                'pt': 'Este site contém material explícito destinado exclusivamente a adultos maiores de 18 anos.',
+                'en': 'This site contains explicit material intended exclusively for adults over 18 years old.',
+                'es': 'Este sitio contiene material explícito destinado exclusivamente a adultos mayores de 18 años.'
+            },
+            # Adicione todas as outras traduções necessárias aqui
         }
         return translations.get(key, {}).get(lang, key)
+
+# Modifique a detecção de dispositivo para incluir o idioma
+def detect_device_and_language():
+    user_agent = st.query_params.get('user_agent', '')
+    lang = st.query_params.get('lang', ['pt'])[0]
+    
+    return {
+        'is_mobile': 'Mobi' in user_agent,
+        'is_ios': 'iPhone' in user_agent or 'iPad' in user_agent,
+        'is_android': 'Android' in user_agent,
+        'language': lang if lang in ['pt', 'en', 'es'] else 'pt'
+    }
 
 # ======================
 # CONFIGURAÇÃO INICIAL DO STREAMLIT
