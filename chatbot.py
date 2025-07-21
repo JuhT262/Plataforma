@@ -2154,8 +2154,8 @@ class ChatService:
         ChatService.display_chat_history()
 
         if not st.session_state.get("audio_sent") and st.session_state.chat_started:
-            status_container = st.empty()
-            UiService.show_audio_recording_effect(status_container)
+            
+            UiService.show_audio_recording_effect()
     
             st.session_state.messages.append({
                 "role": "assistant",
