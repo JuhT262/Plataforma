@@ -79,7 +79,6 @@ class TranslationService:
                 'en': 'Become VIP 💎',
                 'es': 'Hazte VIP 💎'
             }
-            # Adicione mais traduções conforme necessário
         }
         return translations.get(key, {}).get(lang, key)
 
@@ -100,9 +99,7 @@ def detect_device_and_language():
     user_agent = st.query_params.get('user_agent', '')
     
     # Detecção de dispositivo
-    is_mobile = 'Mobi' in user_agent
-    is_ios = 'iPhone' in user_agent or 'iPad' in user_agent
-    is_android = 'Android' in user_agent
+    is_mobile = 'Mobi' in user_agent or 'Android' in user_agent or 'iPhone' in user_agent or 'iPad' in user_agent
     
     # Detecção de idioma
     lang = st.query_params.get('lang', 'pt')
@@ -111,60 +108,10 @@ def detect_device_and_language():
     
     return {
         'is_mobile': is_mobile,
-        'is_ios': is_ios,
-        'is_android': is_android,
         'language': lang
     }
 
 device_info = detect_device_and_language()
-
-# ======================
-# SISTEMA DE TRADUÇÃO
-# ======================
-class TranslationService:
-    @staticmethod
-    def translate_text(text, target_lang='pt'):
-        if target_lang == 'pt':
-            return text  # Já está em português
-            
-        try:
-            translation = translator.translate(text, dest=target_lang)
-            return translation.text
-        except:
-            return text
-    
-    @staticmethod
-    def get_translated_content(key, lang='pt'):
-        translations = {
-            'age_verification_title': {
-                'pt': 'Verificação de Idade',
-                'en': 'Age Verification',
-                'es': 'Verificación de Edad'
-            },
-            'age_verification_text': {
-                'pt': 'Este site contém material explícito destinado exclusivamente a adultos maiores de 18 anos.',
-                'en': 'This site contains explicit material intended exclusively for adults over 18 years old.',
-                'es': 'Este sitio contiene material explícito destinado exclusivamente a adultos mayores de 18 años.'
-            },
-            'age_verification_button': {
-                'pt': 'Confirmo que sou maior de 18 anos',
-                'en': 'I confirm I am over 18 years old',
-                'es': 'Confirmo que soy mayor de 18 años'
-            },
-            'chat_input_placeholder': {
-                'pt': 'Escreva sua mensagem aqui',
-                'en': 'Type your message here',
-                'es': 'Escribe tu mensaje aquí'
-            },
-            'vip_button': {
-                'pt': 'Tornar-se VIP 💎',
-                'en': 'Become VIP 💎',
-                'es': 'Hazte VIP 💎'
-            },
-            # Adicione mais traduções conforme necessário
-        }
-        
-        return translations.get(key, {}).get(lang, key)
 
 # ======================
 # ESTILOS RESPONSIVOS
@@ -311,6 +258,27 @@ def get_responsive_styles(device_info):
             background: #ff66b3;
             font-weight: bold;
         }}
+        
+        /* EFEITO DE GRAVAÇÃO DE ÁUDIO VISÍVEL */
+        .audio-recording-effect {{
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 102, 179, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            animation: pulse 1.5s infinite;
+        }}
+        
+        @keyframes pulse {{
+            0% {{ opacity: 0.8; transform: translateX(-50%) scale(0.95); }}
+            50% {{ opacity: 1; transform: translateX(-50%) scale(1.05); }}
+            100% {{ opacity: 0.8; transform: translateX(-50%) scale(0.95); }}
+        }}
     </style>
     """
     
@@ -374,6 +342,12 @@ def get_responsive_styles(device_info):
             
             .language-selector {
                 bottom: 90px;
+            }
+            
+            .audio-recording-effect {
+                bottom: 120px;
+                font-size: 14px;
+                padding: 8px 15px;
             }
         }
         
@@ -452,6 +426,10 @@ def get_responsive_styles(device_info):
             .mobile-chat-menu {
                 display: none !important;
             }
+            
+            .audio-recording-effect {
+                bottom: 100px;
+            }
         }
     </style>
     """
@@ -460,95 +438,6 @@ def get_responsive_styles(device_info):
 
 # Aplicar estilos
 st.markdown(get_responsive_styles(device_info), unsafe_allow_html=True)
-
-# Adicionar elementos de UI móvel
-st.markdown("""
-<!-- Menu Mobile Button -->
-<div class="mobile-menu-button">☰</div>
-
-<!-- Botão Abrir Chat Mobile -->
-<div class="mobile-chat-menu">💬</div>
-
-<!-- Seletor de Idioma -->
-<div class="language-selector">
-    <div class="language-btn %s" onclick="st.query_params.set('lang', 'pt')">PT</div>
-    <div class="language-btn %s" onclick="st.query_params.set('lang', 'en')">EN</div>
-    <div class="language-btn %s" onclick="st.query_params.set('lang', 'es')">ES</div>
-</div>
-
-<script>
-// Menu Mobile
-document.addEventListener('DOMContentLoaded', function() {
-    const menuButton = document.querySelector('.mobile-menu-button');
-    const sidebar = document.querySelector('[data-testid="stSidebar"]');
-    const overlay = document.createElement("div");
-    
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 999;
-        display: none;
-    `;
-    document.body.appendChild(overlay);
-    
-    if (menuButton && sidebar) {
-        menuButton.addEventListener('click', function() {
-            sidebar.classList.toggle('open');
-            overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
-            menuButton.innerHTML = sidebar.classList.contains('open') ? '✕' : '☰';
-        });
-        
-        overlay.addEventListener('click', function() {
-            sidebar.classList.remove('open');
-            overlay.style.display = 'none';
-            menuButton.innerHTML = '☰';
-        });
-    }
-    
-    // Botão Abrir Chat
-    const chatButton = document.querySelector('.mobile-chat-menu');
-    if (chatButton) {
-        chatButton.addEventListener('click', function() {
-            st.session_state.current_page = 'chat';
-            // Aqui você precisaria adicionar a lógica para atualizar o Streamlit
-            // Isso pode requerer uma solução mais avançada com comunicação entre JS e Python
-        });
-    }
-    
-    // Rolagem automática do chat
-    function scrollChatToBottom() {
-        const chatContainer = document.querySelector('.chat-container');
-        if (chatContainer) {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-    }
-    
-    // Observa mudanças no chat para rolar automaticamente
-    new MutationObserver(scrollChatToBottom).observe(
-        document.querySelector('.chat-container') || document.body, 
-        { childList: true, subtree: true }
-    );
-    
-    // Atualizar idioma ativo
-    const langBtns = document.querySelectorAll('.language-btn');
-    const currentLang = '%s';
-    langBtns.forEach(btn => {
-        if (btn.textContent === currentLang.toUpperCase()) {
-            btn.classList.add('active');
-        }
-    });
-});
-</script>
-""" % (
-    'active' if device_info['language'] == 'pt' else '',
-    'active' if device_info['language'] == 'en' else '',
-    'active' if device_info['language'] == 'es' else '',
-    device_info['language']
-), unsafe_allow_html=True)
 
 # ======================
 # CONSTANTES E CONFIGURAÇÕES
@@ -596,14 +485,12 @@ class PersistentState:
     
     def init_db(self):
         try:
-            # Garante que o diretório existe
             os.makedirs('data', exist_ok=True)
             self.conn = sqlite3.connect('data/persistent_state.db', check_same_thread=False)
-            self.conn.execute("PRAGMA journal_mode=WAL")  # Melhor desempenho para concorrência
+            self.conn.execute("PRAGMA journal_mode=WAL")
             self.create_tables()
         except Exception as e:
             st.error(f"Erro ao inicializar banco de dados: {str(e)}")
-            # Fallback para conexão em memória se falhar
             self.conn = sqlite3.connect(':memory:', check_same_thread=False)
             self.create_tables()
     
@@ -621,7 +508,6 @@ class PersistentState:
             self.conn.commit()
         except sqlite3.Error as e:
             st.error(f"Erro ao criar tabelas: {str(e)}")
-            # Tenta novamente com esquema simplificado
             try:
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS global_state (
@@ -640,7 +526,7 @@ class PersistentState:
             
         try:
             if not self.conn:
-                self.init_db()  # Reconecta se necessário
+                self.init_db()
                 
             cursor = self.conn.cursor()
             cursor.execute('''
@@ -659,7 +545,7 @@ class PersistentState:
             
         try:
             if not self.conn:
-                self.init_db()  # Reconecta se necessário
+                self.init_db()
                 
             cursor = self.conn.cursor()
             cursor.execute('''
@@ -721,17 +607,14 @@ def load_persistent_data():
             
         db = PersistentState()
         
-        # Verificação extra de conexão
         if not db.conn:
             db.init_db()
             
         saved_data, saved_lang = db.load_state(user_id)
         
-        # Fallback para idioma padrão se não houver dados
         if saved_lang not in ['pt', 'en', 'es']:
             saved_lang = 'pt'
             
-        # Atualiza o idioma com prioridade para parâmetro de URL
         url_lang = st.query_params.get('lang', 'pt')
         if url_lang and url_lang in ['pt', 'en', 'es']:
             st.session_state.language = url_lang
@@ -740,13 +623,11 @@ def load_persistent_data():
         else:
             st.session_state.language = 'pt'
         
-        # Carrega dados salvos com fallback seguro
         if saved_data:
             for key, value in saved_data.items():
                 if key not in st.session_state:
                     st.session_state[key] = value
                     
-        # Garante que os campos essenciais existam
         defaults = {
             'age_verified': False,
             'messages': [],
@@ -766,7 +647,6 @@ def load_persistent_data():
                 
     except Exception as e:
         print(f"Erro crítico em load_persistent_data: {str(e)}")
-        # Fallback completo se algo der muito errado
         st.session_state.update({
             'user_id': str(uuid.uuid4()),
             'language': device_info.get('language', 'pt'),
@@ -1007,14 +887,26 @@ class ApiService:
         UiService.show_status_effect(status_container, "typing")
         
         conversation_history = ChatService.format_conversation_history(st.session_state.messages)
-        language = st.session_state.get('language', 'pt')
+        
+        # Detecta o idioma da mensagem do usuário
+        user_lang = 'pt'
+        if st.session_state.messages:
+            last_user_msg = st.session_state.messages[-1]['content']
+            if any(word in last_user_msg.lower() for word in ["the", "you", "are", "is", "this"]):
+                user_lang = 'en'
+            elif any(word in last_user_msg.lower() for word in ["el", "la", "qué", "es", "hola"]):
+                user_lang = 'es'
+        
+        # Atualiza o idioma na sessão
+        st.session_state.language = user_lang
+        save_persistent_data()
         
         headers = {'Content-Type': 'application/json'}
         data = {
             "contents": [
                 {
                     "role": "user",
-                    "parts": [{"text": f"{Persona.get_full_persona(language)}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
+                    "parts": [{"text": f"{Persona.get_full_persona(user_lang)}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
                 }
             ],
             "generationConfig": {
@@ -1174,7 +1066,7 @@ class UiService:
         container.empty()
 
     @staticmethod
-    def show_audio_recording_effect(container):
+    def show_audio_recording_effect():
         messages = {
             'pt': "Gravando um áudio",
             'en': "Recording audio",
@@ -1186,44 +1078,32 @@ class UiService:
         dots = ""
         start_time = time.time()
         
+        # Mostra o efeito de gravação fixo na tela
+        recording_container = st.empty()
+        
         while time.time() - start_time < Config.AUDIO_DURATION:
             elapsed = time.time() - start_time
             dots = "." * (int(elapsed) % 4)
             
-            container.markdown(f"""
-            <div style="
-                color: #888;
-                font-size: 0.8em;
-                padding: 2px 8px;
-                border-radius: 10px;
-                background: rgba(0,0,0,0.05);
-                display: inline-block;
-                margin-left: 10px;
-                vertical-align: middle;
-                font-style: italic;
-            ">
+            recording_container.markdown(f"""
+            <div class="audio-recording-effect">
                 {message}{dots}
             </div>
             """, unsafe_allow_html=True)
             
             time.sleep(0.3)
         
-        container.empty()
+        recording_container.empty()
 
     @staticmethod
     def age_verification():
-        # Verificação inicial do estado com fallback seguro
         if st.session_state.get('age_verified', False):
             return True
         
-        # Configuração do idioma com fallback
         lang = st.session_state.get('language', 'pt')
-        
-        # Container principal para controle preciso
         verification_container = st.empty()
         
         with verification_container.container():
-            # Estilos CSS completos (mantendo todos os detalhes originais)
             st.markdown("""
             <style>
                 .age-verification {
@@ -1264,12 +1144,10 @@ class UiService:
             </style>
             """, unsafe_allow_html=True)
     
-            # Conteúdo traduzido completo
             title = TranslationService.get_translated_content('age_verification_title', lang)
             text = TranslationService.get_translated_content('age_verification_text', lang)
             button_text = TranslationService.get_translated_content('age_verification_button', lang)
     
-            # Estrutura HTML completa
             st.markdown(f"""
             <div class="age-verification">
                 <div class="age-header">
@@ -1283,17 +1161,14 @@ class UiService:
             </div>
             """, unsafe_allow_html=True)
     
-            # Botão de confirmação com colunas
             col1, col2, col3 = st.columns([1,2,1])
             with col2:
                 if st.button(button_text, 
                             key="age_verify_btn",
                             use_container_width=True,
                             type="primary"):
-                    # Atualização do estado com persistência
                     st.session_state.age_verified = True
                     
-                    # Verificação extra para garantir a persistência
                     if 'db_conn' in st.session_state:
                         try:
                             cursor = st.session_state.db_conn.cursor()
@@ -1305,17 +1180,14 @@ class UiService:
                         except Exception as e:
                             st.error(f"Erro ao salvar verificação: {str(e)}")
                     
-                    # Limpeza e recarregamento
                     verification_container.empty()
                     st.rerun()
         
-        # Bloqueio seguro do aplicativo
         if not st.session_state.get('age_verified', False):
             st.stop()
             
     @staticmethod
     def setup_sidebar():
-        # Adiciona verificação para garantir que a idade foi verificada
         if not st.session_state.get('age_verified', False):
             return
             
@@ -1761,7 +1633,6 @@ class NewPages:
     def show_offers_page():
         lang = st.session_state.get('language', 'pt')
         
-        # Textos traduzidos
         packages_title = TranslationService.translate_text("PACOTES EXCLUSIVOS", lang)
         packages_subtitle = TranslationService.translate_text("Escolha o que melhor combina com seus desejos...", lang)
         flash_offer = TranslationService.translate_text("OFERTA RELÂMPAGO", lang)
