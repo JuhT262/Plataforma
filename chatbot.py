@@ -9,12 +9,32 @@ import re
 import os
 import uuid
 import urllib.parse
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from functools import lru_cache
 
 # ======================
-# SERVIÇO DE TRADUÇÃO COM API DO GOOGLE
+# CONSTANTES GLOBAIS
+# ======================
+MESSAGE_EXPIRATION_HOURS = 2  # Mensagens expiram após 2 horas
+RETURNING_USER_MESSAGE = {
+    'pt': "Que bom que voltou! 😍",
+    'en': "Welcome back! 😍", 
+    'es': "¡Qué bueno que volviste! 😍"
+}
+
+# ======================
+# CONFIGURAÇÕES INICIAIS
+# ======================
+st.set_page_config(
+    page_title="Juh Premium",
+    page_icon="😍",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# ======================
+# SERVIÇO DE TRADUÇÃO
 # ======================
 class GoogleTranslator:
     def __init__(self):
@@ -37,15 +57,11 @@ class GoogleTranslator:
                 return response.json()[0][0][0]
             return text
         except Exception as e:
-            print(f"Translation error: {str(e)}")
+            print(f"Erro na tradução: {str(e)}")
             return text
 
-# Crie a instância do tradutor
 translator = GoogleTranslator()
 
-# ======================
-# SISTEMA DE TRADUÇÃO (Interface compatível)
-# ======================
 class TranslationService:
     @staticmethod
     def translate_text(text, target_lang='pt'):
@@ -54,6 +70,7 @@ class TranslationService:
     @staticmethod
     def get_translated_content(key, lang='pt'):
         translations = {
+            'welcome_back': RETURNING_USER_MESSAGE,
             'age_verification_title': {
                 'pt': 'Verificação de Idade',
                 'en': 'Age Verification',
@@ -83,17 +100,7 @@ class TranslationService:
         return translations.get(key, {}).get(lang, key)
 
 # ======================
-# CONFIGURAÇÃO INICIAL DO STREAMLIT
-# ======================
-st.set_page_config(
-    page_title="Juh Premium",
-    page_icon="😍",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# ======================
-# DETECÇÃO DE DISPOSITIVO E IDIOMA (Versão final)
+# DETECÇÃO DE DISPOSITIVO E IDIOMA
 # ======================
 def detect_device_and_language():
     user_agent = st.query_params.get('user_agent', '')
@@ -113,9 +120,6 @@ def detect_device_and_language():
 
 device_info = detect_device_and_language()
 
-# ======================
-# DETECÇÃO DE IDIOMA DO USUÁRIO
-# ======================
 def detect_user_language(user_input):
     """Detecta o idioma baseado no texto do usuário"""
     if not user_input:
@@ -136,7 +140,7 @@ def detect_user_language(user_input):
         return 'pt'
 
 # ======================
-# ESTILOS RESPONSIVOS
+# ESTILOS RESPONSIVOS (ATUALIZADO)
 # ======================
 def get_responsive_styles(device_info):
     is_mobile = device_info['is_mobile']
@@ -148,6 +152,23 @@ def get_responsive_styles(device_info):
         * {{
             -webkit-overflow-scrolling: touch !important;
             overscroll-behavior: contain !important;
+        }}
+        
+        /* MELHORIA: Visibilidade das mensagens */
+        .stChatMessage {{
+            color: white !important;
+        }}
+        
+        .stChatMessage[data-testid="user"] > div {{
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            border-radius: 18px 18px 0 18px !important;
+        }}
+        
+        .stChatMessage[data-testid="assistant"] > div {{
+            background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
+            color: white !important;
+            border-radius: 18px 18px 18px 0 !important;
         }}
         
         #root > div:nth-child(1) > div > div > div > div > section > div {{
@@ -407,27 +428,6 @@ def get_responsive_styles(device_info):
             overflow-y: auto;
             padding-bottom: 80px;
         }
-        
-        .stChatMessage[data-testid="user"] > div {
-            background: rgba(0, 0, 0, 0.1) !important;
-            border-radius: 18px 18px 0 18px !important;
-            margin-left: auto !important;
-            max-width: 85% !important;
-        }
-        
-        .stChatMessage[data-testid="assistant"] > div {
-            background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
-            border-radius: 18px 18px 18px 0 !important;
-            max-width: 85% !important;
-        }
-        
-        .typing-indicator {
-            display: inline-block;
-            padding: 8px 12px;
-            background: rgba(255, 102, 179, 0.2);
-            border-radius: 12px;
-            font-size: 12px;
-        }
     </style>
     """
     
@@ -475,7 +475,7 @@ class Config:
     CHECKOUT_VIP_1MES = "https://checkout.exemplo.com/vip-1mes"
     CHECKOUT_VIP_3MESES = "https://checkout.exemplo.com/vip-3meses"
     CHECKOUT_VIP_1ANO = "https://checkout.exemplo.com/vip-1ano"
-    INTERNATIONAL_LINK = "https://exemplo.com/international"  # Novo link para gringos
+    INTERNATIONAL_LINK = "https://exemplo.com/international"
     MAX_REQUESTS_PER_SESSION = 30
     REQUEST_TIMEOUT = 30
     AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/Juh%20of.mp3"
@@ -495,7 +495,7 @@ class Config:
     LOGO_URL = "https://i.ibb.co/LX7x3tcB/Logo-Golden-Pepper-Letreiro-1.png"
 
 # ======================
-# PERSISTÊNCIA DE ESTADO (VERSÃO CORRIGIDA)
+# PERSISTÊNCIA DE ESTADO (ATUALIZADA)
 # ======================
 class PersistentState:
     _instance = None
@@ -551,11 +551,14 @@ class PersistentState:
             if not self.conn:
                 self.init_db()
                 
+            # Adiciona timestamp de atualização
+            data['last_updated'] = datetime.now().isoformat()
+                
             cursor = self.conn.cursor()
             cursor.execute('''
-                INSERT OR REPLACE INTO global_state (user_id, session_data, language)
-                VALUES (?, ?, ?)
-            ''', (str(user_id), json.dumps(data), language))
+                INSERT OR REPLACE INTO global_state (user_id, session_data, language, last_updated)
+                VALUES (?, ?, ?, ?)
+            ''', (str(user_id), json.dumps(data), language, datetime.now().isoformat()))
             self.conn.commit()
             return True
         except Exception as e:
@@ -572,16 +575,29 @@ class PersistentState:
                 
             cursor = self.conn.cursor()
             cursor.execute('''
-                SELECT session_data, language FROM global_state 
+                SELECT session_data, language, last_updated FROM global_state 
                 WHERE user_id = ?
             ''', (str(user_id),))
             
             result = cursor.fetchone()
             if result:
+                session_data, language, last_updated = result
+                
+                # Verifica se as mensagens expiraram (2 horas)
+                if last_updated:
+                    last_updated = datetime.fromisoformat(last_updated)
+                    if datetime.now() - last_updated > timedelta(hours=MESSAGE_EXPIRATION_HOURS):
+                        try:
+                            data = json.loads(session_data)
+                            data['messages'] = []  # Limpa mensagens antigas
+                            return data, language
+                        except:
+                            return None, language
+                
                 try:
-                    return json.loads(result[0]), result[1]
+                    return json.loads(session_data), language
                 except json.JSONDecodeError:
-                    return None, result[1] if result[1] else 'pt'
+                    return None, language if language else 'pt'
             return None, 'pt'
         except sqlite3.Error as e:
             print(f"Erro ao carregar estado: {str(e)}")
@@ -614,7 +630,8 @@ def save_persistent_data():
             'show_vip_offer': st.session_state.get('show_vip_offer', False),
             'session_id': st.session_state.get('session_id', str(uuid.uuid4())),
             'last_cta_time': st.session_state.get('last_cta_time', 0),
-            'language': st.session_state.get('language', 'pt')
+            'language': st.session_state.get('language', 'pt'),
+            'last_updated': datetime.now().isoformat()
         }
         
         db.save_state(user_id, data_to_save, st.session_state.get('language', 'pt'))
