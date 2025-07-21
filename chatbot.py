@@ -114,6 +114,28 @@ def detect_device_and_language():
 device_info = detect_device_and_language()
 
 # ======================
+# DETECÇÃO DE IDIOMA DO USUÁRIO
+# ======================
+def detect_user_language(user_input):
+    """Detecta o idioma baseado no texto do usuário"""
+    if not user_input:
+        return 'pt'
+        
+    user_input = user_input.lower()
+    
+    # Palavras-chave em inglês
+    english_words = ["the", "you", "are", "is", "this", "hi", "hello", "how", "what"]
+    # Palavras-chave em espanhol
+    spanish_words = ["el", "la", "qué", "es", "hola", "quiero", "tú", "cómo", "qué"]
+    
+    if any(word in user_input for word in english_words):
+        return 'en'
+    elif any(word in user_input for word in spanish_words):
+        return 'es'
+    else:
+        return 'pt'
+
+# ======================
 # ESTILOS RESPONSIVOS
 # ======================
 def get_responsive_styles(device_info):
@@ -453,6 +475,7 @@ class Config:
     CHECKOUT_VIP_1MES = "https://checkout.exemplo.com/vip-1mes"
     CHECKOUT_VIP_3MESES = "https://checkout.exemplo.com/vip-3meses"
     CHECKOUT_VIP_1ANO = "https://checkout.exemplo.com/vip-1ano"
+    INTERNATIONAL_LINK = "https://exemplo.com/international"  # Novo link para gringos
     MAX_REQUESTS_PER_SESSION = 30
     REQUEST_TIMEOUT = 30
     AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/Juh%20of.mp3"
@@ -888,18 +911,8 @@ class ApiService:
         
         conversation_history = ChatService.format_conversation_history(st.session_state.messages)
         
-        # Detecta o idioma da mensagem do usuário
-        user_lang = 'pt'
-        if st.session_state.messages:
-            last_user_msg = st.session_state.messages[-1]['content']
-            if any(word in last_user_msg.lower() for word in ["the", "you", "are", "is", "this"]):
-                user_lang = 'en'
-            elif any(word in last_user_msg.lower() for word in ["el", "la", "qué", "es", "hola"]):
-                user_lang = 'es'
-        
-        # Atualiza o idioma na sessão
-        st.session_state.language = user_lang
-        save_persistent_data()
+        # Usa o idioma da sessão que foi detectado anteriormente
+        user_lang = st.session_state.get('language', 'pt')
         
         headers = {'Content-Type': 'application/json'}
         data = {
@@ -1633,6 +1646,34 @@ class NewPages:
     def show_offers_page():
         lang = st.session_state.get('language', 'pt')
         
+        # Se for gringo, mostrar apenas o link
+        if lang in ['en', 'es']:
+            st.markdown(f"""
+            <div style="text-align: center; padding: 50px 0;">
+                <h2 style="color: #ff66b3;">{TranslationService.translate_text("Exclusive Content", lang)}</h2>
+                <p>{TranslationService.translate_text("Click below to access all my exclusive content", lang)}</p>
+                <a href="{Config.INTERNATIONAL_LINK}" target="_blank" style="
+                    display: inline-block;
+                    background: linear-gradient(45deg, #ff1493, #9400d3);
+                    color: white;
+                    padding: 15px 30px;
+                    border-radius: 30px;
+                    text-decoration: none;
+                    font-weight: bold;
+                    margin-top: 20px;
+                ">
+                    {TranslationService.translate_text("GET FULL ACCESS NOW", lang)}
+                </a>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            if st.button(TranslationService.translate_text("Back to chat", lang), key="back_from_offers"):
+                st.session_state.current_page = "chat"
+                save_persistent_data()
+                st.rerun()
+            return
+        
+        # Código existente para mostrar pacotes em português
         packages_title = TranslationService.translate_text("PACOTES EXCLUSIVOS", lang)
         packages_subtitle = TranslationService.translate_text("Escolha o que melhor combina com seus desejos...", lang)
         flash_offer = TranslationService.translate_text("OFERTA RELÂMPAGO", lang)
@@ -2140,7 +2181,11 @@ class ChatService:
         if user_input:
             cleaned_input = ChatService.validate_input(user_input)
             lower_input = cleaned_input.lower()
-    
+            
+            # Detecta o idioma do usuário
+            user_lang = detect_user_language(cleaned_input)
+            st.session_state.language = user_lang  # Atualiza o idioma na sessão
+            
             with st.chat_message("user", avatar="🧑"):
                 st.markdown(cleaned_input)
     
@@ -2154,7 +2199,7 @@ class ChatService:
                 st.session_state.session_id,
                 "user",
                 cleaned_input,
-                lang
+                user_lang
             )
             st.session_state.request_count += 1
     
@@ -2166,14 +2211,14 @@ class ChatService:
                 }
                 
                 with st.chat_message("assistant", avatar="💋"):
-                    st.markdown(busy_msg.get(lang, busy_msg['pt']))
+                    st.markdown(busy_msg.get(user_lang, busy_msg['pt']))
                 DatabaseService.save_message(
                     conn,
                     get_user_id(),
                     st.session_state.session_id,
                     "assistant",
-                    busy_msg.get(lang, busy_msg['pt']),
-                    lang
+                    busy_msg.get(user_lang, busy_msg['pt']),
+                    user_lang
                 )
                 save_persistent_data()
                 st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
@@ -2186,46 +2231,42 @@ class ChatService:
                 time.sleep(5)
                 placeholder.empty()
                 
-                responses = {
-                    'pt': {
-                        "text": (
-                            "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
-                            "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
-                            "Vem ver tudo que preparei pra te deixar louco 🔥"
-                        ),
-                        "cta": {
-                            "show": True,
-                            "label": "👉 Ver Planos VIP",        
-                            "target": "offers"
-                        }
-                    },
-                    'en': {
-                        "text": (
-                            "No direct Pix, baby... 💸 Here you enter my world just by choosing "
-                            "one of my plans: Promo, Start, Premium and Extreme 😈\n"
-                            "Come see everything I've prepared to drive you crazy 🔥"
-                        ),
-                        "cta": {
-                            "show": True,
-                            "label": "👉 See VIP Plans",        
-                            "target": "offers"
-                        }
-                    },
-                    'es': {
-                        "text": (
-                            "Nada de Pix directo, cariño... 💸 Aquí entras en mi mundo simplemente eligiendo "
-                            "uno de mis planes: Promo, Start, Premium y Extreme 😈\n"
-                            "Ven a ver todo lo que he preparado para volverte loco 🔥"
-                        ),
-                        "cta": {
-                            "show": True,
-                            "label": "👉 Ver Planes VIP",        
-                            "target": "offers"
+                if user_lang in ['en', 'es']:  # Gringos - link único
+                    responses = {
+                        'en': {
+                            "text": "For international fans, here's my exclusive content link:",
+                            "cta": {
+                                "show": True,
+                                "label": "👉 Get Full Access",        
+                                "target": Config.INTERNATIONAL_LINK  # Link para gringos
+                            }
+                        },
+                        'es': {
+                            "text": "Para fans internacionales, aquí está mi enlace de contenido exclusivo:",
+                            "cta": {
+                                "show": True,
+                                "label": "👉 Obtener Acceso Completo",        
+                                "target": Config.INTERNATIONAL_LINK  # Link para gringos
+                            }
                         }
                     }
-                }
-                
-                resposta = responses.get(lang, responses['pt'])
+                else:  # Brasileiros - oferta de pacotes
+                    responses = {
+                        'pt': {
+                            "text": (
+                                "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
+                                "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
+                                "Vem ver tudo que preparei pra te deixar louco 🔥"
+                            ),
+                            "cta": {
+                                "show": True,
+                                "label": "👉 Ver Planos VIP",        
+                                "target": "offers"  # Página de ofertas normal
+                            }
+                        }
+                    }
+                    
+                resposta = responses.get(user_lang, responses['pt'] if user_lang == 'pt' else responses['en'])
             
             elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
                 placeholder = st.empty()
@@ -2257,10 +2298,10 @@ class ChatService:
                 }
                 
                 resposta = {
-                    "text": random.choice(photo_responses.get(lang, photo_responses['pt'])),
+                    "text": random.choice(photo_responses.get(user_lang, photo_responses['pt'])),
                     "cta": {
                         "show": True,
-                        "label": cta_labels.get(lang, cta_labels['pt']),
+                        "label": cta_labels.get(user_lang, cta_labels['pt']),
                         "target": "offers"
                     }
                 }
@@ -2297,7 +2338,7 @@ class ChatService:
                     }
                 }
                 
-                resposta = responses.get(lang, responses['pt'])
+                resposta = responses.get(user_lang, responses['pt'])
             
             elif any(v in lower_input for v in ["video", "transar", "masturbar"]):
                 placeholder = st.empty()
@@ -2329,10 +2370,10 @@ class ChatService:
                 }
                 
                 resposta = {
-                    "text": random.choice(video_responses.get(lang, video_responses['pt'])),
+                    "text": random.choice(video_responses.get(user_lang, video_responses['pt'])),
                     "cta": {
                         "show": True,
-                        "label": cta_labels.get(lang, cta_labels['pt']),
+                        "label": cta_labels.get(user_lang, cta_labels['pt']),
                         "target": "offers"
                     }
                 }
@@ -2368,7 +2409,7 @@ class ChatService:
                 st.session_state.session_id,
                 "assistant",
                 json.dumps(resposta),
-                lang
+                user_lang
             )
             
             save_persistent_data()
