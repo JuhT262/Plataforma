@@ -179,9 +179,9 @@ def get_responsive_styles(device_info):
     </style>
     """
         
-        div[data-testid="stToolbar"],
-        div[data-testid="stDecoration"],
-        div[data-testid="stStatusWidget"],
+         div[data-testid="stToolbar"],
+         div[data-testid="stDecoration"],
+         div[data-testid="stStatusWidget"],
         #MainMenu, header, footer,
         .stDeployButton {{
             display: none !important;
