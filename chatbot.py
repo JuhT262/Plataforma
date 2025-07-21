@@ -664,6 +664,12 @@ def load_persistent_data():
             st.session_state.language = 'pt'
         
         if saved_data:
+            # Verifica se é um usuário retornando (já tinha mensagens salvas)
+            if 'messages' in saved_data and len(saved_data['messages']) > 0:
+                st.session_state.is_returning_user = True
+            else:
+                st.session_state.is_returning_user = False
+                
             for key, value in saved_data.items():
                 if key not in st.session_state:
                     st.session_state[key] = value
@@ -678,7 +684,8 @@ def load_persistent_data():
             'current_page': 'home',
             'show_vip_offer': False,
             'session_id': str(uuid.uuid4()),
-            'last_cta_time': 0
+            'last_cta_time': 0,
+            'is_returning_user': False
         }
         
         for key, default in defaults.items():
@@ -699,7 +706,8 @@ def load_persistent_data():
             'current_page': 'home',
             'show_vip_offer': False,
             'session_id': str(uuid.uuid4()),
-            'last_cta_time': 0
+            'last_cta_time': 0,
+            'is_returning_user': False
         })
 
 # ======================
@@ -1521,6 +1529,30 @@ class UiService:
             <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Mensagem de boas-vindas para usuários retornantes
+        if st.session_state.get('is_returning_user', False) and len(st.session_state.messages) == 0:
+            welcome_msg = RETURNING_USER_MESSAGE.get(lang, RETURNING_USER_MESSAGE['pt'])
+            
+            with st.chat_message("assistant", avatar="💋"):
+                st.markdown(welcome_msg)
+            
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": welcome_msg
+            })
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "assistant",
+                welcome_msg,
+                lang
+            )
+            
+            # Reseta o flag para não mostrar novamente
+            st.session_state.is_returning_user = False
+            save_persistent_data()
         
         ChatService.process_user_input(conn)
         save_persistent_data()
