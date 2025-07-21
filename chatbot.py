@@ -64,21 +64,24 @@ class TranslationService:
                 'en': 'This site contains explicit material intended exclusively for adults over 18 years old.',
                 'es': 'Este sitio contiene material explícito destinado exclusivamente a adultos mayores de 18 años.'
             },
-            # Adicione todas as outras traduções necessárias aqui
+            'age_verification_button': {
+                'pt': 'Confirmo que sou maior de 18 anos',
+                'en': 'I confirm I am over 18 years old',
+                'es': 'Confirmo que soy mayor de 18 años'
+            },
+            'chat_input_placeholder': {
+                'pt': 'Escreva sua mensagem aqui',
+                'en': 'Type your message here',
+                'es': 'Escribe tu mensaje aquí'
+            },
+            'vip_button': {
+                'pt': 'Tornar-se VIP 💎',
+                'en': 'Become VIP 💎',
+                'es': 'Hazte VIP 💎'
+            }
+            # Adicione mais traduções conforme necessário
         }
         return translations.get(key, {}).get(lang, key)
-
-# Modifique a detecção de dispositivo para incluir o idioma
-def detect_device_and_language():
-    user_agent = st.query_params.get('user_agent', '')
-    lang = st.query_params.get('lang', ['pt'])[0]
-    
-    return {
-        'is_mobile': 'Mobi' in user_agent,
-        'is_ios': 'iPhone' in user_agent or 'iPad' in user_agent,
-        'is_android': 'Android' in user_agent,
-        'language': lang if lang in ['pt', 'en', 'es'] else 'pt'
-    }
 
 # ======================
 # CONFIGURAÇÃO INICIAL DO STREAMLIT
@@ -95,28 +98,18 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Configuração do tradutor
-translator = Translator()
-
 # ======================
-# DETECÇÃO DE DISPOSITIVO E IDIOMA
+# DETECÇÃO DE DISPOSITIVO E IDIOMA (Versão final)
 # ======================
 def detect_device_and_language():
     user_agent = st.query_params.get('user_agent', '')
     
     # Detecção de dispositivo
-    is_mobile = False
-    is_ios = False
-    is_android = False
+    is_mobile = 'Mobi' in user_agent
+    is_ios = 'iPhone' in user_agent or 'iPad' in user_agent
+    is_android = 'Android' in user_agent
     
-    if 'Mobi' in user_agent:
-        is_mobile = True
-        if 'iPhone' in user_agent or 'iPad' in user_agent:
-            is_ios = True
-        elif 'Android' in user_agent:
-            is_android = True
-    
-    # Detecção de idioma (simplificado)
+    # Detecção de idioma
     lang = st.query_params.get('lang', 'pt')
     if lang not in ['pt', 'en', 'es']:
         lang = 'pt'
