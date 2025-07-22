@@ -223,9 +223,9 @@ hide_streamlit_style = """
         0%, 100% { opacity: 1; }
         50% { opacity: 0; }
     }
-
-    /* ========== MOBILE ========== */
     st.markdown("""
+    /* ========== MOBILE ========== */
+    
     @media (max-width: 768px) {
         /* Layout geral */
         .package-container,
