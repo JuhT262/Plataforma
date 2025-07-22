@@ -4325,7 +4325,7 @@ class UiService:
     
             st.markdown("---")
             
-           menu_options = {
+        menu_options = {
             "Início 🏠": "home",
             "Galeria Privada 📸": "gallery",
             "Mensagens 💬": "messages",
