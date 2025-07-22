@@ -895,7 +895,7 @@ class UiService:
             }
     
             for option, page in menu_options.items():
-                if st.button(option, use_container_width=True, key=f"menu_{page}"):
+                if st.button(option, use_container_width=True, key=f"sidebar_menu_{page}"):
                     if st.session_state.current_page != page:
                         st.session_state.current_page = page
                         st.session_state.last_action = f"page_change_to_{page}"
@@ -4368,7 +4368,7 @@ class UiService:
             st.markdown(f"### {TranslationService.translate_text('Menu Exclusivo', lang)}")
             
             for option, page in current_menu.items():
-                if st.button(option, use_container_width=True, key=f"menu_{page}"):
+                if st.button(option, use_container_width=True, key=f"sidebar_menu_{page}"):
                     if st.session_state.current_page != page:
                         st.session_state.current_page = page
                         st.session_state.last_action = f"page_change_to_{page}"
