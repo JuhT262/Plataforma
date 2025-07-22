@@ -794,7 +794,7 @@ class UiService:
     
     time.sleep(LIGANDO_DELAY)
 
-        <style>
+    <style>
             @keyframes pulse-ring {{
                 0% {{ transform: scale(0.8); opacity: 0.8; }}
                 100% {{ transform: scale(1.5); opacity: 0; }}
