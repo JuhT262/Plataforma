@@ -165,19 +165,49 @@ hide_streamlit_style = """
         }
         
         /* Input do chat */
+        /* Input do chat - Versão Corrigida */
         [data-testid="stChatInput"] {
-            padding: 12px !important;
-            font-size: 16px !important;
             position: fixed !important;
-            bottom: 0 !important;
+            bottom: 20px !important;
             left: 0 !important;
             right: 0 !important;
-            background: rgba(30, 0, 51, 0.9) !important;
+            padding: 12px !important;
+            margin: 0 10px !important;
+            width: calc(100% - 20px) !important;
+            box-sizing: border-box !important;
+            background: rgba(30, 0, 51, 0.95) !important;
             backdrop-filter: blur(5px);
+            border-radius: 15px !important;
             z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
         }
         
-        /* Otimizações de performance */
+        [data-testid="stChatInput"] button {
+            position: absolute !important;
+            right: 15px !important;
+            bottom: 15px !important;
+            height: 40px !important;
+            width: 40px !important;
+            min-width: 40px !important;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            background: #ff1493 !important;
+        }
+        
+        [data-testid="stChatInput"] button svg {
+            margin: 0 auto !important;
+        }
+        
+        [data-testid="stChatInput"] textarea {
+            padding-right: 50px !important;
+            min-height: 50px !important;
+        }
+        
+        .stApp > div {
+            padding-bottom: 100px !important;
+        }
+        
+        /* Mantenha as otimizações de performance */
         * {
             animation: none !important;
             transition: none !important;
@@ -317,6 +347,30 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('resize', function() {
     setupMobileMenu();
 });
+
+// ===== CÓDIGO NOVO PARA AJUSTE MOBILE ===== //
+if (window.innerWidth <= 768) {
+    const adjustChatInput = () => {
+        const chatInput = document.querySelector('[data-testid="stChatInput"]');
+        if (chatInput) {
+            chatInput.addEventListener('focus', function() {
+                setTimeout(() => {
+                    this.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    document.querySelector('.stApp > div').style.paddingBottom = '200px';
+                }, 300);
+            });
+            
+            chatInput.addEventListener('blur', function() {
+                setTimeout(() => {
+                    document.querySelector('.stApp > div').style.paddingBottom = '100px';
+                }, 300);
+            });
+        }
+    };
+    
+    adjustChatInput();
+    window.addEventListener('resize', adjustChatInput);
+}
 </script>
 """, unsafe_allow_html=True)
 
