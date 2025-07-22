@@ -105,7 +105,7 @@ st.markdown("""
 <style>
     /* Estilos base */
     #root > div:nth-child(1) > div > div > div > div > section > div {
-        padding-top: 0rem;
+    padding-top: 0rem;
     }
     div[data-testid="stToolbar"] {
         display: none !important;
