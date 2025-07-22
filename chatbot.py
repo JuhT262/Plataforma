@@ -224,7 +224,7 @@ hide_streamlit_style = """
         50% { opacity: 0; }
     }
     st.markdown("""
-    /* ========== MOBILE ========== */
+        /* ========== MOBILE ========== */
     
     @media (max-width: 768px) {
         /* Layout geral */
