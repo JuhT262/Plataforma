@@ -133,10 +133,7 @@ hide_streamlit_style = """
         100% { transform: rotate(5deg); }
     }
 
-    @keyframes shake {
-    0% { transform: rotate(-5deg); }
-    100% { transform: rotate(5deg); }
-    }
+    
 
     * ========== MEDIA QUERIES PARA MOBILE ========== */
     @media (max-width: 768px) {
