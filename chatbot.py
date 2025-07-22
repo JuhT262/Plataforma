@@ -733,39 +733,7 @@ class UiService:
         call_container = st.empty()
         
         # HTML com animação completa
-        call_container.markdown(f"""
-    <style>
-        @keyframes shake {{
-            0% {{ transform: rotate(-5deg); }}
-            100% {{ transform: rotate(5deg); }}
-        }}
-        .phone-icon {{
-            font-size: 3rem;
-            display: inline-block;
-            animation: shake 0.5s infinite alternate;
-            transform-origin: center bottom;
-            filter: drop-shadow(0 0 5px rgba(255, 102, 179, 0.7));
-        }}
-        .online-indicator {{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 15px;
-        }}
-        .dot-pulse {{
-            width: 10px;
-            height: 10px;
-            background: #4CAF50;
-            border-radius: 50%;
-            animation: dot-pulse 1.5s infinite;
-        }}
-        @keyframes dot-pulse {{
-            0%, 100% {{ transform: scale(1); opacity: 1; }}
-            50% {{ transform: scale(1.2); opacity: 0.8; }}
-        }}
-    </style>
-    
+        call_container.markdown("""
     <div style="
         position: relative;
         background: linear-gradient(135deg, #1e0033, #3c0066);
@@ -777,22 +745,42 @@ class UiService:
         border: 2px solid #ff66b3;
         text-align: center;
         color: white;
-        overflow: hidden;
     ">
-        <!-- Ícone animado -->
-        <div class="phone-icon">📱</div>
+        <div style="
+            font-size: 3rem;
+            display: inline-block;
+            animation: shake 0.5s infinite alternate;
+            transform-origin: center bottom;
+        ">📱</div>
         
         <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>
         
-        <!-- Indicador de status -->
-        <div class="online-indicator">
-            <div class="dot-pulse"></div>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
+            <div style="
+                width: 10px;
+                height: 10px;
+                background: #4CAF50;
+                border-radius: 50%;
+                animation: pulse 1.5s infinite;
+            "></div>
             <span style="font-size: 0.9rem;">Online agora</span>
         </div>
     </div>
+    
+    <style>
+        @keyframes shake {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+    </style>
     """, unsafe_allow_html=True)
     
-    time.sleep(LIGANDO_DELAY)
+    time.sleep(5)
+    call_container.empty()
 
     <style>
             @keyframes pulse-ring {{
