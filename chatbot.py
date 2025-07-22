@@ -4325,25 +4325,22 @@ class UiService:
     
             st.markdown("---")
             
-            menu_options = {
-                'pt': {
-                    "Início 🏠": "home",
-                    "Galeria Privada 📸": "gallery",
-                    "Mensagens 💬": "messages",
-                    "Ofertas Especiais 🎁": "offers"
-            }}
-            
-            current_menu = menu_options.get(lang, menu_options['pt'])
-            
-            st.markdown(f"### {TranslationService.translate_text('Menu Exclusivo', lang)}")
-            
-            for option, page in current_menu.items():
-                if st.button(option, use_container_width=True, key=f"sidebar_menu_{page}"):
-                    if st.session_state.current_page != page:
-                        st.session_state.current_page = page
-                        st.session_state.last_action = f"page_change_to_{page}"
-                        save_persistent_data()
-                        st.rerun()
+           menu_options = {
+            "Início 🏠": "home",
+            "Galeria Privada 📸": "gallery",
+            "Mensagens 💬": "messages",
+            "Ofertas Especiais 🎁": "offers"
+        }
+
+        for idx, (option, page) in enumerate(menu_options.items()):
+            if st.button(option, 
+                        use_container_width=True, 
+                        key=f"sidebar_menu_{page}_{idx}"):  # Chave única com índice
+                if st.session_state.current_page != page:
+                    st.session_state.current_page = page
+                    st.session_state.last_action = f"page_change_to_{page}"
+                    save_persistent_data()
+                    st.rerun()
     
             st.markdown("---")
             st.markdown(f"### {TranslationService.translate_text('Sua Conta', lang)}")
