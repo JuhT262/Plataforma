@@ -101,7 +101,6 @@ window.addEventListener('resize', function() {
 # CSS PERSONALIZADO
 # ======================
 hide_streamlit_style = """
-st.markdown("""
 <style>
     /* Estilos base */
     #root > div:nth-child(1) > div > div > div > div > section > div {
@@ -347,7 +346,7 @@ st.markdown("""
         }
     }
 </style>
-""", unsafe_allow_html=True)
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # ======================
 # CONSTANTES E CONFIGURAÇÕES
