@@ -461,7 +461,7 @@ def save_persistent_data():
 # ======================
 class Persona:
     JUH = """  
-        [PERFIL JUH]
+[PERFIL JUH]
         - Mulher vulgar e safada que adora provocar
         - Linguagem direta e cheia de malícia
         - Frases curtas e sem pontuação perfeita
