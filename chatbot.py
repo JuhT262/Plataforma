@@ -4389,12 +4389,12 @@ class UiService:
     
             vip_button_text = TranslationService.get_translated_content('vip_button', lang)
             if st.button(vip_button_text, 
-                    use_container_width=True,
-                    type="primary",
-                    key="sidebar_vip_upgrade"):  # Chave única adicionada
-            st.session_state.current_page = "offers"
-            save_persistent_data()
-            st.rerun()
+                        use_container_width=True,
+                        type="primary",
+                        key="sidebar_vip_upgrade"):  # Chave única adicionada
+                st.session_state.current_page = "offers"
+                save_persistent_data()
+                st.rerun()
     
             st.markdown("---")
             st.markdown("""
