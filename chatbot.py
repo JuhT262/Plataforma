@@ -18,12 +18,7 @@ from datetime import datetime
 # ======================
 # CONFIGURAÇÃO INICIAL DO STREAMLIT
 # ======================
-# Configurações de performance
-st.set_option('client.caching', 'true')
-st.set_option('client.showErrorDetails', 'false')
-st.set_option('server.enableCORS', 'false')
-st.set_option('server.enableXsrfProtection', 'false')
-
+# Configurações de performance - REMOVIDO st.set_option() não reconhecido
 st.set_page_config(
     page_title="Juh Premium",
     page_icon="😍",
@@ -89,14 +84,6 @@ hide_streamlit_style = """
         padding-top: 0.5rem !important;
         padding-left: 1rem !important;
         padding-right: 1rem !important;
-    }
-
-    div[data-testid="stToolbar"],
-    div[data-testid="stDecoration"],
-    div[data-testid="stStatusWidget"],
-    #MainMenu, header, footer,
-    .stDeployButton {
-        display: none !important;
     }
 
     img, .stImage img {
