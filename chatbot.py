@@ -4348,19 +4348,7 @@ class UiService:
                     "Galeria Privada 📸": "gallery",
                     "Mensagens 💬": "messages",
                     "Ofertas Especiais 🎁": "offers"
-                },
-                'en': {
-                    "Home 🏠": "home",
-                    "Private Gallery 📸": "gallery",
-                    "Messages 💬": "messages",
-                    "Special Offers 🎁": "offers"
-                },
-                'es': {
-                    "Inicio 🏠": "home",
-                    "Galería Privada 📸": "gallery",
-                    "Mensajes 💬": "messages",
-                    "Ofertas Especiales 🎁": "offers"
-                }
+                
             }
             
             current_menu = menu_options.get(lang, menu_options['pt'])
