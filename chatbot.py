@@ -11,12 +11,10 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
-from datetime import datetime
 
 # ======================
-# CONFIGURAÇÃO INICIAL DO STREAMLIT
+# CONFIGURAÇÃO INICIAL
 # ======================
-# Configurações de performance
 st._config.set_option('client.caching', 'true')
 st._config.set_option('client.showErrorDetails', 'false')
 st._config.set_option('server.enableCORS', 'false')
@@ -29,7 +27,79 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS customizado com melhorias para mobile e desktop
+# ======================
+# SCRIPTS ESSENCIAIS
+# ======================
+st.markdown("""
+<script>
+// Função para abrir links corretamente em mobile
+function handleMobileLinks() {
+    if (window.innerWidth <= 768) {
+        document.querySelectorAll('a[href^="http"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.top.location.href = this.href;
+            });
+        });
+    }
+}
+
+// Configura o menu mobile
+function setupMobileMenu() {
+    if (window.innerWidth <= 768) {
+        if (!document.querySelector('.mobile-menu-button')) {
+            const menuBtn = document.createElement("div");
+            menuBtn.className = "mobile-menu-button";
+            menuBtn.innerHTML = "☰";
+            document.body.appendChild(menuBtn);
+            
+            const overlay = document.createElement("div");
+            overlay.className = "sidebar-overlay";
+            document.body.appendChild(overlay);
+            
+            const sidebar = document.querySelector('[data-testid="stSidebar"]');
+            
+            menuBtn.addEventListener('click', function() {
+                const isOpen = sidebar.style.transform !== 'translateX(0px)';
+                sidebar.style.transform = isOpen ? 'translateX(0px)' : 'translateX(-100%)';
+                overlay.style.display = isOpen ? 'block' : 'none';
+                menuBtn.innerHTML = isOpen ? '✕' : '☰';
+            });
+            
+            overlay.addEventListener('click', function() {
+                sidebar.style.transform = 'translateX(-100%)';
+                overlay.style.display = 'none';
+                menuBtn.innerHTML = '☰';
+            });
+        }
+    } else {
+        const menuBtn = document.querySelector('.mobile-menu-button');
+        const overlay = document.querySelector('.sidebar-overlay');
+        if (menuBtn) menuBtn.remove();
+        if (overlay) overlay.remove();
+        
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) sidebar.style.transform = '';
+    }
+}
+
+// Executa quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+    handleMobileLinks();
+    setupMobileMenu();
+});
+
+// Re-executa quando a janela é redimensionada
+window.addEventListener('resize', function() {
+    handleMobileLinks();
+    setupMobileMenu();
+});
+</script>
+""", unsafe_allow_html=True)
+
+# ======================
+# CSS PERSONALIZADO
+# ======================
 hide_streamlit_style = """
 <style>
     /* Estilos base */
@@ -108,6 +178,10 @@ hide_streamlit_style = """
     }
 
     /* Sidebar */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
+        border-right: 1px solid #ff66b3 !important;
+    }
     [data-testid="stSidebar"] img {
         border-radius: 50% !important;
         border: 2px solid #ff66b3;
@@ -132,10 +206,25 @@ hide_streamlit_style = """
         0% { transform: rotate(-5deg); }
         100% { transform: rotate(5deg); }
     }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.8; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-20px); }
+        60% { transform: translateY(-10px); }
+    }
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
 
-    
-
-    * ========== MEDIA QUERIES PARA MOBILE ========== */
+    /* ========== MOBILE ========== */
     @media (max-width: 768px) {
         /* Layout geral */
         .package-container,
@@ -161,18 +250,17 @@ hide_streamlit_style = """
             padding: 0.2rem !important;
         }
         
-        /* Mensagens do chat */
+        /* Chat */
+        .chat-header {
+            padding: 10px !important;
+            font-size: 1.2em !important;
+        }
         .stChatMessage {
             max-width: 85% !important;
             font-size: 14px !important;
         }
         
-        /* Imagens */
-        .stImage img {
-            max-height: 200px !important;
-        }
-        
-        /* Input do chat - Versão Corrigida */
+        /* Input do chat */
         [data-testid="stChatInput"] {
             position: fixed !important;
             bottom: 30px !important;
@@ -187,7 +275,6 @@ hide_streamlit_style = """
             z-index: 100;
             box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
         }
-        
         [data-testid="stChatInput"] button {
             position: absolute !important;
             right: 15px !important;
@@ -199,45 +286,19 @@ hide_streamlit_style = """
             border-radius: 50% !important;
             background: #ff1493 !important;
         }
-        
-        [data-testid="stChatInput"] button svg {
-            margin: 0 auto !important;
-        }
-        
         [data-testid="stChatInput"] textarea {
             padding-right: 50px !important;
             min-height: 50px !important;
         }
         
-        .stApp > div {
-            padding-bottom: 150px !important;
+        /* Efeito de chamada */
+        .phone-call-container {
+            width: 90% !important;
+            padding: 20px !important;
+            margin: 20px auto !important;
         }
-        
-        /* Mantenha as otimizações de performance */
-        * {
-            animation: none !important;
-            transition: none !important;
-        }
-        
-        /* Cabeçalho do chat */
-        .chat-header {
-            padding: 10px !important;
-            font-size: 1.2em !important;
-        }
-        
-        /* Espaçamento */
-        [data-testid="stVerticalBlock"] {
-            gap: 0.2rem !important;
-        }
-        
-        /* Sidebar mobile */
-        [data-testid="stSidebar"] {
-            top: 0 !important;
-            height: 100vh !important;
-            position: fixed !important;
-            z-index: 1000;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
+        .phone-icon {
+            font-size: 2.5rem !important;
         }
         
         /* Menu mobile */
@@ -258,8 +319,6 @@ hide_streamlit_style = """
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             border: 2px solid white;
         }
-        
-        /* Overlay para menu mobile */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -270,125 +329,20 @@ hide_streamlit_style = """
             z-index: 999;
             display: none;
         }
+        [data-testid="stSidebar"] {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
         
-        /* Ajustes específicos para iOS */
-        @supports (-webkit-touch-callout: none) {
-            [data-testid="stChatInput"] textarea {
-                font-size: 16px !important;
-                min-height: 50px !important;
-            }
+        /* Links de pacotes */
+        .package-link {
+            display: block !important;
+            padding: 12px !important;
+            font-size: 14px !important;
         }
     }
 </style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-# Script para controle do menu mobile e melhorias mobile
-st.markdown("""
-<script>
-// Função para configurar o menu mobile
-function setupMobileMenu() {
-    if (window.innerWidth <= 768) {
-        if (!document.querySelector('.mobile-menu-button')) {
-            const menuBtn = document.createElement("div");
-            menuBtn.className = "mobile-menu-button";
-            menuBtn.innerHTML = "☰";
-            document.body.appendChild(menuBtn);
-            
-            const overlay = document.createElement("div");
-            overlay.className = "sidebar-overlay";
-            document.body.appendChild(overlay);
-            
-            const sidebar = document.querySelector('[data-testid="stSidebar"]');
-            
-            menuBtn.addEventListener('click', function() {
-                const isOpen = sidebar.style.transform !== 'translateX(0px)';
-                sidebar.style.transform = isOpen ? 'translateX(0px)' : 'translateX(-100%)';
-                overlay.style.display = isOpen ? 'block' : 'none';
-                menuBtn.innerHTML = isOpen ? '✕' : '☰';
-            });
-            
-            overlay.addEventListener('click', function() {
-                sidebar.style.transform = 'translateX(-100%)';
-                overlay.style.display = 'none';
-                menuBtn.innerHTML = '☰';
-            });
-        }
-    } else {
-        const menuBtn = document.querySelector('.mobile-menu-button');
-        const overlay = document.querySelector('.sidebar-overlay');
-        if (menuBtn) menuBtn.remove();
-        if (overlay) overlay.remove();
-        
-        const sidebar = document.querySelector('[data-testid="stSidebar"]');
-        if (sidebar) sidebar.style.transform = '';
-    }
-}
-
-// Configura o menu quando a página carrega
-document.addEventListener('DOMContentLoaded', function() {
-    setupMobileMenu();
-    
-    // Ajuste do chat input em mobile
-    if (window.innerWidth <= 768) {
-        const adjustChatInput = () => {
-            const chatInput = document.querySelector('[data-testid="stChatInput"]');
-            if (chatInput) {
-                chatInput.addEventListener('focus', function() {
-                    setTimeout(() => {
-                        window.scrollTo({
-                            top: document.body.scrollHeight,
-                            behavior: 'smooth'
-                        });
-                        document.documentElement.style.setProperty(
-                            '--mobile-padding-bottom', '250px'
-                        );
-                    }, 300);
-                });
-            }
-        };
-        adjustChatInput();
-    }
-});
-
-// Reconfigura quando a janela é redimensionada
-window.addEventListener('resize', function() {
-    setupMobileMenu();
-});
-
-// ===== SOLUÇÕES PARA MOBILE ===== //
-// Corrige clique em botões e links
-document.addEventListener('click', function(e) {
-    if (window.innerWidth <= 768) {
-        // Links
-        if (e.target.closest('a[href^="http"]')) {
-            e.preventDefault();
-            window.top.location.href = e.target.closest('a').href;
-            return;
-        }
-        
-        // Botões
-        const button = e.target.closest('button');
-        if (button) {
-            button.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                button.style.transform = '';
-                if (button.onclick) button.onclick();
-            }, 200);
-        }
-    }
-}, true);
-
-// Garante que os links abram corretamente
-document.querySelectorAll('a[href^="http"]').forEach(link => {
-    link.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768) {
-            e.preventDefault();
-            window.top.location.href = this.href;
-        }
-    });
-});
-</script>
 """, unsafe_allow_html=True)
 
 # ======================
@@ -412,14 +366,14 @@ class Config:
     IMG_PROFILE = ("https://i.ibb.co/s9GgDRmP/Swapfaces-AI-091e78d3-634f-4a01-9676-8d62385a06f9.png"
                   "?w=200&h=200&fit=crop")
     IMG_GALLERY = [
-        f"https://i.ibb.co/xtt4yMMM/Swapfaces-AI-2a6a4421-008f-411b-874c-a32e1cdbe892.png?w=300&h=300&fit=crop",
-        f"https://i.ibb.co/7JXFKM5H/Swapfaces-AI-e0167c19-a9b9-46a3-acf0-f82f6f2eefab.png?w=300&h=300&fit=crop",
-        f"https://i.ibb.co/bgRwyQ7R/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png?w=300&h=300&fit=crop"
+        "https://i.ibb.co/xtt4yMMM/Swapfaces-AI-2a6a4421-008f-411b-874c-a32e1cdbe892.png?w=300&h=300&fit=crop",
+        "https://i.ibb.co/7JXFKM5H/Swapfaces-AI-e0167c19-a9b9-46a3-acf0-f82f6f2eefab.png?w=300&h=300&fit=crop",
+        "https://i.ibb.co/bgRwyQ7R/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png?w=300&h=300&fit=crop"
     ]
     IMG_HOME_PREVIEWS = [
-        f"https://i.ibb.co/Z17qTBfm/7.png?w=300&h=300&fit=crop",
-        f"https://i.ibb.co/BVjZQBmx/Juh.png?w=300&h=300&fit=crop",
-        f"https://i.ibb.co/4ZsXW2WK/image-1.png?w=300&h=300&fit=crop"
+        "https://i.ibb.co/Z17qTBfm/7.png?w=300&h=300&fit=crop",
+        "https://i.ibb.co/BVjZQBmx/Juh.png?w=300&h=300&fit=crop",
+        "https://i.ibb.co/4ZsXW2WK/image-1.png?w=300&h=300&fit=crop"
     ]
     LOGO_URL = "https://i.ibb.co/LX7x3tcB/Logo-Golden-Pepper-Letreiro-1.png"
 
@@ -734,94 +688,122 @@ class UiService:
         
         # CSS inline para garantir que seja aplicado
         call_container.markdown("""
-        <style>
-            @keyframes shake {
-                0% { transform: rotate(-5deg); }
-                100% { transform: rotate(5deg); }
-            }
-            @keyframes pulse {
-                0%, 100% { transform: scale(1); opacity: 1; }
-                50% { transform: scale(1.2); opacity: 0.8; }
-            }
-            .phone-call-container {
-                position: relative;
-                background: linear-gradient(135deg, #1e0033, #3c0066);
-                border-radius: 20px;
-                padding: 30px;
-                max-width: 300px;
-                margin: 0 auto;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                border: 2px solid #ff66b3;
-                text-align: center;
-                color: white;
-            }
-            .phone-icon {
+        <div class="phone-call-container" style="
+            position: relative;
+            background: linear-gradient(135deg, #1e0033, #3c0066);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 300px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 2px solid #ff66b3;
+            text-align: center;
+            color: white;
+        ">
+            <!-- Efeito de onda pulsante -->
+            <div style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 100px;
+                height: 100px;
+                background: rgba(255, 102, 179, 0.3);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                animation: pulse-ring 2s infinite;
+            "></div>
+            <div style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 100px;
+                height: 100px;
+                background: rgba(255, 102, 179, 0.3);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                animation: pulse-ring 2s infinite;
+                animation-delay: 0.66s;
+            "></div>
+            <div style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 100px;
+                height: 100px;
+                background: rgba(255, 102, 179, 0.3);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                animation: pulse-ring 2s infinite;
+                animation-delay: 1.33s;
+            "></div>
+            
+            <!-- Ícone animado -->
+            <div class="phone-icon" style="
                 font-size: 3rem;
                 display: inline-block;
                 animation: shake 0.5s infinite alternate;
                 transform-origin: center bottom;
                 filter: drop-shadow(0 0 5px rgba(255, 102, 179, 0.7));
-            }
-            .online-indicator {
+            ">📱</div>
+            
+            <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>
+            
+            <!-- Indicador de status -->
+            <div class="online-indicator" style="
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 gap: 8px;
                 margin-top: 15px;
-            }
-            .dot-pulse {
-                width: 10px;
-                height: 10px;
-                background: #4CAF50;
-                border-radius: 50%;
-                animation: pulse 1.5s infinite;
-            }
-        </style>
-        
-        <div class="phone-call-container">
-            <div class="phone-icon">📱</div>
-            <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>
-            <div class="online-indicator">
-                <div class="dot-pulse"></div>
+            ">
+                <div class="dot-pulse" style="
+                    width: 10px;
+                    height: 10px;
+                    background: #4CAF50;
+                    border-radius: 50%;
+                    animation: dot-pulse 1.5s infinite;
+                "></div>
                 <span style="font-size: 0.9rem;">Online agora</span>
             </div>
         </div>
+
+        <style>
+            @keyframes pulse-ring {
+                0% { transform: scale(0.8); opacity: 0.8; }
+                100% { transform: scale(1.5); opacity: 0; }
+            }
+            @keyframes shake {
+                0% { transform: rotate(-5deg); }
+                100% { transform: rotate(5deg); }
+            }
+            @keyframes dot-pulse {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.2); opacity: 0.8; }
+            }
+        </style>
         """, unsafe_allow_html=True)
         
         time.sleep(LIGANDO_DELAY)
         
         # Tela de chamada atendida
         call_container.markdown("""
-        <style>
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes bounce {
-                0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-                40% { transform: translateY(-20px); }
-                60% { transform: translateY(-10px); }
-            }
-            @keyframes blink {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0; }
-            }
-            .call-answered {
-                background: linear-gradient(135deg, #1e0033, #3c0066);
-                border-radius: 20px;
-                padding: 30px;
-                max-width: 300px;
-                margin: 0 auto;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                border: 2px solid #4CAF50;
-                text-align: center;
-                color: white;
-                animation: fadeIn 0.5s;
-            }
-        </style>
-        
-        <div class="call-answered">
-            <div style="font-size: 3rem; color: #4CAF50; animation: bounce 0.5s;">✓</div>
+        <div style="
+            background: linear-gradient(135deg, #1e0033, #3c0066);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 300px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 2px solid #4CAF50;
+            text-align: center;
+            color: white;
+            animation: fadeIn 0.5s;
+        ">
+            <div style="
+                font-size: 3rem;
+                color: #4CAF50;
+                animation: bounce 0.5s;
+            ">✓</div>
             <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
             <p style="font-size: 0.9rem; margin:0;">
                 Juh está te esperando... 
@@ -2086,24 +2068,8 @@ def main():
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
             border-right: 1px solid #ff66b3 !important;
-            overflow: auto !important;
-            z-index: 2 !important;
         }
         .stButton button {
-            background: rgba(255, 20, 147, 0.2) !important;
-            color: white !important;
-            border: 1px solid #ff66b3 !important;
-            transition: all 0.3s !important;
-        }
-        .stButton button:hover {
-            background: rgba(255, 20, 147, 0.4) !important;
-            transform: translateY(-2px) !important;
-        }
-        [data-testid="stChatInput"] {
-            background: rgba(255, 102, 179, 0.1) !important;
-            border: 1px solid #ff66b3 !important;
-        }
-        div.stButton > button:first-child {
             background: linear-gradient(45deg, #ff1493, #9400d3) !important;
             color: white !important;
             border: none !important;
@@ -2113,7 +2079,7 @@ def main():
             transition: all 0.3s !important;
             box-shadow: 0 4px 8px rgba(255, 20, 147, 0.3) !important;
         }
-        div.stButton > button:first-child:hover {
+        .stButton button:hover {
             transform: translateY(-2px) !important;
             box-shadow: 0 6px 12px rgba(255, 20, 147, 0.4) !important;
         }
@@ -2143,13 +2109,13 @@ def main():
     if not st.session_state.chat_started:
         col1, col2, col3 = st.columns([1,3,1])
         with col2:
-            st.markdown("""
+            st.markdown(f"""
             <div style="text-align: center; margin: 50px 0;">
-                <img src="{profile_img}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
+                <img src="{Config.IMG_PROFILE}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
                 <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
                 <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
             </div>
-            """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
             
             if st.button("Iniciar Conversa", type="primary", use_container_width=True):
                 st.session_state.update({
