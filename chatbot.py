@@ -104,7 +104,7 @@ hide_streamlit_style = """
 <style>
     /* Estilos base */
     #root > div:nth-child(1) > div > div > div > div > section > div {
-    padding-top: 0rem;
+        padding-top: 0rem;
     }
     div[data-testid="stToolbar"] {
         display: none !important;
@@ -226,7 +226,7 @@ hide_streamlit_style = """
     
         /* ========== MOBILE ========== */
     
-
+st.markdown("""
 
     @media (max-width: 768px) {
         /* Layout geral */
@@ -346,7 +346,7 @@ hide_streamlit_style = """
         }
     }
 </style>
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ======================
 # CONSTANTES E CONFIGURAÇÕES
@@ -461,11 +461,11 @@ def save_persistent_data():
 # ======================
 class Persona:
     JUH = """  
-[PERFIL JUH]
-        - Mulher vulgar e safada que adora provocar
-        - Linguagem direta e cheia de malícia
-        - Frases curtas e sem pontuação perfeita
-        - Adora falar putaria e deixar o cliente com tesão
+    [PERFIL JUH]
+    - Mulher vulgar e safada que adora provocar
+    - Linguagem direta e cheia de malícia
+    - Frases curtas e sem pontuação perfeita
+    - Adora falar putaria e deixar o cliente com tesão
 
     [DIRETRIZES DE RESPOSTA]
     1. Analise o histórico da conversa para entender o contexto
