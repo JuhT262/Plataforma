@@ -726,14 +726,14 @@ class UiService:
         """
 
     @staticmethod
-    def show_call_effect():
-        LIGANDO_DELAY = 5
-        ATENDIDA_DELAY = 3
+def show_call_effect():
+    LIGANDO_DELAY = 5
+    ATENDIDA_DELAY = 3
 
-        call_container = st.empty()
-        
-        # HTML com animação completa
-        call_container.markdown("""
+    call_container = st.empty()
+    
+    # Primeira tela - Ligando
+    call_container.markdown("""
     <div style="
         position: relative;
         background: linear-gradient(135deg, #1e0033, #3c0066);
@@ -745,145 +745,131 @@ class UiService:
         border: 2px solid #ff66b3;
         text-align: center;
         color: white;
+        overflow: hidden;
     ">
-        <div style="
-            font-size: 3rem;
-            display: inline-block;
-            animation: shake 0.5s infinite alternate;
-            transform-origin: center bottom;
-        ">📱</div>
+        <!-- Efeito de onda pulsante -->
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring delay-1"></div>
+        <div class="pulse-ring delay-2"></div>
+        
+        <!-- Ícone animado -->
+        <div class="phone-icon">📱</div>
         
         <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>
         
-        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
-            <div style="
-                width: 10px;
-                height: 10px;
-                background: #4CAF50;
-                border-radius: 50%;
-                animation: pulse 1.5s infinite;
-            "></div>
+        <!-- Indicador de status -->
+        <div class="online-indicator">
+            <div class="dot-pulse"></div>
             <span style="font-size: 0.9rem;">Online agora</span>
         </div>
     </div>
-    
+
     <style>
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
         @keyframes shake {
             0% { transform: rotate(-5deg); }
             100% { transform: rotate(5deg); }
         }
-        @keyframes pulse {
+        
+        @keyframes dot-pulse {
             0%, 100% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.2); opacity: 0.8; }
+        }
+        
+        .pulse-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 102, 179, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse-ring 2s infinite;
+        }
+        
+        .delay-1 { animation-delay: 0.66s; }
+        .delay-2 { animation-delay: 1.33s; }
+        
+        .online-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .dot-pulse {
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: dot-pulse 1.5s infinite;
+        }
+        
+        .phone-icon {
+            font-size: 3rem;
+            display: inline-block;
+            animation: shake 0.5s infinite alternate;
+            transform-origin: center bottom;
+            filter: drop-shadow(0 0 5px rgba(255, 102, 179, 0.7));
         }
     </style>
     """, unsafe_allow_html=True)
     
-    time.sleep(5)
-    call_container.empty()
-
-    <style>
-            @keyframes pulse-ring {{
-                0% {{ transform: scale(0.8); opacity: 0.8; }}
-                100% {{ transform: scale(1.5); opacity: 0; }}
-            }}
-            
-            @keyframes shake {{
-                0% {{ transform: rotate(-5deg); }}
-                100% {{ transform: rotate(5deg); }}
-            }}
-            
-            @keyframes dot-pulse {{
-                0%, 100% {{ transform: scale(1); opacity: 1; }}
-                50% {{ transform: scale(1.2); opacity: 0.8; }}
-            }}
-            
-            .pulse-ring {{
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 100px;
-                height: 100px;
-                background: rgba(255, 102, 179, 0.3);
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
-                animation: pulse-ring 2s infinite;
-            }}
-            
-            .delay-1 {{ animation-delay: 0.66s; }}
-            .delay-2 {{ animation-delay: 1.33s; }}
-            
-            .online-indicator {{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                margin-top: 15px;
-            }}
-            
-            .dot-pulse {{
-                width: 10px;
-                height: 10px;
-                background: #4CAF50;
-                border-radius: 50%;
-                animation: dot-pulse 1.5s infinite;
-            }}
-            
-            .phone-icon {{
-                filter: drop-shadow(0 0 5px rgba(255, 102, 179, 0.7));
-            }}
-        </style>
-        """, unsafe_allow_html=True)
-        
-        time.sleep(LIGANDO_DELAY)
-        
-        # Tela de chamada atendida
-        call_container.markdown(f"""
+    time.sleep(LIGANDO_DELAY)
+    
+    # Segunda tela - Chamada atendida
+    call_container.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #1e0033, #3c0066);
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 300px;
+        margin: 0 auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: 2px solid #4CAF50;
+        text-align: center;
+        color: white;
+        animation: fadeIn 0.5s;
+    ">
         <div style="
-            background: linear-gradient(135deg, #1e0033, #3c0066);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 300px;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 2px solid #4CAF50;
-            text-align: center;
-            color: white;
-            animation: fadeIn 0.5s;
-        ">
-            <div style="
-                font-size: 3rem;
-                color: #4CAF50;
-                animation: bounce 0.5s;
-            ">✓</div>
-            <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
-            <p style="font-size: 0.9rem; margin:0;">
-                Juh está te esperando... 
-                <span class="blink" style="animation: blink 1s infinite;">|</span>
-            </p>
-        </div>
+            font-size: 3rem;
+            color: #4CAF50;
+            animation: bounce 0.5s;
+        ">✓</div>
+        <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
+        <p style="font-size: 0.9rem; margin:0;">
+            Juh está te esperando... 
+            <span class="blink" style="animation: blink 1s infinite;">|</span>
+        </p>
+    </div>
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         
-        <style>
-            @keyframes fadeIn {{
-                from {{ opacity: 0; transform: translateY(10px); }}
-                to {{ opacity: 1; transform: translateY(0); }}
-            }}
-            
-            @keyframes bounce {{
-                0%, 20%, 50%, 80%, 100% {{ transform: translateY(0); }}
-                40% {{ transform: translateY(-20px); }}
-                60% {{ transform: translateY(-10px); }}
-            }}
-            
-            @keyframes blink {{
-                0%, 100% {{ opacity: 1; }}
-                50% {{ opacity: 0; }}
-            }}
-        </style>
-        """, unsafe_allow_html=True)
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
         
-        time.sleep(ATENDIDA_DELAY)
-        call_container.empty()
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    time.sleep(ATENDIDA_DELAY)
+    call_container.empty()
 
     @staticmethod
     def show_status_effect(container, status_type):
