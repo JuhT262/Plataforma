@@ -1989,13 +1989,13 @@ def main():
         """, unsafe_allow_html=True)
 
         if st.button("Tornar-se VIP", 
-                    key="vip_button_gallery", 
+                    key="vip_button_gallery_2", 
                     use_container_width=True,
                     type="primary"):
             st.session_state.current_page = "offers"
             st.rerun()
         
-        if st.button("Voltar ao chat", key="back_from_gallery"):
+        if st.button("Voltar ao chat", key="back_from_gallery_2"):
             st.session_state.current_page = "chat"
             save_persistent_data()
             st.rerun()
@@ -2070,7 +2070,7 @@ class NewPages:
             save_persistent_data()
             st.rerun()
 
-        if st.button("Voltar ao chat", key="back_from_home"):
+        if st.button("Voltar ao chat", key="back_from_home_2"):
             st.session_state.current_page = "chat"
             save_persistent_data()
             st.rerun()
@@ -2408,7 +2408,7 @@ class NewPages:
                 </div>
                 """, unsafe_allow_html=True)
 
-        if st.button("Voltar ao chat", key="back_from_offers"):
+        if st.button("Voltar ao chat", key="back_from_offers_2"):
             st.session_state.current_page = "chat"
             save_persistent_data()
             st.rerun()
@@ -2603,7 +2603,7 @@ class ChatService:
             save_persistent_data()
             st.rerun()
     
-        user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
+        user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input_2")
     
         if user_input:
             cleaned_input = ChatService.validate_input(user_input)
@@ -4418,22 +4418,22 @@ class UiService:
         current_shortcuts = shortcuts.get(lang, shortcuts['pt'])
         
         with cols[0]:
-            if st.button(current_shortcuts[0], key="shortcut_home", use_container_width=True):
+            if st.button(current_shortcuts[0], key="shortcut_home_2", use_container_width=True):
                 st.session_state.current_page = "home"
                 save_persistent_data()
                 st.rerun()
         with cols[1]:
-            if st.button(current_shortcuts[1], key="shortcut_gallery", use_container_width=True):
+            if st.button(current_shortcuts[1], key="shortcut_gallery_2", use_container_width=True):
                 st.session_state.current_page = "gallery"
                 save_persistent_data()
                 st.rerun()
         with cols[2]:
-             if st.button(current_shortcuts[2], key="shortcut_offers", use_container_width=True):
+             if st.button(current_shortcuts[2], key="shortcut_offers_2", use_container_width=True):
                  st.session_state.current_page = "offers"
                  save_persistent_data()
                  st.rerun()
         with cols[3]:
-            if st.button(current_shortcuts[3], key="shortcut_vip", use_container_width=True):
+            if st.button(current_shortcuts[3], key="shortcut_vip_2", use_container_width=True):
                 st.session_state.current_page = "offers"
                 save_persistent_data()
                 st.rerun()
@@ -4566,13 +4566,13 @@ class UiService:
         """, unsafe_allow_html=True)
 
         if st.button(vip_button, 
-                    key="vip_button_gallery", 
+                    key="vip_button_gallery_3", 
                     use_container_width=True,
                     type="primary"):
             st.session_state.current_page = "offers"
             st.rerun()
         
-        if st.button(back_button, key="back_from_gallery"):
+        if st.button(back_button, key="back_from_gallery_3"):
             st.session_state.current_page = "chat"
             save_persistent_data()
             st.rerun()
@@ -4646,7 +4646,7 @@ class NewPages:
             save_persistent_data()
             st.rerun()
 
-        if st.button(back_button, key="back_from_home"):
+        if st.button(back_button, key="back_from_home_3"):
             st.session_state.current_page = "chat"
             save_persistent_data()
             st.rerun()
@@ -4676,7 +4676,7 @@ class NewPages:
             </div>
             """, unsafe_allow_html=True)
             
-            if st.button(TranslationService.translate_text("Back to chat", lang), key="back_from_offers"):
+            if st.button(TranslationService.translate_text("Back to chat", lang), key="back_from_offers_3"):
                 st.session_state.current_page = "chat"
                 save_persistent_data()
                 st.rerun()
@@ -5027,7 +5027,7 @@ class NewPages:
                 </div>
                 """, unsafe_allow_html=True)
 
-        if st.button(back_button, key="back_from_offers"):
+        if st.button(back_button, key="back_from_offers_4"):
             st.session_state.current_page = "chat"
             save_persistent_data()
             st.rerun()
@@ -5185,7 +5185,7 @@ class ChatService:
         lang = st.session_state.get('language', 'pt')
         placeholder = TranslationService.get_translated_content('chat_input_placeholder', lang)
         
-        user_input = st.chat_input(placeholder, key="chat_input")
+        user_input = st.chat_input(placeholder, key="chat_input_3")
     
         if user_input:
             cleaned_input = ChatService.validate_input(user_input)
