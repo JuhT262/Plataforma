@@ -19,10 +19,10 @@ from datetime import datetime
 # CONFIGURAÇÃO INICIAL DO STREAMLIT
 # ======================
 # Configurações de performance
-st._config.set_option('client.caching', 'true')
-st._config.set_option('client.showErrorDetails', 'false')
-st._config.set_option('server.enableCORS', 'false')
-st._config.set_option('server.enableXsrfProtection', 'false')
+st.set_option('client.caching', 'true')
+st.set_option('client.showErrorDetails', 'false')
+st.set_option('server.enableCORS', 'false')
+st.set_option('server.enableXsrfProtection', 'false')
 
 st.set_page_config(
     page_title="Juh Premium",
@@ -107,7 +107,7 @@ hide_streamlit_style = """
     }
 
     [data-testid="stSidebar"] img {
-        border-radius: 50 !important;
+        border-radius: 50% !important;
         border: 2px solid #ff66b3;
         width: 80px !important;
         height: 80px !important;
@@ -243,11 +243,7 @@ class PersistentState:
 
 def get_user_id():
     if 'user_id' not in st.session_state:
-        user_id = st.query_params.get('uid', [None])[0]
-        if not user_id:
-            user_id = str(uuid.uuid4())
-            st.query_params['uid'] = user_id
-        st.session_state.user_id = user_id
+        st.session_state.user_id = str(uuid.uuid4())
     return st.session_state.user_id
 
 def load_persistent_data():
@@ -280,7 +276,7 @@ def save_persistent_data():
 # MODELOS DE DADOS
 # ======================
 class Persona:
-    JUH = """  # Alterado de JUH para JUH
+    JUH = """
     [PERFIL JUH]
     - Mulher vulgar e safada que adora provocar
     - Linguagem direta e cheia de malícia
@@ -296,7 +292,7 @@ class Persona:
     1. Quando o histórico mostra clima sexual:
     Histórico:
     Cliente: sua buceta é rosinha?
-    Juh: adoro mostrar ela aberta  # Alterado de Juh para Juh
+    Juh: adoro mostrar ela aberta
     Cliente: quero ver
     Resposta: ```json
     {
@@ -326,7 +322,7 @@ class Persona:
     3. Quando o contexto não justifica CTA:
     Histórico:
     Cliente: oi
-    Juh: oi gato  # Alterado de Juh para Juh
+    Juh: oi gato
     Resposta: ```json
     {
       "text": "eai gostoso",
@@ -757,9 +753,9 @@ class UiService:
                 menuBtn.addEventListener('click', function() {
                     tooltip.style.display = tooltip.style.display === 'none' ? 'flex' : 'none';
                     menuBtn.innerHTML = menuBtn.innerHTML === '☰' ? '✕' : '☰';
-                
+                });
             }
-       
+        });
         </script>
         """, unsafe_allow_html=True)
 
