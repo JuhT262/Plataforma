@@ -734,40 +734,65 @@ class UiService:
         
         # HTML com animação completa
         call_container.markdown(f"""
-        <div style="
-            position: relative;
-            background: linear-gradient(135deg, #1e0033, #3c0066);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 300px;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 2px solid #ff66b3;
-            text-align: center;
-            color: white;
-            overflow: hidden;
-        ">
-            <!-- Efeito de onda pulsante -->
-            <div class="pulse-ring"></div>
-            <div class="pulse-ring delay-1"></div>
-            <div class="pulse-ring delay-2"></div>
-            
-            <!-- Ícone animado -->
-            <div class="phone-icon" style="
-                font-size: 3rem;
-                display: inline-block;
-                animation: shake 0.5s infinite alternate;
-                transform-origin: center bottom;
-            ">📱</div>
-            
-            <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>
-            
-            <!-- Indicador de status -->
-            <div class="online-indicator">
-                <div class="dot-pulse"></div>
-                <span style="font-size: 0.9rem;">Online agora</span>
-            </div>
+    <style>
+        @keyframes shake {{
+            0% {{ transform: rotate(-5deg); }}
+            100% {{ transform: rotate(5deg); }}
+        }}
+        .phone-icon {{
+            font-size: 3rem;
+            display: inline-block;
+            animation: shake 0.5s infinite alternate;
+            transform-origin: center bottom;
+            filter: drop-shadow(0 0 5px rgba(255, 102, 179, 0.7));
+        }}
+        .online-indicator {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }}
+        .dot-pulse {{
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: dot-pulse 1.5s infinite;
+        }}
+        @keyframes dot-pulse {{
+            0%, 100% {{ transform: scale(1); opacity: 1; }}
+            50% {{ transform: scale(1.2); opacity: 0.8; }}
+        }}
+    </style>
+    
+    <div style="
+        position: relative;
+        background: linear-gradient(135deg, #1e0033, #3c0066);
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 300px;
+        margin: 0 auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: 2px solid #ff66b3;
+        text-align: center;
+        color: white;
+        overflow: hidden;
+    ">
+        <!-- Ícone animado -->
+        <div class="phone-icon">📱</div>
+        
+        <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>
+        
+        <!-- Indicador de status -->
+        <div class="online-indicator">
+            <div class="dot-pulse"></div>
+            <span style="font-size: 0.9rem;">Online agora</span>
         </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    time.sleep(LIGANDO_DELAY)
 
         <style>
             @keyframes pulse-ring {{
