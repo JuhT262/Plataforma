@@ -226,9 +226,9 @@ hide_streamlit_style = """
     
         /* ========== MOBILE ========== */
     
-    st.markdown("""
+st.markdown("""
 
-@media (max-width: 768px) {
+    @media (max-width: 768px) {
         /* Layout geral */
         .package-container,
         [data-testid="stHorizontalBlock"] {
