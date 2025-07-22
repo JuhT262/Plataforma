@@ -101,6 +101,7 @@ window.addEventListener('resize', function() {
 # CSS PERSONALIZADO
 # ======================
 hide_streamlit_style = """
+st.markdown("""
 <style>
     /* Estilos base */
     #root > div:nth-child(1) > div > div > div > div > section > div {
@@ -226,7 +227,7 @@ hide_streamlit_style = """
     
         /* ========== MOBILE ========== */
     
-st.markdown("""
+
 
     @media (max-width: 768px) {
         /* Layout geral */
