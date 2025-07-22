@@ -145,7 +145,7 @@ hide_streamlit_style = """
         .stButton > button {
             font-size: 0.9rem !important;
             padding: 12px 16px !important;
-            min-height: 48px !important; /* Melhor para touch */
+            min-height: 48px !important;
         }
         
         /* Containers */
@@ -164,22 +164,20 @@ hide_streamlit_style = """
             max-height: 200px !important;
         }
         
-        /* Input do chat */
         /* Input do chat - Versão Corrigida */
         [data-testid="stChatInput"] {
             position: fixed !important;
-            bottom: 20px !important;
-            left: 0 !important;
-            right: 0 !important;
-            padding: 12px !important;
-            margin: 0 10px !important;
+            bottom: 30px !important;
+            left: 10px !important;
+            right: 10px !important;
+            padding: 15px !important;
             width: calc(100% - 20px) !important;
             box-sizing: border-box !important;
-            background: rgba(30, 0, 51, 0.95) !important;
+            background: rgba(30, 0, 51, 0.98) !important;
             backdrop-filter: blur(5px);
-            border-radius: 15px !important;
+            border-radius: 20px !important;
             z-index: 100;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
         }
         
         [data-testid="stChatInput"] button {
@@ -204,7 +202,7 @@ hide_streamlit_style = """
         }
         
         .stApp > div {
-            padding-bottom: 100px !important;
+            padding-bottom: 150px !important;
         }
         
         /* Mantenha as otimizações de performance */
@@ -277,29 +275,24 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# Script para controle do menu mobile
+# Script para controle do menu mobile e melhorias mobile
 st.markdown("""
 <script>
 // Função para configurar o menu mobile
 function setupMobileMenu() {
     if (window.innerWidth <= 768) {
-        // Verifica se já existe o botão
         if (!document.querySelector('.mobile-menu-button')) {
-            // Cria o botão do menu
             const menuBtn = document.createElement("div");
             menuBtn.className = "mobile-menu-button";
             menuBtn.innerHTML = "☰";
             document.body.appendChild(menuBtn);
             
-            // Cria o overlay
             const overlay = document.createElement("div");
             overlay.className = "sidebar-overlay";
             document.body.appendChild(overlay);
             
-            // Obtém a sidebar
             const sidebar = document.querySelector('[data-testid="stSidebar"]');
             
-            // Adiciona eventos
             menuBtn.addEventListener('click', function() {
                 const isOpen = sidebar.style.transform !== 'translateX(0px)';
                 sidebar.style.transform = isOpen ? 'translateX(0px)' : 'translateX(-100%)';
@@ -314,13 +307,11 @@ function setupMobileMenu() {
             });
         }
     } else {
-        // Remove os elementos do menu mobile se existirem
         const menuBtn = document.querySelector('.mobile-menu-button');
         const overlay = document.querySelector('.sidebar-overlay');
         if (menuBtn) menuBtn.remove();
         if (overlay) overlay.remove();
         
-        // Garante que a sidebar esteja visível em desktop
         const sidebar = document.querySelector('[data-testid="stSidebar"]');
         if (sidebar) sidebar.style.transform = '';
     }
@@ -330,16 +321,25 @@ function setupMobileMenu() {
 document.addEventListener('DOMContentLoaded', function() {
     setupMobileMenu();
     
-    // Ajusta o input do chat em mobile para não ser coberto pelo teclado
+    // Ajuste do chat input em mobile
     if (window.innerWidth <= 768) {
-        const chatInput = document.querySelector('[data-testid="stChatInput"]');
-        if (chatInput) {
-            chatInput.addEventListener('focus', function() {
-                setTimeout(() => {
-                    this.scrollIntoView({behavior: 'smooth', block: 'center'});
-                }, 300);
-            });
-        }
+        const adjustChatInput = () => {
+            const chatInput = document.querySelector('[data-testid="stChatInput"]');
+            if (chatInput) {
+                chatInput.addEventListener('focus', function() {
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                        document.documentElement.style.setProperty(
+                            '--mobile-padding-bottom', '250px'
+                        );
+                    }, 300);
+                });
+            }
+        };
+        adjustChatInput();
     }
 });
 
@@ -348,29 +348,38 @@ window.addEventListener('resize', function() {
     setupMobileMenu();
 });
 
-// ===== CÓDIGO NOVO PARA AJUSTE MOBILE ===== //
-if (window.innerWidth <= 768) {
-    const adjustChatInput = () => {
-        const chatInput = document.querySelector('[data-testid="stChatInput"]');
-        if (chatInput) {
-            chatInput.addEventListener('focus', function() {
-                setTimeout(() => {
-                    this.scrollIntoView({behavior: 'smooth', block: 'center'});
-                    document.querySelector('.stApp > div').style.paddingBottom = '200px';
-                }, 300);
-            });
-            
-            chatInput.addEventListener('blur', function() {
-                setTimeout(() => {
-                    document.querySelector('.stApp > div').style.paddingBottom = '100px';
-                }, 300);
-            });
+// ===== SOLUÇÕES PARA MOBILE ===== //
+// Corrige clique em botões e links
+document.addEventListener('click', function(e) {
+    if (window.innerWidth <= 768) {
+        // Links
+        if (e.target.closest('a[href^="http"]')) {
+            e.preventDefault();
+            window.top.location.href = e.target.closest('a').href;
+            return;
         }
-    };
-    
-    adjustChatInput();
-    window.addEventListener('resize', adjustChatInput);
-}
+        
+        // Botões
+        const button = e.target.closest('button');
+        if (button) {
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = '';
+                if (button.onclick) button.onclick();
+            }, 200);
+        }
+    }
+}, true);
+
+// Garante que os links abram corretamente
+document.querySelectorAll('a[href^="http"]').forEach(link => {
+    link.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+            e.preventDefault();
+            window.top.location.href = this.href;
+        }
+    });
+});
 </script>
 """, unsafe_allow_html=True)
 
@@ -714,8 +723,11 @@ class UiService:
         ATENDIDA_DELAY = 3
 
         call_container = st.empty()
+        
+        # HTML com animação completa
         call_container.markdown(f"""
         <div style="
+            position: relative;
             background: linear-gradient(135deg, #1e0033, #3c0066);
             border-radius: 20px;
             padding: 30px;
@@ -725,25 +737,86 @@ class UiService:
             border: 2px solid #ff66b3;
             text-align: center;
             color: white;
-            animation: pulse-ring 2s infinite;
+            overflow: hidden;
         ">
-            <div style="font-size: 3rem;">📱</div>
+            <!-- Efeito de onda pulsante -->
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring delay-1"></div>
+            <div class="pulse-ring delay-2"></div>
+            
+            <!-- Ícone animado -->
+            <div class="phone-icon" style="
+                font-size: 3rem;
+                display: inline-block;
+                animation: shake 0.5s infinite alternate;
+                transform-origin: center bottom;
+            ">📱</div>
+            
             <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Juh...</h3>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
-                <div style="width: 10px; height: 10px; background: #4CAF50; border-radius: 50%;"></div>
+            
+            <!-- Indicador de status -->
+            <div class="online-indicator">
+                <div class="dot-pulse"></div>
                 <span style="font-size: 0.9rem;">Online agora</span>
             </div>
         </div>
+
         <style>
             @keyframes pulse-ring {{
-                0% {{ transform: scale(0.95); opacity: 0.8; }}
-                50% {{ transform: scale(1.05); opacity: 1; }}
-                100% {{ transform: scale(0.95); opacity: 0.8; }}
+                0% {{ transform: scale(0.8); opacity: 0.8; }}
+                100% {{ transform: scale(1.5); opacity: 0; }}
+            }}
+            
+            @keyframes shake {{
+                0% {{ transform: rotate(-5deg); }}
+                100% {{ transform: rotate(5deg); }}
+            }}
+            
+            @keyframes dot-pulse {{
+                0%, 100% {{ transform: scale(1); opacity: 1; }}
+                50% {{ transform: scale(1.2); opacity: 0.8; }}
+            }}
+            
+            .pulse-ring {{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 100px;
+                height: 100px;
+                background: rgba(255, 102, 179, 0.3);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                animation: pulse-ring 2s infinite;
+            }}
+            
+            .delay-1 {{ animation-delay: 0.66s; }}
+            .delay-2 {{ animation-delay: 1.33s; }}
+            
+            .online-indicator {{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                margin-top: 15px;
+            }}
+            
+            .dot-pulse {{
+                width: 10px;
+                height: 10px;
+                background: #4CAF50;
+                border-radius: 50%;
+                animation: dot-pulse 1.5s infinite;
+            }}
+            
+            .phone-icon {{
+                filter: drop-shadow(0 0 5px rgba(255, 102, 179, 0.7));
             }}
         </style>
         """, unsafe_allow_html=True)
         
         time.sleep(LIGANDO_DELAY)
+        
+        # Tela de chamada atendida
         call_container.markdown(f"""
         <div style="
             background: linear-gradient(135deg, #1e0033, #3c0066);
@@ -755,11 +828,37 @@ class UiService:
             border: 2px solid #4CAF50;
             text-align: center;
             color: white;
+            animation: fadeIn 0.5s;
         ">
-            <div style="font-size: 3rem; color: #4CAF50;">✓</div>
+            <div style="
+                font-size: 3rem;
+                color: #4CAF50;
+                animation: bounce 0.5s;
+            ">✓</div>
             <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
-            <p style="font-size: 0.9rem; margin:0;">Juh está te esperando...</p>
+            <p style="font-size: 0.9rem; margin:0;">
+                Juh está te esperando... 
+                <span class="blink" style="animation: blink 1s infinite;">|</span>
+            </p>
         </div>
+        
+        <style>
+            @keyframes fadeIn {{
+                from {{ opacity: 0; transform: translateY(10px); }}
+                to {{ opacity: 1; transform: translateY(0); }}
+            }}
+            
+            @keyframes bounce {{
+                0%, 20%, 50%, 80%, 100% {{ transform: translateY(0); }}
+                40% {{ transform: translateY(-20px); }}
+                60% {{ transform: translateY(-10px); }}
+            }}
+            
+            @keyframes blink {{
+                0%, 100% {{ opacity: 1; }}
+                50% {{ opacity: 0; }}
+            }}
+        </style>
         """, unsafe_allow_html=True)
         
         time.sleep(ATENDIDA_DELAY)
@@ -1459,7 +1558,9 @@ class NewPages:
                 <li>Fotos da Buceta</li>
             </ul>
             <div style="position: absolute; bottom: 20px; width: calc(100% - 40px);">
-                <a href="{checkout_start}" target="_blank" rel="noopener noreferrer" style="
+                <a href="{checkout_start}" target="_blank" rel="noopener noreferrer" 
+                   onclick="window.top.location.href=this.href; return false;"
+                   style="
                     display: block;
                     background: linear-gradient(45deg, #ff66b3, #ff1493);
                     color: white;
@@ -1470,8 +1571,7 @@ class NewPages:
                     font-weight: bold;
                     transition: all 0.3s;
                 " onmouseover="this.style.transform='scale(1.05)'" 
-                onmouseout="this.style.transform='scale(1)'"
-                onclick="this.innerHTML='REDIRECIONANDO ⌛'; this.style.opacity='0.7'">
+                onmouseout="this.style.transform='scale(1)'">
                     QUERO ESTE PACOTE ➔
                 </a>
             </div>
@@ -1496,7 +1596,9 @@ class NewPages:
                 <li>Videos Masturbando</li>
             </ul>
             <div style="position: absolute; bottom: 20px; width: calc(100% - 40px);">
-                <a href="{checkout_premium}" target="_blank" rel="noopener noreferrer" style="
+                <a href="{checkout_premium}" target="_blank" rel="noopener noreferrer"
+                   onclick="window.top.location.href=this.href; return false;"
+                   style="
                     display: block;
                     background: linear-gradient(45deg, #9400d3, #ff1493);
                     color: white;
@@ -1507,8 +1609,7 @@ class NewPages:
                     font-weight: bold;
                     transition: all 0.3s;
                 " onmouseover="this.style.transform='scale(1.05)'" 
-                onmouseout="this.style.transform='scale(1)'"
-                onclick="this.innerHTML='REDIRECIONANDO ⌛'; this.style.opacity='0.7'">
+                onmouseout="this.style.transform='scale(1)'">
                     QUERO ESTE PACOTE ➔
                 </a>
             </div>
@@ -1534,7 +1635,9 @@ class NewPages:
                 <li>Acesso a conteúdos futuros</li>
             </ul>
             <div style="position: absolute; bottom: 20px; width: calc(100% - 40px);">
-                <a href="{checkout_extreme}" target="_blank" rel="noopener noreferrer" style="
+                <a href="{checkout_extreme}" target="_blank" rel="noopener noreferrer"
+                   onclick="window.top.location.href=this.href; return false;"
+                   style="
                     display: block;
                     background: linear-gradient(45deg, #ff0066, #9400d3);
                     color: white;
@@ -1545,8 +1648,7 @@ class NewPages:
                     font-weight: bold;
                     transition: all 0.3s;
                 " onmouseover="this.style.transform='scale(1.05)'" 
-                onmouseout="this.style.transform='scale(1)'"
-                onclick="this.innerHTML='REDIRECIONANDO ⌛'; this.style.opacity='0.7'">
+                onmouseout="this.style.transform='scale(1)'">
                     QUERO ESTE PACOTE ➔
                 </a>
             </div>
@@ -1633,7 +1735,9 @@ class NewPages:
                         {''.join([f'<li style="margin-bottom: 5px;">{benefit}</li>' for benefit in plan['benefits']])}
                     </ul>
                     <div style="text-align: center; margin-top: 15px;">
-                        <a href="{plan['link']}" style="
+                        <a href="{plan['link']}" target="_blank" 
+                           onclick="window.top.location.href=this.href; return false;"
+                           style="
                             background: linear-gradient(45deg, #ff1493, #9400d3);
                             color: white;
                             padding: 10px 20px;
