@@ -1,6 +1,4 @@
-# ======================
-# IMPORTAÇÕES
-# ======================
+# -*- coding: utf-8 -*-
 import streamlit as st
 import requests
 import json
@@ -13,22 +11,31 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from functools import lru_cache
+from datetime import datetime
 
 # ======================
 # CONFIGURAÇÃO INICIAL DO STREAMLIT
 # ======================
+# Configurações de performance
+st._config.set_option('client.caching', 'true')
+st._config.set_option('client.showErrorDetails', 'false')
+st._config.set_option('server.enableCORS', 'false')
+st._config.set_option('server.enableXsrfProtection', 'false')
+
+# Adiciona detecção de mobile no início do app
+st.query_params["user_agent"] = st.query_params.get("user_agent", "Desktop")
+
 st.set_page_config(
-    page_title="Paloma Premium",
-    page_icon="💋",
+    page_title="Juh Premium",
+    page_icon="😍",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-st._config.set_option('client.caching', True)
-st._config.set_option('client.showErrorDetails', False)
-
+# CSS customizado com melhorias para mobile e desktop
 hide_streamlit_style = """
 <style>
+    /* Estilos base */
     #root > div:nth-child(1) > div > div > div > div > section > div {
         padding-top: 0rem;
     }
@@ -66,37 +73,363 @@ hide_streamlit_style = """
         margin: 0 !important;
         padding: 0 !important;
     }
+
+    /* Cores de fundo */
+    html, body, .stApp {
+        background: linear-gradient(180deg, #1e0033, #3c0066) !important;
+        color: #fff !important;
+    }
+
+    /* Botões */
+    .stButton>button {
+        font-size: 1rem !important;
+        padding: 14px 20px !important;
+        background-color: #ff1493 !important;
+        color: white !important;
+        border-radius: 8px !important;
+        border: none !important;
+        transition: all 0.3s !important;
+    }
+    .stButton>button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 8px rgba(255, 20, 147, 0.4) !important;
+    }
+
+    /* Layout geral */
+    .block-container {
+        padding-top: 0.5rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    /* Imagens */
+    img, .stImage img {
+        max-width: 100% !important;
+        height: auto !important;
+        border-radius: 12px !important;
+        padding: 5px !important;
+    }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] img {
+        border-radius: 50% !important;
+        border: 2px solid #ff66b3;
+        width: 80px !important;
+        height: 80px !important;
+        object-fit: cover !important;
+    }
+
+    /* Chat */
+    .stChatMessage {
+        max-width: 85% !important;
+    }
+    
+    /* Input do chat */
+    [data-testid="stChatInput"] {
+        background: rgba(255, 102, 179, 0.1) !important;
+        border: 1px solid #ff66b3 !important;
+    }
+
+    /* Animações */
+    @keyframes shake {
+        0% { transform: rotate(-5deg); }
+        100% { transform: rotate(5deg); }
+    }
+
+    /* ========== MEDIA QUERIES PARA MOBILE ========== */
+    @media (max-width: 768px) {
+        /* Layout geral */
+        .package-container,
+        [data-testid="stHorizontalBlock"] {
+            flex-direction: column !important;
+        }
+
+        .package-box,
+        [data-testid="stHorizontalBlock"] > div {
+            width: 100% !important;
+            margin-bottom: 20px !important;
+        }
+
+        /* Botões */
+        .stButton > button {
+            font-size: 0.9rem !important;
+            padding: 12px 16px !important;
+            min-height: 48px !important;
+        }
+        
+        /* Containers */
+        .block-container, .stApp {
+            padding: 0.2rem !important;
+        }
+        
+        /* Mensagens do chat */
+        .stChatMessage {
+            max-width: 85% !important;
+            font-size: 14px !important;
+        }
+        
+        /* Imagens */
+        .stImage img {
+            max-height: 200px !important;
+        }
+        
+        /* Input do chat - Versão Corrigida */
+        [data-testid="stChatInput"] {
+            position: fixed !important;
+            bottom: 30px !important;
+            left: 10px !important;
+            right: 10px !important;
+            padding: 15px !important;
+            width: calc(100% - 20px) !important;
+            box-sizing: border-box !important;
+            background: rgba(30, 0, 51, 0.98) !important;
+            backdrop-filter: blur(5px);
+            border-radius: 20px !important;
+            z-index: 100;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+        }
+        
+        [data-testid="stChatInput"] button {
+            position: absolute !important;
+            right: 15px !important;
+            bottom: 15px !important;
+            height: 40px !important;
+            width: 40px !important;
+            min-width: 40px !important;
+            padding: 0 !important;
+            border-radius: 50% !important;
+            background: #ff1493 !important;
+        }
+        
+        [data-testid="stChatInput"] button svg {
+            margin: 0 auto !important;
+        }
+        
+        [data-testid="stChatInput"] textarea {
+            padding-right: 50px !important;
+            min-height: 50px !important;
+        }
+        
+        .stApp > div {
+            padding-bottom: 150px !important;
+        }
+        
+        /* Mantenha as otimizações de performance */
+        * {
+            animation: none !important;
+            transition: none !important;
+        }
+        
+        /* Cabeçalho do chat */
+        .chat-header {
+            padding: 10px !important;
+            font-size: 1.2em !important;
+        }
+        
+        /* Espaçamento */
+        [data-testid="stVerticalBlock"] {
+            gap: 0.2rem !important;
+        }
+        
+        /* Sidebar mobile */
+        [data-testid="stSidebar"] {
+            top: 0 !important;
+            height: 100vh !important;
+            position: fixed !important;
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        /* Menu mobile */
+        .mobile-menu-button {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff1493, #ff66b3);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 1001;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border: 2px solid white;
+        }
+        
+        /* Overlay para menu mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        /* Ajustes específicos para iOS */
+        @supports (-webkit-touch-callout: none) {
+            [data-testid="stChatInput"] textarea {
+                font-size: 16px !important;
+                min-height: 50px !important;
+            }
+        }
+    }
 </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+# Script para controle do menu mobile e melhorias mobile
+st.markdown("""
+<script>
+// Função para configurar o menu mobile
+function setupMobileMenu() {
+    if (window.innerWidth <= 768) {
+        if (!document.querySelector('.mobile-menu-button')) {
+            const menuBtn = document.createElement("div");
+            menuBtn.className = "mobile-menu-button";
+            menuBtn.innerHTML = "☰";
+            document.body.appendChild(menuBtn);
+            
+            const overlay = document.createElement("div");
+            overlay.className = "sidebar-overlay";
+            document.body.appendChild(overlay);
+            
+            const sidebar = document.querySelector('[data-testid="stSidebar"]');
+            
+            menuBtn.addEventListener('click', function() {
+                const isOpen = sidebar.style.transform !== 'translateX(0px)';
+                sidebar.style.transform = isOpen ? 'translateX(0px)' : 'translateX(-100%)';
+                overlay.style.display = isOpen ? 'block' : 'none';
+                menuBtn.innerHTML = isOpen ? '✕' : '☰';
+            });
+            
+            overlay.addEventListener('click', function() {
+                sidebar.style.transform = 'translateX(-100%)';
+                overlay.style.display = 'none';
+                menuBtn.innerHTML = '☰';
+            });
+        }
+    } else {
+        const menuBtn = document.querySelector('.mobile-menu-button');
+        const overlay = document.querySelector('.sidebar-overlay');
+        if (menuBtn) menuBtn.remove();
+        if (overlay) overlay.remove();
+        
+        const sidebar = document.querySelector('[data-testid="stSidebar"]');
+        if (sidebar) sidebar.style.transform = '';
+    }
+}
+
+// Configura o menu quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+    setupMobileMenu();
+    
+    // Ajuste do chat input em mobile
+    if (window.innerWidth <= 768) {
+        const adjustChatInput = () => {
+            const chatInput = document.querySelector('[data-testid="stChatInput"]');
+            if (chatInput) {
+                chatInput.addEventListener('focus', function() {
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                        document.documentElement.style.setProperty(
+                            '--mobile-padding-bottom', '250px'
+                        );
+                    }, 300);
+                });
+            }
+        };
+        adjustChatInput();
+    }
+});
+
+// Reconfigura quando a janela é redimensionada
+window.addEventListener('resize', function() {
+    setupMobileMenu();
+});
+
+// ===== SOLUÇÕES PARA MOBILE ===== //
+// Corrige clique em botões e links
+document.addEventListener('click', function(e) {
+    if (window.innerWidth <= 768) {
+        // Links
+        if (e.target.closest('a[href^="http"]')) {
+            e.preventDefault();
+            window.top.location.href = e.target.closest('a').href;
+            return;
+        }
+        
+        // Botões
+        const button = e.target.closest('button');
+        if (button) {
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = '';
+                if (button.onclick) button.onclick();
+            }, 200);
+        }
+    }
+}, true);
+
+// Garante que os links abram corretamente
+document.querySelectorAll('a[href^="http"]').forEach(link => {
+    link.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+            e.preventDefault();
+            window.top.location.href = this.href;
+        }
+    });
+});
+
+// Função para redirecionamento em mobile
+function redirectTo(url) {
+    if (window.innerWidth <= 768) {
+        window.top.location.href = url;
+    } else {
+        window.open(url, '_blank').focus();
+    }
+}
+</script>
+""", unsafe_allow_html=True)
 
 # ======================
 # CONSTANTES E CONFIGURAÇÕES
 # ======================
 class Config:
-    API_KEY = "AIzaSyDTaYm2KHHnVPdWy4l5pEaGPM7QR0g3IPc"
+    API_KEY = "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g"
     API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
     VIP_LINK = "https://exemplo.com/vip"
-    CHECKOUT_START = "https://checkout.exemplo.com/start"
-    CHECKOUT_PREMIUM = "https://checkout.exemplo.com/premium"
-    CHECKOUT_EXTREME = "https://checkout.exemplo.com/extreme"
+    CHECKOUT_PROMO = "https://pay.cakto.com.br/n92nbk2_480593"
+    CHECKOUT_START = "https://pay.cakto.com.br/eax37ya_480603"
+    CHECKOUT_PREMIUM = "https://pay.cakto.com.br/36i68th"
+    CHECKOUT_EXTREME = "https://pay.cakto.com.br/32iy7je"
     CHECKOUT_VIP_1MES = "https://checkout.exemplo.com/vip-1mes"
     CHECKOUT_VIP_3MESES = "https://checkout.exemplo.com/vip-3meses"
     CHECKOUT_VIP_1ANO = "https://checkout.exemplo.com/vip-1ano"
     MAX_REQUESTS_PER_SESSION = 30
     REQUEST_TIMEOUT = 30
-    AUDIO_FILE = "https://github.com/gustapb77/ChatBotHot/raw/refs/heads/main/assets/audio/paloma_audio.mp3"
-    AUDIO_DURATION = 7
-    IMG_PROFILE = "https://i.ibb.co/ks5CNrDn/IMG-9256.jpg"
+    AUDIO_FILE = "https://github.com/JuhT262/Plataforma/raw/refs/heads/main/assets/Juh%20of.mp3"
+    AUDIO_DURATION = 8
+    IMG_PROFILE = ("https://i.ibb.co/s9GgDRmP/Swapfaces-AI-091e78d3-634f-4a01-9676-8d62385a06f9.png"
+                  "?w=200&h=200&fit=crop")
     IMG_GALLERY = [
-        "https://i.ibb.co/zhNZL4FF/IMG-9198.jpg",
-        "https://i.ibb.co/Y4B7CbXf/IMG-9202.jpg",
-        "https://i.ibb.co/Fqf0gPPq/IMG-9199.jpg"
+        f"https://i.ibb.co/xtt4yMMM/Swapfaces-AI-2a6a4421-008f-411b-874c-a32e1cdbe892.png?w=300&h=300&fit=crop",
+        f"https://i.ibb.co/7JXFKM5H/Swapfaces-AI-e0167c19-a9b9-46a3-acf0-f82f6f2eefab.png?w=300&h=300&fit=crop",
+        f"https://i.ibb.co/bgRwyQ7R/Swapfaces-AI-7b3f94e0-0b2d-4ca6-9e7f-4313b6de3499.png?w=300&h=300&fit=crop"
     ]
     IMG_HOME_PREVIEWS = [
-        "https://i.ibb.co/k2MJg4XC/Save-ClipApp-412457343-378531441368078-7870326395110089440-n.jpg",
-        "https://i.ibb.co/MxqKBk1X/Save-ClipApp-481825770-18486618637042608-2702272791254832108-n.jpg",
-        "https://i.ibb.co/F4CkkYTL/Save-ClipApp-461241348-1219420546053727-2357827070610318448-n.jpg"
+        f"https://i.ibb.co/Z17qTBfm/7.png?w=300&h=300&fit=crop",
+        f"https://i.ibb.co/BVjZQBmx/Juh.png?w=300&h=300&fit=crop",
+        f"https://i.ibb.co/4ZsXW2WK/image-1.png?w=300&h=300&fit=crop"
     ]
     LOGO_URL = "https://i.ibb.co/LX7x3tcB/Logo-Golden-Pepper-Letreiro-1.png"
 
@@ -167,7 +500,7 @@ def save_persistent_data():
         'age_verified', 'messages', 'request_count',
         'connection_complete', 'chat_started', 'audio_sent',
         'current_page', 'show_vip_offer', 'session_id',
-        'last_cta_time'  # Novo campo adicionado
+        'last_cta_time', 'is_mobile'
     ]
     
     new_data = {key: st.session_state.get(key) for key in persistent_keys if key in st.session_state}
@@ -180,8 +513,8 @@ def save_persistent_data():
 # MODELOS DE DADOS
 # ======================
 class Persona:
-    PALOMA = """
-    [PERFIL PALOMA]
+    JUH = """  
+    [PERFIL JUH]
     - Mulher vulgar e safada que adora provocar
     - Linguagem direta e cheia de malícia
     - Frases curtas e sem pontuação perfeita
@@ -196,7 +529,7 @@ class Persona:
     1. Quando o histórico mostra clima sexual:
     Histórico:
     Cliente: sua buceta é rosinha?
-    Paloma: adoro mostrar ela aberta
+    Juh: adoro mostrar ela aberta
     Cliente: quero ver
     Resposta: ```json
     {
@@ -226,7 +559,7 @@ class Persona:
     3. Quando o contexto não justifica CTA:
     Histórico:
     Cliente: oi
-    Paloma: oi gato
+    Juh: oi gato
     Resposta: ```json
     {
       "text": "eai gostoso",
@@ -240,14 +573,12 @@ class Persona:
 class CTAEngine:
     @staticmethod
     def should_show_cta(conversation_history: list) -> bool:
-        """Analisa o contexto para decidir quando mostrar CTA"""
         if len(conversation_history) < 2:
             return False
 
-        # Não mostrar CTA se já teve um recentemente
         if 'last_cta_time' in st.session_state:
             elapsed = time.time() - st.session_state.last_cta_time
-            if elapsed < 120:  # 2 minutos de intervalo entre CTAs
+            if elapsed < 120:
                 return False
 
         last_msgs = []
@@ -280,51 +611,6 @@ class CTAEngine:
         has_direct_ask = any(ask in context for ask in direct_asks)
         
         return (hot_count >= 3) or has_direct_ask
-
-    @staticmethod
-    def generate_response(user_input: str) -> dict:
-        """Gera resposta com CTA contextual (fallback)"""
-        user_input = user_input.lower()
-        
-        if any(p in user_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
-            return {
-                "text": random.choice([
-                    "to com fotos da minha buceta bem aberta quer ver",
-                    "minha buceta ta chamando vc nas fotos",
-                    "fiz um ensaio novo mostrando tudinho"
-                ]),
-                "cta": {
-                    "show": True,
-                    "label": "Ver Fotos Quentes",
-                    "target": "offers"
-                }
-            }
-        
-        elif any(v in user_input for v in ["video", "transar", "masturbar"]):
-            return {
-                "text": random.choice([
-                    "tenho video me masturbando gostoso vem ver",
-                    "to me tocando nesse video novo quer ver",
-                    "gravei um video especial pra vc"
-                ]),
-                "cta": {
-                    "show": True,
-                    "label": "Ver Vídeos Exclusivos",
-                    "target": "offers"
-                }
-            }
-        
-        else:
-            return {
-                "text": random.choice([
-                    "quero te mostrar tudo que eu tenho aqui",
-                    "meu privado ta cheio de surpresas pra vc",
-                    "vem ver o que eu fiz pensando em voce"
-                ]),
-                "cta": {
-                    "show": False
-                }
-            }
 
 # ======================
 # SERVIÇOS DE BANCO DE DADOS
@@ -394,7 +680,7 @@ class ApiService:
             "contents": [
                 {
                     "role": "user",
-                    "parts": [{"text": f"{Persona.PALOMA}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
+                    "parts": [{"text": f"{Persona.JUH}\n\nHistórico da Conversa:\n{conversation_history}\n\nÚltima mensagem do cliente: '{prompt}'\n\nResponda em JSON com o formato:\n{{\n  \"text\": \"sua resposta\",\n  \"cta\": {{\n    \"show\": true/false,\n    \"label\": \"texto do botão\",\n    \"target\": \"página\"\n  }}\n}}"}]
                 }
             ],
             "generationConfig": {
@@ -419,7 +705,7 @@ class ApiService:
                     if not CTAEngine.should_show_cta(st.session_state.messages):
                         resposta["cta"]["show"] = False
                     else:
-                        st.session_state.last_cta_time = time.time()  # Registrar quando CTA foi mostrado
+                        st.session_state.last_cta_time = time.time()
                 
                 return resposta
             
@@ -453,53 +739,104 @@ class UiService:
     def show_call_effect():
         LIGANDO_DELAY = 5
         ATENDIDA_DELAY = 3
-
+    
         call_container = st.empty()
-        call_container.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, #1e0033, #3c0066);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 300px;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 2px solid #ff66b3;
-            text-align: center;
-            color: white;
-            animation: pulse-ring 2s infinite;
-        ">
-            <div style="font-size: 3rem;">📱</div>
-            <h3 style="color: #ff66b3; margin-bottom: 5px;">Ligando para Paloma...</h3>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
-                <div style="width: 10px; height: 10px; background: #4CAF50; border-radius: 50%;"></div>
+        
+        # CSS inline para garantir que seja aplicado
+        call_container.markdown("""
+        <style>
+            @keyframes shake {
+                0% { transform: rotate(-5deg); }
+                100% { transform: rotate(5deg); }
+            }
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); opacity: 1; }
+                50% { transform: scale(1.2); opacity: 0.8; }
+            }
+            .phone-call-container {
+                position: relative;
+                background: linear-gradient(135deg, #1e0033, #3c0066);
+                border-radius: 20px;
+                padding: 30px;
+                max-width: 300px;
+                margin: 0 auto;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                border: 2px solid #ff66b3;
+                text-align: center;
+                color: white;
+            }
+            .phone-icon {
+                font-size: 3rem;
+                display: inline-block;
+                animation: shake 0.5s infinite alternate;
+                transform-origin: center bottom;
+                filter: drop-shadow(0 0 5px rgba(255, 102, 179, 0.7));
+            }
+            .online-indicator {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                margin-top: 15px;
+            }
+            .dot-pulse {
+                width: 10px;
+                height: 10px;
+                background: #4CAF50;
+                border-radius: 50%;
+                animation: pulse 1.5s infinite;
+            }
+        </style>
+        
+        <div class="phone-call-container">
+            <div class="phone-icon">📱</div>
+            <h3 style="margin:0; font-size:1.5em; display:inline-block;">Ligando para Juh...</h3>
+            <div class="online-indicator">
+                <div class="dot-pulse"></div>
                 <span style="font-size: 0.9rem;">Online agora</span>
             </div>
         </div>
-        <style>
-            @keyframes pulse-ring {{
-                0% {{ transform: scale(0.95); opacity: 0.8; }}
-                50% {{ transform: scale(1.05); opacity: 1; }}
-                100% {{ transform: scale(0.95); opacity: 0.8; }}
-            }}
-        </style>
         """, unsafe_allow_html=True)
         
         time.sleep(LIGANDO_DELAY)
-        call_container.markdown(f"""
-        <div style="
-            background: linear-gradient(135deg, #1e0033, #3c0066);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 300px;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border: 2px solid #4CAF50;
-            text-align: center;
-            color: white;
-        ">
-            <div style="font-size: 3rem; color: #4CAF50;">✓</div>
+        
+        # Tela de chamada atendida
+        call_container.markdown("""
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes bounce {
+                0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+                40% { transform: translateY(-20px); }
+                60% { transform: translateY(-10px); }
+            }
+            @keyframes blink {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0; }
+            }
+            .call-answered {
+                background: linear-gradient(135deg, #1e0033, #3c0066);
+                border-radius: 20px;
+                padding: 30px;
+                max-width: 300px;
+                margin: 0 auto;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                border: 2px solid #4CAF50;
+                text-align: center;
+                color: white;
+                animation: fadeIn 0.5s;
+            }
+        </style>
+        
+        <div class="call-answered">
+            <div style="font-size: 3rem; color: #4CAF50; animation: bounce 0.5s;">✓</div>
             <h3 style="color: #4CAF50; margin-bottom: 5px;">Chamada atendida!</h3>
-            <p style="font-size: 0.9rem; margin:0;">Paloma está te esperando...</p>
+            <p style="font-size: 0.9rem; margin:0;">
+                Juh está te esperando... 
+                <span style="animation: blink 1s infinite;">|</span>
+            </p>
         </div>
         """, unsafe_allow_html=True)
         
@@ -576,152 +913,259 @@ class UiService:
 
     @staticmethod
     def age_verification():
-        st.markdown("""
+        verification_container = st.empty()
+        
+        # CSS para mobile
+        mobile_style = """
         <style>
-            .age-verification {
-                max-width: 600px;
-                margin: 2rem auto;
-                padding: 2rem;
-                background: linear-gradient(145deg, #1e0033, #3c0066);
-                border-radius: 15px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                border: 1px solid rgba(255, 102, 179, 0.2);
+            .mobile-call-screen {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(180deg, #1e0033, #3c0066);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
                 color: white;
             }
-            .age-header {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                margin-bottom: 1.5rem;
-            }
-            .age-icon {
-                font-size: 2.5rem;
+            .mobile-call-screen h2 {
                 color: #ff66b3;
+                margin-bottom: 20px;
             }
-            .age-title {
-                font-size: 1.8rem;
-                font-weight: 700;
-                margin: 0;
-                color: #ff66b3;
+            @media (min-width: 769px) {
+                .mobile-call-screen { display: none; }
             }
         </style>
-        """, unsafe_allow_html=True)
-
-        with st.container():
-            st.markdown("""
-            <div class="age-verification">
-                <div class="age-header">
-                    <div class="age-icon">🔞</div>
-                    <h1 class="age-title">Verificação de Idade</h1>
-                </div>
-                <div class="age-content">
-                    <p>Este site contém material explícito destinado exclusivamente a adultos maiores de 18 anos.</p>
-                    <p>Ao acessar este conteúdo, você declara estar em conformidade com todas as leis locais aplicáveis.</p>
-                </div>
+        """
+        
+        # Verifica se é mobile
+        is_mobile = "Mobi" in st.query_params.get("user_agent", "")
+        
+        if is_mobile:
+            # Tela de ligação para mobile
+            verification_container.markdown(f"""
+            {mobile_style}
+            <div class="mobile-call-screen">
+                <h2>📞 Ligando para Juh...</h2>
+                <div style="font-size: 1.2em;">Por favor, aguarde...</div>
             </div>
             """, unsafe_allow_html=True)
-
-        col1, col2, col3 = st.columns([1,2,1])
-        with col2:
-            if st.button("Confirmo que sou maior de 18 anos", 
-                        key="age_checkbox",
-                        use_container_width=True,
-                        type="primary"):
-                st.session_state.age_verified = True
-                save_persistent_data()
-                st.rerun()
+            
+            # Simula o tempo de ligação
+            time.sleep(3)
+            
+            # Marca como verificado e redireciona
+            st.session_state.age_verified = True
+            st.session_state.is_mobile = True
+            save_persistent_data()
+            verification_container.empty()
+            st.rerun()
+        else:
+            # Versão desktop normal
+            with verification_container.container():
+                st.markdown("""
+                <style>
+                    .age-verification {
+                        max-width: 600px;
+                        margin: 2rem auto;
+                        padding: 2rem;
+                        background: linear-gradient(145deg, #1e0033, #3c0066);
+                        border-radius: 15px;
+                        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                        border: 1px solid rgba(255, 102, 179, 0.2);
+                        color: white;
+                    }
+                    .age-header {
+                        display: flex;
+                        align-items: center;
+                        gap: 15px;
+                        margin-bottom: 1.5rem;
+                    }
+                    .age-icon {
+                        font-size: 2.5rem;
+                        color: #ff66b3;
+                    }
+                    .age-title {
+                        font-size: 1.8rem;
+                        font-weight: 700;
+                        margin: 0;
+                        color: #ff66b3;
+                    }
+                    @media (max-width: 768px) {
+                        .age-verification {
+                            padding: 1rem;
+                            margin: 1rem;
+                        }
+                        .age-title {
+                            font-size: 1.4rem;
+                        }
+                    }
+                </style>
+                """, unsafe_allow_html=True)
+        
+                st.markdown("""
+                <div class="age-verification">
+                    <div class="age-header">
+                        <div class="age-icon">🔞</div>
+                        <h1 class="age-title">Verificação de Idade</h1>
+                    </div>
+                    <div class="age-content">
+                        <p>Este site contém material explícito destinado exclusivamente a adultos maiores de 18 anos.</p>
+                        <p>Ao acessar este conteúdo, você declara estar em conformidade com todas as leis locais aplicáveis.</p>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+                col1, col2, col3 = st.columns([1,2,1])
+                with col2:
+                    if st.button("Confirmo que sou maior de 18 anos", 
+                                key="age_checkbox",
+                                use_container_width=True,
+                                type="primary"):
+                        st.session_state.age_verified = True
+                        save_persistent_data()
+                        verification_container.empty()
+                        st.rerun()
 
     @staticmethod
     def setup_sidebar():
+        # Não mostra sidebar no mobile
+        if st.session_state.get('is_mobile', False):
+            return
+            
         with st.sidebar:
-            st.markdown("""
+            st.markdown(f"""
             <style>
-                [data-testid="stSidebar"] {
+                section[data-testid="stSidebar"] {{
+                    min-width: 320px !important;
+                    max-width: 400px !important;
+                    width: 100% !important;
                     background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
                     border-right: 1px solid #ff66b3 !important;
-                }
-                .sidebar-logo-container {
-                    margin: -25px -25px 0px -25px;
-                    padding: 0;
-                    text-align: left;
-                }
-                .sidebar-logo {
-                    max-width: 100%;
-                    height: auto;
-                    margin-bottom: -10px;
-                }
-                .sidebar-header {
+                }}
+    
+                .sidebar-logo-container {{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 20px 0 0 0;
+                    margin: 0 auto;
+                    text-align: center;
+                }}
+    
+                .sidebar-logo {{
+                    width: 100% !important;
+                    max-width: 400px !important;
+                    height: auto !important;
+                    object-fit: contain;
+                    margin: 0 auto;
+                    display: block;
+                    border: none !important;
+                    box-shadow: none !important;
+                    border-radius: 0 !important;
+                }}
+    
+                .sidebar-header {{
                     text-align: center; 
-                    margin-bottom: 20px;
-                }
-                .sidebar-header img {
-                    border-radius: 50%; 
+                    margin: -10px auto 10px auto;
+                }}
+    
+                .sidebar-header img {{
+                    border-radius: 50% !important;
                     border: 2px solid #ff66b3;
                     width: 80px;
                     height: 80px;
                     object-fit: cover;
-                }
-                .vip-badge {
+                    margin-bottom: 0.5rem;
+                }}
+    
+                .vip-badge {{
                     background: linear-gradient(45deg, #ff1493, #9400d3);
                     padding: 15px;
                     border-radius: 8px;
                     color: white;
                     text-align: center;
                     margin: 10px 0;
-                }
-                .menu-item {
+                }}
+    
+                .menu-item {{
                     transition: all 0.3s;
                     padding: 10px;
                     border-radius: 5px;
-                }
-                .menu-item:hover {
+                }}
+    
+                .menu-item:hover {{
                     background: rgba(255, 102, 179, 0.2);
-                }
-                .sidebar-logo {
-                    width: 280px;
-                    height: auto;
-                    object-fit: contain;
-                    margin-left: -15px;
-                    margin-top: -15px;
-                }
-                @media (min-width: 768px) {
-                    .sidebar-logo {
-                        width: 320px;
-                    }
-                }
-                [data-testid="stSidebarNav"] {
+                }}
+    
+                [data-testid="stSidebarNav"] {{
                     margin-top: -50px;
-                }
-                .sidebar-logo-container {
-                    position: relative;
-                    z-index: 1;
-                }
+                }}
+    
+                /* MOBILE RESPONSIVO */
+                @media only screen and (max-width: 768px) {{
+                    section[data-testid="stSidebar"] {{
+                        min-width: 100vw !important;
+                        max-width: 100vw !important;
+                        position: relative !important;
+                    }}
+    
+                    .sidebar-logo-container {{
+                        padding: 10px 0 0 0 !important;
+                    }}
+    
+                    .sidebar-header {{
+                        margin: 0 auto !important;
+                    }}
+    
+                    .sidebar-header img {{
+                        width: 70px !important;
+                        height: 70px !important;
+                    }}
+    
+                    [data-testid="stVerticalBlock"] {{
+                        padding: 0 10px !important;
+                    }}
+    
+                    .chat-bubble, .stMarkdown {{
+                        font-size: 16px !important;
+                    }}
+                    
+                    .vip-badge {{
+                        padding: 10px !important;
+                        font-size: 14px !important;
+                    }}
+                    
+                    .menu-item {{
+                        padding: 8px !important;
+                        font-size: 14px !important;
+                    }}
+                }}
             </style>
-            """, unsafe_allow_html=True)
-            
-            st.markdown(f"""
+    
             <div class="sidebar-logo-container">
-                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Golden Pepper Logo">
+                <img src="{Config.LOGO_URL}" class="sidebar-logo" alt="Logo">
+            </div>
+    
+            <div class="sidebar-header">
+                <img src="{Config.IMG_PROFILE}" alt="Juh">
+                <h3 style="color: #ff66b3; margin-top: 10px;">Juh Premium 💎</h3>
             </div>
             """, unsafe_allow_html=True)
-            
-            st.markdown("""
-            <div class="sidebar-header">
-                <img src="{profile_img}" alt="Paloma">
-                <h3 style="color: #ff66b3; margin-top: 10px;">Paloma Premium</h3>
-            </div>
-            """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
-            
+    
             st.markdown("---")
             st.markdown("### Menu Exclusivo")
-            
             menu_options = {
-                "Início": "home",
-                "Galeria Privada": "gallery",
-                "Mensagens": "messages",
-                "Ofertas Especiais": "offers"
+                "Início 🏠": "home",
+                "Galeria Privada 📸": "gallery",
+                "Mensagens 💬": "messages",
+                "Ofertas Especiais 🎁": "offers"
             }
-            
+    
             for option, page in menu_options.items():
                 if st.button(option, use_container_width=True, key=f"menu_{page}"):
                     if st.session_state.current_page != page:
@@ -729,10 +1173,10 @@ class UiService:
                         st.session_state.last_action = f"page_change_to_{page}"
                         save_persistent_data()
                         st.rerun()
-            
+    
             st.markdown("---")
             st.markdown("### Sua Conta")
-            
+    
             st.markdown("""
             <div style="
                 background: rgba(255, 20, 147, 0.1);
@@ -743,29 +1187,159 @@ class UiService:
                 <p style="margin:0;">Acesse conteúdo exclusivo</p>
             </div>
             """, unsafe_allow_html=True)
-            
+    
             st.markdown("---")
-            st.markdown("### Upgrade VIP")
+            st.markdown("### Upgrade VIP 💎")
+    
             st.markdown("""
             <div class="vip-badge">
-                <p style="margin: 0 0 10px; font-weight: bold;">Acesso completo por apenas</p>
-                <p style="margin: 0; font-size: 1.5em; font-weight: bold;">R$ 29,90/mês</p>
+                <p style="margin: 0 0 10px; font-weight: bold;">Acesso ao Promo por apenas</p>
+                <p style="margin: 0; font-size: 1.5em; font-weight: bold;">R$ 12,50/mês</p>
                 <p style="margin: 10px 0 0; font-size: 0.8em;">Cancele quando quiser</p>
             </div>
             """, unsafe_allow_html=True)
-            
-            if st.button("Tornar-se VIP", use_container_width=True, type="primary"):
+    
+            if st.button("Tornar-se VIP 💎", use_container_width=True, type="primary"):
                 st.session_state.current_page = "offers"
                 save_persistent_data()
                 st.rerun()
-            
+    
             st.markdown("---")
             st.markdown("""
             <div style="text-align: center; font-size: 0.7em; color: #888;">
-                <p>© 2024 Paloma Premium</p>
+                <p>© 2024 Juh Premium</p>
                 <p>Conteúdo para maiores de 18 anos</p>
             </div>
             """, unsafe_allow_html=True)
+            
+    @staticmethod
+    def chat_shortcuts():
+        # Esconde atalhos no mobile
+        if st.session_state.get('is_mobile', False):
+            return
+            
+        cols = st.columns(4)
+        with cols[0]:
+            if st.button(" Início🏠", key="shortcut_home", use_container_width=True):
+                st.session_state.current_page = "home"
+                save_persistent_data()
+                st.rerun()
+        with cols[1]:
+            if st.button("Galeria 📸", key="shortcut_gallery", use_container_width=True):
+                st.session_state.current_page = "gallery"
+                save_persistent_data()
+                st.rerun()
+        with cols[2]:
+             if st.button("Ofertas 🎁", key="shortcut_offers", use_container_width=True):
+                 st.session_state.current_page = "offers"
+                 save_persistent_data()
+                 st.rerun()
+        with cols[3]:
+            if st.button("VIP 💎", key="shortcut_vip", use_container_width=True):
+                st.session_state.current_page = "offers"
+                save_persistent_data()
+                st.rerun()
+
+    @staticmethod
+    def enhanced_chat_ui(conn):
+        # Otimizações específicas para mobile
+        if st.session_state.get('is_mobile', False):
+            st.markdown("""
+            <style>
+                @media (max-width: 768px) {
+                    .stButton button {
+                        font-size: 14px !important;
+                        padding: 12px !important;
+                    }
+                    /* Esconde os atalhos */
+                    [data-testid="column"] {
+                        display: none !important;
+                    }
+                }
+            </style>
+            """, unsafe_allow_html=True)
+    
+        st.markdown("""
+        <style>
+            .chat-header {
+                background: linear-gradient(90deg, #ff66b3, #ff1493);
+                color: white;
+                padding: 15px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                text-align: center;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+            .stAudio {
+                border-radius: 20px !important;
+                background: rgba(255, 102, 179, 0.1) !important;
+                padding: 10px !important;
+                margin: 10px 0 !important;
+            }
+            audio::-webkit-media-controls-panel {
+                background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
+            }
+            
+            @media (max-width: 768px) {
+                .chat-header {
+                    padding: 10px !important;
+                    font-size: 1.2em !important;
+                }
+                .stChatMessage {
+                    max-width: 80% !important;
+                    margin: 5px 0 !important;
+                }
+                [data-testid="stVerticalBlock"] {
+                    gap: 0.2rem !important;
+                }
+                .stButton button {
+                    padding: 8px 12px !important;
+                    font-size: 14px !important;
+                }
+                .stAudio {
+                    padding: 5px !important;
+                }
+            }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        UiService.chat_shortcuts()
+        
+        st.markdown(f"""
+        <div class="chat-header">
+            <h2 style="margin:0; font-size:1.5em; display:inline-block;">Chat Privado com Juh 💎</h2>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.sidebar.markdown(f"""
+        <div style="
+            background: rgba(255, 20, 147, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        ">
+            <p style="margin:0; font-size:0.9em;">
+                Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
+            </p>
+            <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        ChatService.process_user_input(conn)
+        save_persistent_data()
+        
+        st.markdown("""
+        <div style="
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 0.8em;
+            color: #888;
+        ">
+            <p>Conversa privada • Suas mensagens são confidenciais</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     @staticmethod
     def show_gallery_page(conn):
@@ -820,126 +1394,6 @@ class UiService:
             save_persistent_data()
             st.rerun()
 
-    @staticmethod
-    def chat_shortcuts():
-        cols = st.columns(4)
-        with cols[0]:
-            if st.button("Início", key="shortcut_home", 
-                       help="Voltar para a página inicial",
-                       use_container_width=True):
-                st.session_state.current_page = "home"
-                save_persistent_data()
-                st.rerun()
-        with cols[1]:
-            if st.button("Galeria", key="shortcut_gallery",
-                       help="Acessar galeria privada",
-                       use_container_width=True):
-                st.session_state.current_page = "gallery"
-                save_persistent_data()
-                st.rerun()
-        with cols[2]:
-            if st.button("Ofertas", key="shortcut_offers",
-                       help="Ver ofertas especiais",
-                       use_container_width=True):
-                st.session_state.current_page = "offers"
-                save_persistent_data()
-                st.rerun()
-        with cols[3]:
-            if st.button("VIP", key="shortcut_vip",
-                       help="Acessar área VIP",
-                       use_container_width=True):
-                st.session_state.current_page = "vip"
-                save_persistent_data()
-                st.rerun()
-
-        st.markdown("""
-        <style>
-            div[data-testid="stHorizontalBlock"] > div > div > button {
-                color: white !important;
-                border: 1px solid #ff66b3 !important;
-                background: rgba(255, 102, 179, 0.15) !important;
-                transition: all 0.3s !important;
-                font-size: 0.8rem !important;
-            }
-            div[data-testid="stHorizontalBlock"] > div > div > button:hover {
-                transform: translateY(-2px) !important;
-                box-shadow: 0 2px 8px rgba(255, 102, 179, 0.3) !important;
-            }
-            @media (max-width: 400px) {
-                div[data-testid="stHorizontalBlock"] > div > div > button {
-                    font-size: 0.7rem !important;
-                    padding: 6px 2px !important;
-                }
-            }
-        </style>
-        """, unsafe_allow_html=True)
-
-    @staticmethod
-    def enhanced_chat_ui(conn):
-        st.markdown("""
-        <style>
-            .chat-header {
-                background: linear-gradient(90deg, #ff66b3, #ff1493);
-                color: white;
-                padding: 15px;
-                border-radius: 10px;
-                margin-bottom: 20px;
-                text-align: center;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            }
-            .stAudio {
-                border-radius: 20px !important;
-                background: rgba(255, 102, 179, 0.1) !important;
-                padding: 10px !important;
-                margin: 10px 0 !important;
-            }
-            audio::-webkit-media-controls-panel {
-                background: linear-gradient(45deg, #ff66b3, #ff1493) !important;
-            }
-        </style>
-        """, unsafe_allow_html=True)
-        
-        UiService.chat_shortcuts()
-        
-        st.markdown(f"""
-        <div class="chat-header">
-            <h2 style="margin:0; font-size:1.5em; display:inline-block;">Chat Privado com Paloma</h2>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.sidebar.markdown(f"""
-        <div style="
-            background: rgba(255, 20, 147, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-        ">
-            <p style="margin:0; font-size:0.9em;">
-                Mensagens hoje: <strong>{st.session_state.request_count}/{Config.MAX_REQUESTS_PER_SESSION}</strong>
-            </p>
-            <progress value="{st.session_state.request_count}" max="{Config.MAX_REQUESTS_PER_SESSION}" style="width:100%; height:6px;"></progress>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        ChatService.process_user_input(conn)
-        save_persistent_data()
-        
-        st.markdown("""
-        <div style="
-            text-align: center;
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 0.8em;
-            color: #888;
-        ">
-            <p>Conversa privada • Suas mensagens são confidenciais</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-# ======================
-# PÁGINAS
-# ======================
 class NewPages:
     @staticmethod
     def show_home_page():
@@ -962,12 +1416,23 @@ class NewPages:
             .preview-img:hover {
                 filter: blur(0) brightness(1);
             }
+            
+            @media (max-width: 768px) {
+                .hero-banner {
+                    padding: 40px 15px !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .preview-img {
+                    filter: blur(2px) brightness(0.6) !important;
+                }
+            }
         </style>
         """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class="hero-banner">
-            <h1 style="color: #ff66b3;">Paloma Premium</h1>
+            <h1 style="color: #ff66b3;">Juh Premium</h1>
             <p>Conteúdo exclusivo que você não encontra em nenhum outro lugar...</p>
             <div style="margin-top: 20px;">
                 <a href="#vip" style="
@@ -1007,13 +1472,19 @@ class NewPages:
     @staticmethod
     def show_offers_page():
         st.markdown("""
-        <style>
-            .package-container {
-                display: flex;
-                justify-content: space-between;
-                margin: 30px 0;
-                gap: 20px;
+        <script>
+        function redirectTo(url) {
+            if (window.innerWidth <= 768) {
+                window.top.location.href = url;
+            } else {
+                window.open(url, '_blank').focus();
             }
+        }
+        </script>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <style>
             .package-box {
                 flex: 1;
                 background: rgba(30, 0, 51, 0.3);
@@ -1100,6 +1571,33 @@ class NewPages:
                 padding: 5px 10px;
                 border-radius: 5px;
                 font-weight: bold;
+            }
+            
+            @media (max-width: 768px) {
+                .package-box {
+                    padding: 15px !important;
+                    min-height: auto !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .package-price {
+                    font-size: 1.5em !important;
+                }
+                
+                .package-benefits li {
+                    padding: 6px 0 !important;
+                    font-size: 14px !important;
+                }
+                
+                .countdown-container {
+                    margin: 20px 0 !important;
+                    padding: 10px !important;
+                }
+                
+                .offer-card {
+                    padding: 15px !important;
+                }
+            }
         </style>
         """, unsafe_allow_html=True)
 
@@ -1112,11 +1610,11 @@ class NewPages:
 
         st.markdown('<div class="package-container">', unsafe_allow_html=True)
         
-        st.markdown("""
+        st.markdown(f"""
         <div class="package-box package-start">
             <div class="package-header">
                 <h3 style="color: #ff66b3;">START</h3>
-                <div class="package-price" style="color: #ff66b3;">R$ 49,90</div>
+                <div class="package-price" style="color: #ff66b3;">R$ 19,50</div>
                 <small>para iniciantes</small>
             </div>
             <ul class="package-benefits">
@@ -1124,102 +1622,108 @@ class NewPages:
                 <li>3 vídeo Intimos</li>
                 <li>Fotos Exclusivas</li>
                 <li>Videos Intimos </li>
-                <li>Fotos Buceta</li>
+                <li>Fotos da Buceta</li>
             </ul>
             <div style="position: absolute; bottom: 20px; width: calc(100% - 40px);">
-                <a href="{checkout_start}" target="_blank" rel="noopener noreferrer" style="
-                    display: block;
-                    background: linear-gradient(45deg, #ff66b3, #ff1493);
-                    color: white;
-                    text-align: center;
-                    padding: 10px;
-                    border-radius: 8px;
-                    text-decoration: none;
-                    font-weight: bold;
-                    transition: all 0.3s;
-                " onmouseover="this.style.transform='scale(1.05)'" 
-                onmouseout="this.style.transform='scale(1)'"
-                onclick="this.innerHTML='REDIRECIONANDO ⌛'; this.style.opacity='0.7'">
+                <button onclick="redirectTo('{Config.CHECKOUT_START}')" 
+                    style="
+                        width: 100%;
+                        background: linear-gradient(45deg, #ff66b3, #ff1493);
+                        color: white;
+                        text-align: center;
+                        padding: 12px;
+                        border-radius: 8px;
+                        border: none;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    "
+                    onmouseover="this.style.transform='scale(1.02)'"
+                    onmouseout="this.style.transform='scale(1)'">
                     QUERO ESTE PACOTE ➔
-                </a>
+                </button>
             </div>
         </div>
-        """.format(checkout_start=Config.CHECKOUT_START), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-        st.markdown("""
+        st.markdown(f"""
         <div class="package-box package-premium">
             <div class="package-badge">POPULAR</div>
             <div class="package-header">
                 <h3 style="color: #9400d3;">PREMIUM</h3>
-                <div class="package-price" style="color: #9400d3;">R$ 99,90</div>
+                <div class="package-price" style="color: #9400d3;">R$ 45,50</div>
                 <small>experiência completa</small>
             </div>
             <ul class="package-benefits">
                 <li>20 fotos exclusivas</li>
-                <li>5 vídeos premium</li>
-                <li>Fotos Peito</li>
-                <li>Fotos Bunda</li>
-                <li>Fotos Buceta</li>
+                <li>2 vídeos premium</li>
+                <li>Fotos dos Peitos</li>
+                <li>Fotos da Bunda</li>
+                <li>Fotos da Buceta</li>
                 <li>Fotos Exclusivas e Videos Exclusivos</li>
                 <li>Videos Masturbando</li>
             </ul>
             <div style="position: absolute; bottom: 20px; width: calc(100% - 40px);">
-                <a href="{checkout_premium}" target="_blank" rel="noopener noreferrer" style="
-                    display: block;
-                    background: linear-gradient(45deg, #9400d3, #ff1493);
-                    color: white;
-                    text-align: center;
-                    padding: 10px;
-                    border-radius: 8px;
-                    text-decoration: none;
-                    font-weight: bold;
-                    transition: all 0.3s;
-                " onmouseover="this.style.transform='scale(1.05)'" 
-                onmouseout="this.style.transform='scale(1)'"
-                onclick="this.innerHTML='REDIRECIONANDO ⌛'; this.style.opacity='0.7'">
+                <button onclick="redirectTo('{Config.CHECKOUT_PREMIUM}')" 
+                    style="
+                        width: 100%;
+                        background: linear-gradient(45deg, #9400d3, #ff1493);
+                        color: white;
+                        text-align: center;
+                        padding: 12px;
+                        border-radius: 8px;
+                        border: none;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    "
+                    onmouseover="this.style.transform='scale(1.02)'"
+                    onmouseout="this.style.transform='scale(1)'">
                     QUERO ESTE PACOTE ➔
-                </a>
+                </button>
             </div>
         </div>
-        """.format(checkout_premium=Config.CHECKOUT_PREMIUM), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-        st.markdown("""
+        st.markdown(f"""
         <div class="package-box package-extreme">
             <div class="package-header">
                 <h3 style="color: #ff0066;">EXTREME</h3>
-                <div class="package-price" style="color: #ff0066;">R$ 199,90</div>
+                <div class="package-price" style="color: #ff0066;">R$ 75,50</div>
                 <small>para verdadeiros fãs</small>
             </div>
             <ul class="package-benefits">
-                <li>30 fotos ultra-exclusivas</li>
-                <li>10 Videos Exclusivos</li>
-                <li>Fotos Peito</li>
-                <li>Fotos Bunda</li>
-                <li>Fotos Buceta</li>
+                <li>23 fotos ultra-exclusivas</li>
+                <li>4 Videos Exclusivos</li>
+                <li>Fotos dos Peitos</li>
+                <li>Fotos da Bunda</li>
+                <li>Fotos da Buceta</li>
                 <li>Fotos Exclusivas</li>
                 <li>Videos Masturbando</li>
                 <li>Videos Transando</li>
                 <li>Acesso a conteúdos futuros</li>
             </ul>
             <div style="position: absolute; bottom: 20px; width: calc(100% - 40px);">
-                <a href="{checkout_extreme}" target="_blank" rel="noopener noreferrer" style="
-                    display: block;
-                    background: linear-gradient(45deg, #ff0066, #9400d3);
-                    color: white;
-                    text-align: center;
-                    padding: 10px;
-                    border-radius: 8px;
-                    text-decoration: none;
-                    font-weight: bold;
-                    transition: all 0.3s;
-                " onmouseover="this.style.transform='scale(1.05)'" 
-                onmouseout="this.style.transform='scale(1)'"
-                onclick="this.innerHTML='REDIRECIONANDO ⌛'; this.style.opacity='0.7'">
+                <button onclick="redirectTo('{Config.CHECKOUT_EXTREME}')" 
+                    style="
+                        width: 100%;
+                        background: linear-gradient(45deg, #ff0066, #9400d3);
+                        color: white;
+                        text-align: center;
+                        padding: 12px;
+                        border-radius: 8px;
+                        border: none;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    "
+                    onmouseover="this.style.transform='scale(1.02)'"
+                    onmouseout="this.style.transform='scale(1)'">
                     QUERO ESTE PACOTE ➔
-                </a>
+                </button>
             </div>
         </div>
-        """.format(checkout_extreme=Config.CHECKOUT_EXTREME), unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1259,23 +1763,24 @@ class NewPages:
 
         plans = [
             {
-                "name": "1 Mês",
-                "price": "R$ 29,90",
-                "original": "R$ 49,90",
-                "benefits": ["Acesso total", "Conteúdo novo diário", "Chat privado"],
+                "name": "PROMO",
+                "price": "R$ 12,50",
+                "original": "R$ 17,90",
+                "benefits": ["3 fotos semi-nuas sensuais", "2 fotos +18 exclusivas só para você"],
                 "tag": "COMUM",
-                "link": Config.CHECKOUT_VIP_1MES + "?plan=1mes"
+                "link": Config.CHECKOUT_PROMO + "?plan=Promo"
             },
             {
-                "name": "3 Meses",
+              "name": "3 Meses",
                 "price": "R$ 69,90",
                 "original": "R$ 149,70",
                 "benefits": ["25% de desconto", "Bônus: 1 vídeo exclusivo", "Prioridade no chat"],
                 "tag": "MAIS POPULAR",
                 "link": Config.CHECKOUT_VIP_3MESES + "?plan=3meses"
+        
             },
             {
-                "name": "1 Ano",
+                 "name": "1 Ano",
                 "price": "R$ 199,90",
                 "original": "R$ 598,80",
                 "benefits": ["66% de desconto", "Presente surpresa mensal", "Acesso a conteúdos raros"],
@@ -1300,7 +1805,8 @@ class NewPages:
                         {''.join([f'<li style="margin-bottom: 5px;">{benefit}</li>' for benefit in plan['benefits']])}
                     </ul>
                     <div style="text-align: center; margin-top: 15px;">
-                        <a href="{plan['link']}" style="
+                        <button onclick="redirectTo('{plan['link']}')"
+                           style="
                             background: linear-gradient(45deg, #ff1493, #9400d3);
                             color: white;
                             padding: 10px 20px;
@@ -1308,17 +1814,28 @@ class NewPages:
                             text-decoration: none;
                             display: inline-block;
                             font-weight: bold;
+                            width: 100%;
+                            border: none;
+                            cursor: pointer;
                         ">
                             Assinar {plan['name']}
-                        </a>
+                        </button>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
 
-        if st.button("Voltar ao chat", key="back_from_offers"):
-            st.session_state.current_page = "chat"
-            save_persistent_data()
-            st.rerun()
+        if st.session_state.get('is_mobile', False):
+            if st.button("Voltar ao chat", 
+                        key="back_from_offers_mobile",
+                        on_click=lambda: st.session_state.update({"current_page": "chat"}),
+                        use_container_width=True):
+                save_persistent_data()
+                st.rerun()
+        else:
+            if st.button("Voltar ao chat", key="back_from_offers"):
+                st.session_state.current_page = "chat"
+                save_persistent_data()
+                st.rerun()
 
 # ======================
 # SERVIÇOS DE CHAT
@@ -1351,7 +1868,8 @@ class ChatService:
             'audio_sent': False,
             'current_page': 'home',
             'show_vip_offer': False,
-            'last_cta_time': 0  # Novo campo adicionado
+            'last_cta_time': 0,
+            'is_mobile': False
         }
         
         for key, default in defaults.items():
@@ -1363,7 +1881,7 @@ class ChatService:
         formatted = []
         
         for msg in messages[-max_messages:]:
-            role = "Cliente" if msg["role"] == "user" else "Paloma"
+            role = "Cliente" if msg["role"] == "user" else "Juh"
             content = msg["content"]
             if content == "[ÁUDIO]":
                 content = "[Enviou um áudio sensual]"
@@ -1414,11 +1932,10 @@ class ChatService:
                                 </div>
                                 """, unsafe_allow_html=True)
                                 
-                                # Mostrar botão apenas na última mensagem
                                 if content_data.get("cta", {}).get("show") and idx == len(st.session_state.messages[-12:]) - 1:
                                     if st.button(
                                         content_data.get("cta", {}).get("label", "Ver Ofertas"),
-                                        key=f"cta_button_{hash(msg['content'])}",  # Chave única baseada no conteúdo
+                                        key=f"cta_button_{hash(msg['content'])}",
                                         use_container_width=True
                                     ):
                                         st.session_state.current_page = content_data.get("cta", {}).get("target", "offers")
@@ -1458,12 +1975,44 @@ class ChatService:
 
     @staticmethod
     def process_user_input(conn):
+        now = datetime.utcnow()
+        last_time = st.session_state.get("last_user_msg_time")
+    
+        if last_time:
+            if isinstance(last_time, str):
+                last_time = datetime.fromisoformat(last_time)
+            elapsed = now - last_time
+    
+            if elapsed.total_seconds() > 86400:
+                st.session_state.messages = []
+                st.session_state.request_count = 0
+                st.session_state.audio_sent = False
+    
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": "Eba! Que bom que você voltou 😍 Tava com saudade..."
+                })
+                DatabaseService.save_message(
+                    conn,
+                    get_user_id(),
+                    st.session_state.session_id,
+                    "assistant",
+                    "Eba! Que bom que você voltou 😍 Tava com saudade..."
+                )
+    
+                st.session_state.last_user_msg_time = now.isoformat()
+                save_persistent_data()
+                
+                st.rerun()
+        else:
+            st.session_state.last_user_msg_time = now.isoformat()
+
         ChatService.display_chat_history()
-        
+
         if not st.session_state.get("audio_sent") and st.session_state.chat_started:
             status_container = st.empty()
             UiService.show_audio_recording_effect(status_container)
-            
+    
             st.session_state.messages.append({
                 "role": "assistant",
                 "content": "[ÁUDIO]"
@@ -1478,42 +2027,13 @@ class ChatService:
             st.session_state.audio_sent = True
             save_persistent_data()
             st.rerun()
-        
+    
         user_input = st.chat_input("Escreva sua mensagem aqui", key="chat_input")
-        
+    
         if user_input:
             cleaned_input = ChatService.validate_input(user_input)
-            
-            if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": "Vou ficar ocupada agora, me manda mensagem depois?"
-                })
-                DatabaseService.save_message(
-                    conn,
-                    get_user_id(),
-                    st.session_state.session_id,
-                    "assistant",
-                    "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
-                )
-                save_persistent_data()
-                st.rerun()
-                return
-            
-            st.session_state.messages.append({
-                "role": "user",
-                "content": cleaned_input
-            })
-            DatabaseService.save_message(
-                conn,
-                get_user_id(),
-                st.session_state.session_id,
-                "user",
-                cleaned_input
-            )
-            
-            st.session_state.request_count += 1
-            
+            lower_input = cleaned_input.lower()
+    
             with st.chat_message("user", avatar="🧑"):
                 st.markdown(f"""
                 <div style="
@@ -1525,15 +2045,108 @@ class ChatService:
                     {cleaned_input}
                 </div>
                 """, unsafe_allow_html=True)
+    
+            st.session_state.messages.append({
+                "role": "user",
+                "content": cleaned_input
+            })
+            DatabaseService.save_message(
+                conn,
+                get_user_id(),
+                st.session_state.session_id,
+                "user",
+                cleaned_input
+            )
+            st.session_state.request_count += 1
+    
+            if st.session_state.request_count >= Config.MAX_REQUESTS_PER_SESSION:
+                with st.chat_message("assistant", avatar="💋"):
+                    st.markdown("Vou ficar ocupada agora, me manda mensagem depois?")
+                DatabaseService.save_message(
+                    conn,
+                    get_user_id(),
+                    st.session_state.session_id,
+                    "assistant",
+                    "Estou ficando cansada, amor... Que tal continuarmos mais tarde?"
+                )
+                save_persistent_data()
+                st.session_state.last_user_msg_time = datetime.utcnow().isoformat()
+                return
+    
+            if any(term in lower_input for term in ["pix", "chave", "pagar", "como pago", "me passa", "transferência", "manda a chave"]):
+                placeholder = st.empty()
+                placeholder.markdown("💬 Digitando...")
+                time.sleep(5)
+                placeholder.empty()
+                resposta = {
+                      "text":(
+                      "Nada de Pix direto, gostoso... 💸 Aqui você entra no meu mundinho só escolhendo "
+                      "um dos meus planos: Promo, Start, Premium e Extreme 😈\n"
+                      "Vem ver tudo que preparei pra te deixar louco 🔥"
+                    ),
+                    "cta": {
+                        "show": True,
+                        "label": "👉 Ver Planos VIP",        
+                        "target": "offers"
+                    }
+                }
+    
+            elif any(p in lower_input for p in ["foto", "fotos", "buceta", "peito", "bunda"]):
+                placeholder = st.empty()
+                placeholder.markdown("💬 Digitando...")
+                time.sleep(5)
+                resposta = {
+                    "text": random.choice([
+                        "tô com fotos da minha buceta bem aberta, quer ver?",
+                        "minha buceta tá chamando você nas fotos...",
+                        "fiz um ensaio novo mostrando tudinho 🔥"
+                    ]),
+                    "cta": {
+                        "show": True,
+                        "label": "Ver Fotos Quentes",
+                        "target": "offers"
+                    }
+                }
             
-            with st.chat_message("assistant", avatar="💋"):
+            elif any(p in lower_input for p in ["você é real", "vc é real", "é ia", "é uma ia", "isso é um robô", "é humana?"]):
+                placeholder = st.empty()
+                placeholder.markdown("💬 Digitando...")
+                time.sleep(5)
+                resposta = {
+                    "text": "Sou tão real quanto sua vontade... 😈 Vem descobrir você mesmo no meu plano mais quente 🔥",
+                    "cta": {
+                        "show": True,
+                        "label": "💎 Quero Ver Tudo",
+                        "target": "offers"
+                    }
+                }
+            
+            elif any(v in lower_input for v in ["video", "transar", "masturbar"]):
+                placeholder = st.empty()
+                placeholder.markdown("💬 Digitando...")
+                time.sleep(5)
+                resposta = {
+                    "text": random.choice([
+                        "tenho vídeo me masturbando gostoso, vem ver 😈",
+                        "tô me tocando nesse vídeo novo, quer ver?",
+                        "gravei um vídeo especial só pra você 🥵"
+                    ]),
+                    "cta": {
+                        "show": True,
+                        "label": "Ver Vídeos Exclusivos",
+                        "target": "offers"
+                    }
+                }
+            
+            else:
                 resposta = ApiService.ask_gemini(cleaned_input, st.session_state.session_id, conn)
-                
+            
                 if isinstance(resposta, str):
                     resposta = {"text": resposta, "cta": {"show": False}}
                 elif "text" not in resposta:
                     resposta = {"text": str(resposta), "cta": {"show": False}}
-                
+            
+            with st.chat_message("assistant", avatar="💋"):
                 st.markdown(f"""
                 <div style="
                     background: linear-gradient(45deg, #ff66b3, #ff1493);
@@ -1545,7 +2158,7 @@ class ChatService:
                     {resposta["text"]}
                 </div>
                 """, unsafe_allow_html=True)
-                
+            
                 if resposta.get("cta", {}).get("show"):
                     if st.button(
                         resposta["cta"].get("label", "Ver Ofertas"),
@@ -1585,6 +2198,8 @@ def main():
         [data-testid="stSidebar"] {
             background: linear-gradient(180deg, #1e0033 0%, #3c0066 100%) !important;
             border-right: 1px solid #ff66b3 !important;
+            overflow: auto !important;
+            z-index: 2 !important;
         }
         .stButton button {
             background: rgba(255, 20, 147, 0.2) !important;
@@ -1626,8 +2241,9 @@ def main():
     
     if not st.session_state.age_verified:
         UiService.age_verification()
+        st.markdown("<p style='text-align: center; font-size: 18px; color: #ff66b3;'>📞 Ligando para Juh...</p>", unsafe_allow_html=True)
         st.stop()
-    
+        
     UiService.setup_sidebar()
     
     if not st.session_state.connection_complete:
@@ -1642,7 +2258,7 @@ def main():
             st.markdown("""
             <div style="text-align: center; margin: 50px 0;">
                 <img src="{profile_img}" width="120" style="border-radius: 50%; border: 3px solid #ff66b3;">
-                <h2 style="color: #ff66b3; margin-top: 15px;">Paloma</h2>
+                <h2 style="color: #ff66b3; margin-top: 15px;">Juh</h2>
                 <p style="font-size: 1.1em;">Estou pronta para você, amor...</p>
             </div>
             """.format(profile_img=Config.IMG_PROFILE), unsafe_allow_html=True)
@@ -1664,15 +2280,9 @@ def main():
     elif st.session_state.current_page == "offers":
         NewPages.show_offers_page()
     elif st.session_state.current_page == "vip":
-        st.session_state.show_vip_offer = True
+        st.session_state.current_page = "offers"
         save_persistent_data()
         st.rerun()
-    elif st.session_state.get("show_vip_offer", False):
-        st.warning("Página VIP em desenvolvimento")
-        if st.button("Voltar ao chat"):
-            st.session_state.show_vip_offer = False
-            save_persistent_data()
-            st.rerun()
     else:
         UiService.enhanced_chat_ui(conn)
     
