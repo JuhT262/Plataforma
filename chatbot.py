@@ -406,7 +406,7 @@ function redirectTo(url) {
 # ======================
 class Config:
     API_KEY = "AIzaSyAaLYhdIJRpf_om9bDpqLpjJ57VmTyZO7g"
-    API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key={API_KEY}"
+    API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
     VIP_LINK = "https://exemplo.com/vip"
     CHECKOUT_PROMO = "https://pay.cakto.com.br/n92nbk2_480593"
     CHECKOUT_START = "https://pay.cakto.com.br/eax37ya_480603"
@@ -2267,4 +2267,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
