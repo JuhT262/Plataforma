@@ -666,6 +666,51 @@ class ApiService:
 
     @staticmethod
     def _call_gemini_api(prompt: str, session_id: str, conn) -> dict:
+        prompt_lower = prompt.lower()
+
+        if prompt_lower in ["oi", "olá", "ola", "oi tudo bem", "tudo bem", "e ai", "e aí"]:
+            return {
+                "text": "Oi gostoso, tudo bem com você? Tô aqui pronta pra te deixar louco 😈",
+                "cta": {"show": False}
+            }
+    
+        if any(word in prompt_lower for word in ["foto", "fotos", "buceta", "peito", "bunda", "mostra", "ver"]):
+            return {
+                "text": random.choice([
+                    "tô com fotos da minha buceta bem aberta, quer ver?",
+                    "minha buceta tá chamando você nas fotos...",
+                    "fiz um ensaio novo mostrando tudinho 🔥"
+                ]),
+                "cta": {
+                    "show": True,
+                    "label": "Ver Fotos Quentes",
+                    "target": "offers"
+                }
+            }
+        
+        if any(word in prompt_lower for word in ["video", "vídeo", "transar", "masturbar", "transando"]):
+            return {
+                "text": random.choice([
+                    "tenho vídeo me masturbando gostoso, vem ver 😈",
+                    "tô me tocando nesse vídeo novo, quer ver?",
+                    "gravei um vídeo especial só pra você 🥵"
+                ]),
+                "cta": {
+                    "show": True,
+                    "label": "Ver Vídeos Exclusivos",
+                    "target": "offers"
+                }
+            }
+        
+        if any(word in prompt_lower for word in ["quanto custa", "preço", "valor", "comprar", "assinar", "vip", "plano"]):
+            return {
+                "text": "Tenho vários planos gostosos pra você... O Promo tá só R$ 12,50, vem ver tudo que preparei 😈",
+                "cta": {
+                    "show": True,
+                    "label": "Ver Planos",
+                    "target": "offers"
+                }
+            }
         delay_time = random.uniform(3, 8)
         time.sleep(delay_time)
         
@@ -2267,5 +2312,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
